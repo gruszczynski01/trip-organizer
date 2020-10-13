@@ -77,30 +77,30 @@ const MainTabsNavigator = createBottomTabNavigator(
   {
     App: AppNavigator,
     Settings: SettingsNavigator,
-  },
-  {
-    contentOptions: {
-      activeTintColor: Colors.primary,
-    },
-    contentComponent: (props) => {
-      const dispatch = useDispatch();
-      return (
-        <View style={{ flex: 1, paddingTop: 20 }}>
-          <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
-            <DrawerItems {...props} />
-            <Button
-              title="Logout"
-              color={Colors.primary}
-              onPress={() => {
-                dispatch(authActions.logout());
-                // props.navigation.navigate('Auth');
-              }}
-            />
-          </SafeAreaView>
-        </View>
-      );
-    },
   }
+  //   {
+  //     contentOptions: {
+  //       activeTintColor: Colors.primary,
+  //     },
+  //     contentComponent: (props) => {
+  //       const dispatch = useDispatch();
+  //       return (
+  //         <View style={{ flex: 1, paddingTop: 20 }}>
+  //           <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+  //             <DrawerItems {...props} />
+  //             <Button
+  //               title="Logout"
+  //               color={Colors.primary}
+  //               onPress={() => {
+  //                 dispatch(authActions.logout());
+  //                 // props.navigation.navigate('Auth');
+  //               }}
+  //             />
+  //           </SafeAreaView>
+  //         </View>
+  //       );
+  //     },
+  //   }
 );
 
 const AuthNavigator = createStackNavigator(
@@ -109,14 +109,14 @@ const AuthNavigator = createStackNavigator(
     SignUp: signUpScreen,
   },
   {
-    defaultNavigationOptions: defaultNavOptions,
+    header: null,
   }
 );
 
 const MainNavigator = createSwitchNavigator({
   Startup: StartupScreen,
   Auth: AuthNavigator,
-  Shop: MainTabsNavigator,
+  MainTabs: MainTabsNavigator,
 });
 
 export default createAppContainer(MainNavigator);
