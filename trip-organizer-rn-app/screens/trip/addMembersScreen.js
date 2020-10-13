@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const signUpScreen = () => {
+const addMembersScreen = () => {
   return (
     <View
       style={{
@@ -10,8 +10,8 @@ const signUpScreen = () => {
         alignItems: "center",
       }}
     >
-      <Text>Hello, world! signUpScreen</Text>
+      <Text>Hello, world! addMembersScreen</Text>
     </View>
   );
 };
-export default signUpScreen;
+export default addMembersScreen;
