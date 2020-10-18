@@ -1,16 +1,22 @@
 import React from "react";
-import {
-  createSwitchNavigator,
-  createAppContainer,
-  DrawerItems,
-} from "react-navigation";
+import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
+import { createDrawerNavigator, DrawerItems } from "react-navigation-drawer";
 // import  from "react-navigation-switch";
 
-import { Platform, SafeAreaView, Button, View } from "react-native";
+import {
+  Platform,
+  SafeAreaView,
+  Button,
+  View,
+  Text,
+  Image,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
+
+import * as authActions from "../store/actions/auth";
 
 import Colors from "../constants/Colors";
 
@@ -74,8 +80,31 @@ const SettingsNavigator = createStackNavigator(
 
 const MainTabsNavigator = createBottomTabNavigator(
   {
-    App: AppNavigator,
-    Settings: SettingsNavigator,
+    App: {
+      screen: AppNavigator,
+      navigationOptions: {
+        tabBarLabel: "Trip",
+        tabBarIcon: ({ tintColor }) => (
+          <Image
+            source={require("../assets/icons/trip.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
+            style={{ width: 26, height: 26, tintColor: tintColor }}
+          />
+        ),
+      },
+    },
+
+    Settings: {
+      screen: SettingsNavigator,
+      navigationOptions: {
+        tabBarLabel: "Profile",
+        tabBarIcon: ({ tintColor }) => (
+          <Image
+            source={require("../assets/icons/user-profile.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
+            style={{ width: 26, height: 26, tintColor: tintColor }}
+          />
+        ),
+      },
+    },
   }
   //   {
   //     contentOptions: {
@@ -111,11 +140,48 @@ const MainTabsNavigator = createBottomTabNavigator(
 //     header: null,
 //   }
 // );
+const DrawerNavigator = createDrawerNavigator(
+  {
+    MainTabs: MainTabsNavigator,
+  },
+  {
+    contentOptions: {
+      activeTintColor: Colors.primary,
+    },
+    contentComponent: (props) => {
+      const dispatch = useDispatch();
+      return (
+        <View style={{ flex: 1, paddingTop: 20 }}>
+          <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+            <DrawerItems {...props} />
+            <Image
+              source={require("../assets/icons/logout.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
+              style={{
+                width: 26,
+                height: 26,
+                tintColor: "red",
+                alignSelf: "center",
+              }}
+            />
+            <Button
+              title="Logout"
+              color="red" //{Colors.primary}
+              onPress={() => {
+                dispatch(authActions.logout());
+                props.navigation.navigate("Auth");
+              }}
+            />
+          </SafeAreaView>
+        </View>
+      );
+    },
+  }
+);
 
 const MainNavigator = createSwitchNavigator({
   Startup: StartupScreen,
   Auth: authenticationScreen,
-  MainTabs: MainTabsNavigator,
+  Drawer: DrawerNavigator,
 });
 
 export default createAppContainer(MainNavigator);

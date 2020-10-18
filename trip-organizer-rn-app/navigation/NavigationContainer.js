@@ -6,15 +6,15 @@ import AppNavigator from "./AppNavigator";
 
 const NavigationContainer = (props) => {
   const navRef = useRef();
-  //   const isAuth = useSelector((state) => !!state.auth.token);
+  const isAuth = useSelector((state) => !!state.auth.token);
 
-  //   useEffect(() => {
-  //     if (!isAuth) {
-  //       navRef.current.dispatch(
-  //         NavigationActions.navigate({ routeName: "Auth" })
-  //       );
-  //     }
-  //   }, [isAuth]);
+  useEffect(() => {
+    if (!isAuth) {
+      navRef.current.dispatch(
+        NavigationActions.navigate({ routeName: "Auth" })
+      );
+    }
+  }, [isAuth]);
 
   return <AppNavigator ref={navRef} />;
 };

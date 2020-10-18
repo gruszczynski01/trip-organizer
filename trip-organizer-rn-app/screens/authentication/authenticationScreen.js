@@ -1,7 +1,22 @@
 import React, { useState, useEffect, useReducer, useCallback } from "react";
-import { Text, View, ScrollView } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Button,
+  ActivityIndicator,
+  Alert,
+  Image,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import LoginScreen from "react-native-login-screen";
 import { useDispatch } from "react-redux";
+
+import Input from "../../components/technical/Input";
+import Card from "../../components/technical/Card";
+import Colors from "../../constants/Colors";
 
 import logo from "../../components/technical/logo";
 import * as authActions from "../../store/actions/auth";
@@ -62,14 +77,16 @@ const authenticationScreen = (props) => {
     if (isSignup) {
       action = authActions.signup(
         formState.inputValues.email,
+        formState.inputValues.password,
+        formState.inputValues.name,
+        formState.inputValues.surname
+      );
+    } else {
+      action = authActions.login(
+        formState.inputValues.email,
         formState.inputValues.password
       );
     }
-    // else {
-    //   action = authActions.login(
-    //     formState.inputValues.email,
-    //     formState.inputValues.password
-    //   );
     setError(null);
     setIsLoading(true);
     try {
@@ -94,35 +111,120 @@ const authenticationScreen = (props) => {
   );
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}
+    <KeyboardAvoidingView
+      behavior="padding"
+      //keyboardVerticalOffset={50}
+      style={styles.screen}
     >
-      <LoginScreen
-        // logoComponent={logo}
-        disableSettings
-        //onPressSettings={() => alert("Settings Button is pressed")}
-        // usernameOnChangeText={(username) => console.log("Username: ", username)}
-        // passwordOnChangeText={(password) => console.log("Password: ", password)}
-        // repasswordOnChangeText={(password) => console.log("Repass: ", password)}
-        usernameOnChangeText={inputChangeHandler}
-        passwordOnChangeText={inputChangeHandler}
-        repasswordOnChangeText={inputChangeHandler}
-        onPressLogin={() => {
-          authHandler();
-          console.log("onPressSignIn is pressed");
-        }}
-        onPressSignup={() => {
-          setIsSignup((prevState) => !prevState);
-        }}
-      ></LoginScreen>
-    </View>
+      <LinearGradient colors={["#d0f5ec", "#499feb"]} style={styles.gradient}>
+        <Image
+          style={styles.logo}
+          source={require("../../assets/trip_tmp.png")}
+        />
+
+        <Card style={styles.authContainer}>
+          <ScrollView>
+            <Input
+              id="email"
+              label="E-mail"
+              keyboardType="email-address"
+              required
+              email
+              autoCapitalize="none"
+              errorText="Please enter a valid email address."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+            />
+            {!isSignup ? null : (
+              <Input
+                id="name"
+                label="Name"
+                required
+                autoCapitalize="none"
+                errorText="Please enter a valid name."
+                onInputChange={inputChangeHandler}
+                initialValue=""
+              />
+            )}
+            {!isSignup ? null : (
+              <Input
+                id="surname"
+                label="Surname"
+                required
+                autoCapitalize="none"
+                errorText="Please enter a valid name."
+                onInputChange={inputChangeHandler}
+                initialValue=""
+              />
+            )}
+            <Input
+              id="password"
+              label="Password"
+              keyboardType="default"
+              secureTextEntry
+              required
+              minLength={5}
+              autoCapitalize="none"
+              errorText="Please enter a valid password."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+            />
+
+            <View style={styles.buttonContainer}>
+              {isLoading ? (
+                <ActivityIndicator size="small" color={Colors.primary} />
+              ) : (
+                <Button
+                  title={isSignup ? "Sign Up" : "Login"}
+                  color="#007AFF"
+                  onPress={authHandler}
+                />
+              )}
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title={`Switch to ${isSignup ? "Login" : "Sign Up"}`}
+                color={Colors.accent}
+                onPress={() => {
+                  setIsSignup((prevState) => !prevState);
+                }}
+              />
+            </View>
+          </ScrollView>
+        </Card>
+      </LinearGradient>
+    </KeyboardAvoidingView>
   );
 };
 
 authenticationScreen.navigationOptions = {
   headerShown: false,
 };
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  authContainer: {
+    width: "80%",
+    maxWidth: 400,
+    maxHeight: 400,
+    padding: 20,
+  },
+  buttonContainer: {
+    marginTop: 20,
+  },
+  bottomButtonContainer: {
+    marginTop: 50,
+  },
+  logo: {
+    marginBottom: 80,
+  },
+});
 
 export default authenticationScreen;

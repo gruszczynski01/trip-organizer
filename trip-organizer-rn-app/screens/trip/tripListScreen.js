@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const tripListScreen = () => {
+const signInScreen = () => {
   return (
     <View
       style={{
@@ -10,8 +10,8 @@ const tripListScreen = () => {
         alignItems: "center",
       }}
     >
-      <Text>Hello, world! tripListScreen</Text>
+      <Text>Hello, world! signInScreen</Text>
     </View>
   );
 };
-export default tripListScreen;
+export default signInScreen;
