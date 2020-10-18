@@ -15,8 +15,7 @@ import { useDispatch } from "react-redux";
 import Colors from "../constants/Colors";
 
 import StartupScreen from "../screens/StartupScreen";
-import signInScreen from "../screens/authentication/signInScreen";
-import signUpScreen from "../screens/authentication/signUpScreen";
+import authenticationScreen from "../screens/authentication/authenticationScreen";
 import userProfileScreen from "../screens/user_profile/userProfileScreen";
 import editUserProfileScreen from "../screens/user_profile/editUserProfileScreen";
 import tripListScreen from "../screens/trip/tripListScreen";
@@ -103,19 +102,19 @@ const MainTabsNavigator = createBottomTabNavigator(
   //   }
 );
 
-const AuthNavigator = createStackNavigator(
-  {
-    SignIn: signInScreen,
-    SignUp: signUpScreen,
-  },
-  {
-    header: null,
-  }
-);
+// const AuthNavigator = createStackNavigator(
+//   {
+//     SignIn: signInScreen,
+//     SignUp: signUpScreen,
+//   },
+//   {
+//     header: null,
+//   }
+// );
 
 const MainNavigator = createSwitchNavigator({
   Startup: StartupScreen,
-  Auth: AuthNavigator,
+  Auth: authenticationScreen,
   MainTabs: MainTabsNavigator,
 });
 
