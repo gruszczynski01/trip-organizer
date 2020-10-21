@@ -13,48 +13,60 @@ const mainMenuScreen = (props) => {
     <ScrollView>
       <View style={styles.screen}>
         <Text style={styles.title}>WYJAZD PO SESJI</Text>
+        <TouchableOpacity
+          style={styles.tileOpacity}
+          onPress={() => {
+            props.navigation.navigate("TripTimeline");
+          }}
+        >
+          <Card style={styles.tile}>
+            <ImageBackground
+              style={styles.container}
+              source={require("../../assets/images/time_table.jpg")}
+              imageStyle={{ borderRadius: 10 }}
+            >
+              <Text style={styles.innerText}>TRIP TIMELINE</Text>
+            </ImageBackground>
+          </Card>
+        </TouchableOpacity>
 
-        <Card style={styles.tile}>
-          <ImageBackground
-            style={styles.container}
-            source={require("../../assets/images/time_table.jpg")}
-            imageStyle={{ borderRadius: 10 }}
-          >
-            <Text style={styles.innerText}>TRIP TIMELINE</Text>
-          </ImageBackground>
-        </Card>
-        <Card style={styles.tile}>
-          <ImageBackground
-            style={styles.container}
-            source={require("../../assets/images/to_do_list.jpg")}
-            imageStyle={{ borderRadius: 10 }}
-          >
-            <Text style={styles.innerText}>TO DO LIST</Text>
-          </ImageBackground>
-        </Card>
-        <Card style={styles.tile}>
-          <ImageBackground
-            style={styles.container}
-            source={require("../../assets/images/trip_members.jpg")}
-            imageStyle={{ borderRadius: 10 }}
-          >
-            <Text style={styles.innerText}>MEMBERS</Text>
-          </ImageBackground>
-        </Card>
-        <Card style={styles.tile}>
-          <ImageBackground
-            style={styles.container}
-            source={require("../../assets/images/exchange.jpg")}
-            imageStyle={{ borderRadius: 10 }}
-          >
-            <Text style={styles.innerText}>EXCHANGE MONEY</Text>
-          </ImageBackground>
-        </Card>
+        <TouchableOpacity style={styles.tileOpacity}>
+          <Card style={styles.tile}>
+            <ImageBackground
+              style={styles.container}
+              source={require("../../assets/images/to_do_list.jpg")}
+              imageStyle={{ borderRadius: 10 }}
+            >
+              <Text style={styles.innerText}>TO DO LIST</Text>
+            </ImageBackground>
+          </Card>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.tileOpacity}>
+          <Card style={styles.tile}>
+            <ImageBackground
+              style={styles.container}
+              source={require("../../assets/images/trip_members.jpg")}
+              imageStyle={{ borderRadius: 10 }}
+            >
+              <Text style={styles.innerText}>MEMBERS</Text>
+            </ImageBackground>
+          </Card>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.tileOpacity}>
+          <Card style={styles.tile}>
+            <ImageBackground
+              style={styles.container}
+              source={require("../../assets/images/exchange.jpg")}
+              imageStyle={{ borderRadius: 10 }}
+            >
+              <Text style={styles.innerText}>EXCHANGE MONEY</Text>
+            </ImageBackground>
+          </Card>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
 };
-
 mainMenuScreen.navigationOptions = {
   headerTitle: "Your Trip",
 };
@@ -63,7 +75,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     // justifyContent: "center",
-    alignItems: "center",
+    // alignItems: "center",
   },
   title: {
     textTransform: "uppercase",
@@ -74,8 +86,22 @@ const styles = StyleSheet.create({
     // alignSelf: "center",
     justifyContent: "center",
   },
-  tile: {
+  tileOpacity: {
+    justifyContent: "center",
+    alignContent: "center",
+    alignSelf: "center",
     width: "80%",
+    // maxWidth: 400,
+    // minHeight: 120,
+    // paddingHorizontal: 20,
+    // paddingVertical: 5,
+    // alignItems: "center",
+    // justifyContent: "center",
+    // marginBottom: 20,
+    // backgroundColor: "red",
+  },
+  tile: {
+    // width: "80%",
     // maxWidth: 400,
     minHeight: 120,
     // paddingHorizontal: 20,

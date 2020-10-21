@@ -61,7 +61,7 @@ const AppNavigator = createStackNavigator(
     CurrencyExchange: currencyExchangeScreen,
     ToDoList: toDoListScreen,
     TripMembers: tripMembersScreen,
-    TripTimetable: tripTimelineScreen,
+    TripTimeline: tripTimelineScreen,
   },
   {
     defaultNavigationOptions: defaultNavOptions,
