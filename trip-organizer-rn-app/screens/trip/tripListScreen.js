@@ -3,6 +3,8 @@ import { FlatList, Text, View, StyleSheet } from "react-native";
 import Card from "../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/technical/HeaderButton";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Colors from "../../constants/Colors";
 
 const cards = [
   {
@@ -60,20 +62,28 @@ const cards = [
     type: "card - 19",
   },
 ];
-const signInScreen = () => {
+const signInScreen = (props) => {
   return (
-    <FlatList
-      bounces={false}
-      data={cards}
-      renderItem={({ index, item: { type } }) => (
-        <Card style={styles.cartItem}>
-          <Text style={styles.title}>Wyjazd po sesji </Text>
-          <Text style={styles.dateText}>03.04.2020 - 07.04.2020</Text>
-          <Text style={styles.destination}>Mediolan</Text>
-        </Card>
-      )}
-      keyExtractor={(item) => item.index}
-    />
+    <View style={styles.screen}>
+      <FlatList
+        bounces={false}
+        data={cards}
+        renderItem={({ index, item: { type } }) => (
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate("MainMenu");
+            }}
+          >
+            <Card style={styles.cartItem}>
+              <Text style={styles.title}>Wyjazd po sesji </Text>
+              <Text style={styles.dateText}>03.04.2020 - 07.04.2020</Text>
+              <Text style={styles.destination}>Mediolan</Text>
+            </Card>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.index}
+      />
+    </View>
   );
 };
 
@@ -106,6 +116,9 @@ signInScreen.navigationOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    //backgroundColor: "white",
+  },
   cartItem: {
     padding: 10,
     backgroundColor: "white",
