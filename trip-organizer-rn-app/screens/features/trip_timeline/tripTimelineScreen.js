@@ -4,6 +4,8 @@ import { Text, View, StyleSheet } from "react-native";
 import Timeline from "react-native-timeline-flatlist";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import HorizontalDatePicker from "@logisticinfotech/react-native-horizontal-date-picker";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import HeaderButton from "../../../components/technical/HeaderButton";
 
 const tripTimelineScreen = (props) => {
   const [dates, setDates] = useState(new Date(1598051730000));
@@ -24,6 +26,7 @@ const tripTimelineScreen = (props) => {
         "Badminton is a racquet sport played using racquets to hit a shuttlecock across a net.",
     },
     { time: "12:00", title: "Lunch" },
+    { time: "13:00", title: "Dinner" },
     {
       time: "14:00",
       title: "Watch Soccer",
@@ -53,7 +56,7 @@ const tripTimelineScreen = (props) => {
         <HorizontalDatePicker
           style={styles.datePicker}
           pickerType={"date"}
-          onDateSelected={this.onDateSelected}
+          onDateSelected={onDateSelected}
           isShowYear={false}
         />
       </View>
@@ -62,6 +65,9 @@ const tripTimelineScreen = (props) => {
         data={data}
         separator={true}
         circleSize={20}
+        onEventPress={(event) => {
+          console.log(event);
+        }}
         circleColor="rgb(45,156,219)"
         lineColor="rgb(45,156,219)"
         timeContainerStyle={{ minWidth: 52, marginTop: -5 }}
@@ -81,6 +87,24 @@ const tripTimelineScreen = (props) => {
     </View>
   );
 };
+
+tripTimelineScreen.navigationOptions = (navData) => {
+  return {
+    headerTitle: "Timeline",
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="Add"
+          iconName="ios-add"
+          onPress={() => {
+            navData.navigation.navigate("AddEvent");
+          }}
+        />
+      </HeaderButtons>
+    ),
+  };
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

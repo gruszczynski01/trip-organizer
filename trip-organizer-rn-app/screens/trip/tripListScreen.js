@@ -104,7 +104,7 @@ signInScreen.navigationOptions = (navData) => {
     headerRight: (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
-          title="Menu"
+          title="Add"
           iconName="ios-add"
           onPress={() => {
             navData.navigation.navigate("TripDestination");
