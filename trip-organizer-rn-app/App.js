@@ -12,6 +12,14 @@ import toDoListReducer from "./store/reducers/toDoList";
 import tripsReducer from "./store/reducers/trips";
 import NavigationContainer from "./navigation/NavigationContainer";
 
+// firebase.auth().onAuthStateChanged((user) => {
+//   if (user != null) {
+//     console.log("We are authenticated now!");
+//   }
+
+//   // Do other things
+// });
+
 const rootReducer = combineReducers({
   auth: authReducer,
   events: eventsReducer,

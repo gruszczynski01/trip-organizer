@@ -5,6 +5,7 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/technical/HeaderButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Colors from "../../constants/Colors";
+import * as Animatable from "react-native-animatable";
 
 const cards = [
   {
@@ -70,15 +71,29 @@ const signInScreen = (props) => {
         data={cards}
         renderItem={({ index, item: { type } }) => (
           <TouchableOpacity
+            animation="pulse"
+            easing="ease-out"
+            iterationCount="infinite"
             onPress={() => {
               props.navigation.navigate("MainMenu");
             }}
+            onLongPress={(trip) => {
+              console.log("onLongPress: trip: " + trip);
+            }}
           >
-            <Card style={styles.cartItem}>
-              <Text style={styles.title}>Wyjazd po sesji </Text>
-              <Text style={styles.dateText}>03.04.2020 - 07.04.2020</Text>
-              <Text style={styles.destination}>Mediolan</Text>
-            </Card>
+            <Animatable.View
+              animation="bounceInLeft"
+              easing="ease-out"
+              iterationCount="1"
+            >
+              <Card style={styles.cartItem}>
+                <Animatable.Text style={styles.title}>
+                  Wyjazd po sesji{" "}
+                </Animatable.Text>
+                <Text style={styles.dateText}>03.04.2020 - 07.04.2020</Text>
+                <Text style={styles.destination}>Mediolan</Text>
+              </Card>
+            </Animatable.View>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.index}

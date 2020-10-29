@@ -4,6 +4,7 @@ import { AsyncStorage } from "react-native";
 // export const LOGIN = 'LOGIN';
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
+import { auth } from "../../firebase";
 
 let timer;
 
@@ -88,46 +89,39 @@ export const signup = (email, password, name, surname) => {
 
 export const login = (email, password) => {
   return async (dispatch) => {
-    const response = await fetch(
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBr4f8mBJ1Era_ZF1hfWT1tQ41BZrkA_sE",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }),
-      }
-    );
+    const response = await auth
+      .signInWithEmailAndPassword(email, password)
+      .catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode === "auth/wrong-password") {
+          message = "Wrong password.";
+        } else if (errorCode === "auth/invalid-email") {
+          message = "Invalid email.";
+        } else if (errorCode === "auth/user-disabled") {
+          message = "User disabled.";
+        } else if (errorCode === "auth/user-not-found") {
+          message = "User not found.";
+        } else {
+          message = errorMessage;
+        }
+        throw new Error(message);
+      });
 
-    if (!response.ok) {
-      const errorResData = await response.json();
-      const errorId = errorResData.error.message;
-      let message = "Something went wrong!";
-      if (errorId === "EMAIL_NOT_FOUND") {
-        message = "This email could not be found!";
-      } else if (errorId === "INVALID_PASSWORD") {
-        message = "This password is not valid!";
-      }
-      throw new Error(message);
-    }
-
-    const resData = await response.json();
-    console.log(resData);
+    const resData = await JSON.parse(JSON.stringify(response));
     dispatch(
       authenticate(
-        resData.localId,
-        resData.idToken,
-        parseInt(resData.expiresIn) * 1000
+        resData.user.uid,
+        resData.user.stsTokenManager.accessToken,
+        parseInt(resData.user.stsTokenManager.expirationTime) * 1000
       )
     );
     const expirationDate = new Date(
-      new Date().getTime() + parseInt(resData.expiresIn) * 1000
+      new Date().getTime() +
+        parseInt(resData.user.stsTokenManager.expirationTime) * 1000
     );
-    saveDataToStorage(resData.idToken, resData.localId, expirationDate);
+    saveDataToStorage(resData.user.uid, resData.user.uid, expirationDate);
   };
 };
 
@@ -158,7 +152,7 @@ const addUserToDatabase = (id, email, name, surname) => {
     //   console.log(errorResData);
     // }
     const resData = await response.json();
-    console.log(resData);
+    console.log("resData: " + resData);
     // dispatch({
     //   type: ADD_USER,
     //   userData: {

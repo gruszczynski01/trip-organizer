@@ -4,6 +4,7 @@ import MenuTile from "../../components/technical/MenuTile";
 import Card from "../../components/technical/Card";
 import Input from "../../components/technical/Input";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import * as Animatable from "react-native-animatable";
 
 // const image = require("../../assets/images/time_table.jpg");
 // const image = { uri: "https://reactjs.org/logo-og.png" };
@@ -13,56 +14,81 @@ const mainMenuScreen = (props) => {
     <ScrollView>
       <View style={styles.screen}>
         <Text style={styles.title}>WYJAZD PO SESJI</Text>
-        <TouchableOpacity
-          style={styles.tileOpacity}
-          onPress={() => {
-            props.navigation.navigate("TripTimeline");
-          }}
+        <Animatable.View
+          animation="bounceInLeft"
+          easing="ease-out"
+          iterationCount="1"
         >
-          <Card style={styles.tile}>
-            <ImageBackground
-              style={styles.container}
-              source={require("../../assets/images/time_table.jpg")}
-              imageStyle={{ borderRadius: 10 }}
-            >
-              <Text style={styles.innerText}>TRIP TIMELINE</Text>
-            </ImageBackground>
-          </Card>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tileOpacity}
+            onPress={() => {
+              props.navigation.navigate("TripTimeline");
+            }}
+          >
+            <Card style={styles.tile}>
+              <ImageBackground
+                style={styles.container}
+                source={require("../../assets/images/time_table.jpg")}
+                imageStyle={{ borderRadius: 10 }}
+              >
+                <Text style={styles.innerText}>TRIP TIMELINE</Text>
+              </ImageBackground>
+            </Card>
+          </TouchableOpacity>
+        </Animatable.View>
 
-        <TouchableOpacity style={styles.tileOpacity}>
-          <Card style={styles.tile}>
-            <ImageBackground
-              style={styles.container}
-              source={require("../../assets/images/to_do_list.jpg")}
-              imageStyle={{ borderRadius: 10 }}
-            >
-              <Text style={styles.innerText}>TO DO LIST</Text>
-            </ImageBackground>
-          </Card>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tileOpacity}>
-          <Card style={styles.tile}>
-            <ImageBackground
-              style={styles.container}
-              source={require("../../assets/images/trip_members.jpg")}
-              imageStyle={{ borderRadius: 10 }}
-            >
-              <Text style={styles.innerText}>MEMBERS</Text>
-            </ImageBackground>
-          </Card>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tileOpacity}>
-          <Card style={styles.tile}>
-            <ImageBackground
-              style={styles.container}
-              source={require("../../assets/images/exchange.jpg")}
-              imageStyle={{ borderRadius: 10 }}
-            >
-              <Text style={styles.innerText}>EXCHANGE MONEY</Text>
-            </ImageBackground>
-          </Card>
-        </TouchableOpacity>
+        <Animatable.View
+          animation="bounceInLeft"
+          easing="ease-out"
+          iterationCount="1"
+        >
+          <TouchableOpacity style={styles.tileOpacity}>
+            <Card style={styles.tile}>
+              <ImageBackground
+                style={styles.container}
+                source={require("../../assets/images/to_do_list.jpg")}
+                imageStyle={{ borderRadius: 10 }}
+              >
+                <Text style={styles.innerText}>TO DO LIST</Text>
+              </ImageBackground>
+            </Card>
+          </TouchableOpacity>
+        </Animatable.View>
+        <Animatable.View
+          animation="bounceInLeft"
+          easing="ease-out"
+          iterationCount="1"
+        >
+          <TouchableOpacity style={styles.tileOpacity}>
+            <Card style={styles.tile}>
+              <ImageBackground
+                style={styles.container}
+                source={require("../../assets/images/trip_members.jpg")}
+                imageStyle={{ borderRadius: 10 }}
+              >
+                <Text style={styles.innerText}>MEMBERS</Text>
+              </ImageBackground>
+            </Card>
+          </TouchableOpacity>
+        </Animatable.View>
+
+        <Animatable.View
+          animation="bounceInLeft"
+          easing="ease-out"
+          iterationCount="1"
+        >
+          <TouchableOpacity style={styles.tileOpacity}>
+            <Card style={styles.tile}>
+              <ImageBackground
+                style={styles.container}
+                source={require("../../assets/images/exchange.jpg")}
+                imageStyle={{ borderRadius: 10 }}
+              >
+                <Text style={styles.innerText}>EXCHANGE MONEY</Text>
+              </ImageBackground>
+            </Card>
+          </TouchableOpacity>
+        </Animatable.View>
       </View>
     </ScrollView>
   );
