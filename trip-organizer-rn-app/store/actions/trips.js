@@ -18,48 +18,6 @@ export const addTrip = (
 
     const newTripKey = database.ref().child("trips").push().key;
 
-    // const response = await database.ref("trips/" + newTripKey).set(
-    //   {
-    //     owner: userId,
-    //     name: tripName,
-    //     destination: tripDestination,
-    //     tripBeginning: tripBeginning,
-    //     tripEnding: tripEnding,
-    //     members: [userId],
-    //     to_do_list: newToDoListKey,
-    //     events: [],
-    //   },
-    //   function (error) {
-    //     if (error) {
-    //       console.log(
-    //         "LOG: trip-organizer-rn-app/store/actions/trips.js: Something went wrong with saving new trip to database"
-    //       );
-    //     } else {
-    //       console.log(
-    //         "LOG: trip-organizer-rn-app/store/actions/trips.js: Trip has been saved in database"
-    //       );
-    //     }
-    //   }
-    // );
-
-    // const response = await database.ref("toDoLists/" + newToDoListKey).set(
-    //   {
-    //     tripParent: newTripKey,
-    //     tasks: [],
-    //   },
-    //   function (error) {
-    //     if (error) {
-    //       console.log(
-    //         "LOG: trip-organizer-rn-app/store/actions/trips.js: Something went wrong with saving new toDoList to database"
-    //       );
-    //     } else {
-    //       console.log(
-    //         "LOG: trip-organizer-rn-app/store/actions/trips.js: toDoList has been saved in database"
-    //       );
-    //     }
-    //   }
-    // );
-
     var updates = {};
     updates["trips/" + newTripKey] = {
       owner: userId,
@@ -82,13 +40,12 @@ export const addTrip = (
       .child("trips/" + newTripKey + "/members")
       .push(userId);
 
-    //updates["trips/" + newTripKey + "/members/" + userId] = "";
-
     database
       .ref()
       .child("users/" + userId + "/userTrips")
       .push(newTripKey);
-    // updates["users/" + userId + "/userTrips/" + newTripKey] = "";
+
+    //te dwa pushe mozna przerobic do tablicy updates
 
     dispatch({
       type: ADD_TRIP,
@@ -106,30 +63,48 @@ export const addTrip = (
     });
   };
 };
-//
-// analogiczny przyklad na dodanie tripa
-//
-// function writeNewPost(uid, username, picture, title, body) {
-//     // A post entry.
-//     var postData = {
-//       author: username,
-//       uid: uid,
-//       body: body,
-//       title: title,
-//       starCount: 0,
-//       authorPic: picture
-//     };
 
-//     // Get a key for a new Post.
-//     var newPostKey = firebase.database().ref().child('posts').push().key;
+export const getTrips = () => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
 
-//     // Write the new post's data simultaneously in the posts list and the user's post list.
-//     var updates = {};
-//     updates['/posts/' + newPostKey] = postData;
-//     updates['/user-posts/' + uid + '/' + newPostKey] = postData;
+    let userTripsIds = [];
 
-//     return firebase.database().ref().update(updates);
-//   }
+    database
+      .ref("users/" + userId + "/userTrips")
+      .once("value")
+      .then(function (dataSnapshot) {
+        console.log("DS:");
+        console.log(dataSnapshot);
+        // dataSnapshot.forEach((element) => {
+        //   console.log(element.val);
+        // });
+      });
+
+    // const videosToFetch = ["23423lkj234", "20982lkjbba"];
+    // Map the Firebase promises into an array
+    // const tripsPromises = userTripsIds.map((id) => {
+    //   return databaseRef
+    //     .child("trips")
+    //     .child(id)
+    //     .on("value", (s) => s);
+    // });
+    // // Wait for all the async requests mapped into
+    // // the array to complete
+    // Promise.all(tripsPromises)
+    //   .then((trips) => {
+    //     // do something with the data
+    //   })
+    //   .catch((err) => {
+    //     // handle error
+    //   });
+
+    dispatch({
+      type: GET_USER_TRIP,
+      tripsData: {},
+    });
+  };
+};
 
 // Artykuł jak pobierac dane tripy dla jednego usera
 // https://medium.com/@justintulk/how-to-query-arrays-of-data-in-firebase-aa28a90181bad

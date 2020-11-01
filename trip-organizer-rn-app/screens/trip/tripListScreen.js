@@ -1,4 +1,6 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+
 import { FlatList, Text, View, StyleSheet } from "react-native";
 import Card from "../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
@@ -6,6 +8,7 @@ import HeaderButton from "../../components/technical/HeaderButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Colors from "../../constants/Colors";
 import * as Animatable from "react-native-animatable";
+import * as tripActions from "../../store/actions/trips";
 
 const cards = [
   {
@@ -64,6 +67,10 @@ const cards = [
   },
 ];
 const signInScreen = (props) => {
+  const dispatch = useDispatch();
+
+  dispatch(tripActions.getTrips());
+
   return (
     <View style={styles.screen}>
       <FlatList
