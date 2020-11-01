@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, Button, FlatList } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  FlatList,
+  ScrollView,
+} from "react-native";
 import Card from "../../components/technical/Card";
 import Input from "../../components/technical/Input";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import HeaderButton from "../../components/technical/HeaderButton";
 
-import DateTimePicker from "@react-native-community/datetimepicker";
 const cards = [
   {
     type: "card - 1",
@@ -60,40 +68,33 @@ const cards = [
     type: "card - 19",
   },
 ];
+const inputChangeHandler = () => {
+  console.log("Click...click");
+};
+const nextHandler = () => {
+  console.log("Click...click");
+};
+
 const addMembersScreen = (props) => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState("date");
-  const [show, setShow] = useState(false);
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || startDate;
-    setShow(Platform.OS === "ios");
-    setStartDate(currentDate);
-  };
-  const onChangeEnd = (event, selectedDate) => {
-    const currentDate = selectedDate || endDate;
-    setShow(Platform.OS === "ios");
-    setEndDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
-  };
-
-  const showTimepicker = () => {
-    showMode("time");
-  };
-
   return (
     <View style={styles.screen}>
       <Text style={styles.mainTitle}>Who are you going with?</Text>
+      <Card style={styles.input}>
+        <ScrollView>
+          <Input
+            id="name"
+            label="Name"
+            required
+            autoCapitalize="none"
+            errorText="Please enter a valid name."
+            onInputChange={inputChangeHandler}
+            initialValue=""
+          />
+          <View style={styles.buttonContainer}>
+            <Button title="Next" onPress={nextHandler} />
+          </View>
+        </ScrollView>
+      </Card>
       <FlatList
         bounces={false}
         data={cards}
@@ -109,19 +110,32 @@ const addMembersScreen = (props) => {
   );
 };
 
-addMembersScreen.navigationOptions = {
-  headerTitle: "Select time period",
+addMembersScreen.navigationOptions = (navData) => {
+  return {
+    headerTitle: "Select time period",
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="Add"
+          iconName="ios-save"
+          onPress={() => {
+            navData.navigation.navigate("TripList");
+          }}
+        />
+      </HeaderButtons>
+    ),
+  };
 };
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    justifyContent: "flex-start",
-    // alignItems: "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
   mainTitle: {
     textTransform: "uppercase",
-    fontSize: 40,
+    fontSize: 20,
     fontWeight: "bold",
     letterSpacing: 1,
     margin: 30,
@@ -142,10 +156,10 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "80%",
-    maxWidth: 400,
-    maxHeight: 400,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
+    // maxWidth: 400,
+    // maxHeight: 400,
+    // paddingHorizontal: 20,
+    // paddingVertical: 5,
   },
   buttonContainer: {
     paddingVertical: 20,

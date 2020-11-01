@@ -122,15 +122,24 @@ const addUserToDatabase = (id, email, name, surname) => {
   return async (dispatch, getState) => {
     const token = getState().auth.token;
     const userId = getState().auth.userId;
-    const body = JSON.stringify({
-      email,
-      name,
-      surname,
-    });
-    const response = await database.ref("users/" + userId).set({
-      email: email,
-      name: name,
-      surname: surname,
-    });
+
+    const response = await database.ref("users/" + userId).set(
+      {
+        email: email,
+        name: name,
+        surname: surname,
+      },
+      function (error) {
+        if (error) {
+          console.log(
+            "LOG: trip-organizer-rn-app/store/actions/auth.js: Something went wrong with saving new user to database"
+          );
+        } else {
+          console.log(
+            "LOG: trip-organizer-rn-app/store/actions/auth.js: Token has been saved in database"
+          );
+        }
+      }
+    );
   };
 };

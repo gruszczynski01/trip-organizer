@@ -11,7 +11,6 @@ const tripTimeScreen = (props) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
 
   const onChange = (event, selectedDate) => {
@@ -25,19 +24,6 @@ const tripTimeScreen = (props) => {
     setEndDate(currentDate);
   };
 
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
-  };
-
-  const showTimepicker = () => {
-    showMode("time");
-  };
-
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>When are you going?</Text>
@@ -47,7 +33,7 @@ const tripTimeScreen = (props) => {
         <DateTimePicker
           testID="dateTimePicker"
           value={startDate}
-          mode={mode}
+          mode="date"
           is24Hour={true}
           display="default"
           onChange={onChange}
@@ -59,7 +45,7 @@ const tripTimeScreen = (props) => {
         <DateTimePicker
           testID="dateTimePicker"
           value={endDate}
-          mode={mode}
+          mode="date"
           is24Hour={true}
           display="default"
           onChange={onChangeEnd}
@@ -71,7 +57,16 @@ const tripTimeScreen = (props) => {
           title="Next"
           // color={Colors.accent}
           onPress={() => {
-            props.navigation.navigate("AddMembers");
+            console.log({
+              ...props.navigation.state.params,
+              tripBeginning: startDate,
+              tripEnding: endDate,
+            });
+            props.navigation.navigate("TripName", {
+              ...props.navigation.state.params,
+              tripBeginning: startDate,
+              tripEnding: endDate,
+            });
 
             // setIsSignup((prevState) => !prevState);
           }}
