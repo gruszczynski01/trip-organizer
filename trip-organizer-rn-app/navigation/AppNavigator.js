@@ -40,7 +40,12 @@ import addEventScreen from "../screens/features/trip_timeline/addEventScreen";
 
 const defaultNavOptions = {
   headerStyle: {
-    backgroundColor: Platform.OS === "android" ? Colors.primary : "",
+    backgroundColor: "black",
+    // borderBottomWidth: "0",
+    shadowRadius: 0,
+    shadowOffset: {
+      height: 0,
+    },
   },
   headerTitleStyle: {
     fontFamily: "open-sans-bold",
@@ -48,7 +53,7 @@ const defaultNavOptions = {
   headerBackTitleStyle: {
     fontFamily: "open-sans",
   },
-  headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
+  headerTintColor: "white",
 };
 
 const AppNavigator = createStackNavigator(
@@ -106,6 +111,14 @@ const MainTabsNavigator = createBottomTabNavigator(
             style={{ width: 26, height: 26, tintColor: tintColor }}
           />
         ),
+      },
+    },
+  },
+  {
+    tabBarOptions: {
+      style: {
+        backgroundColor: "black",
+        borderTopColor: "transparent",
       },
     },
   }

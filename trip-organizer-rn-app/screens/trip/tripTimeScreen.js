@@ -26,7 +26,7 @@ const tripTimeScreen = (props) => {
     }
   }, [startDate, endDate]);
 
-  // poprawic pickery
+  // poprawic pickery, pamietac o offsecie // dokończyć edit
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || startDate;

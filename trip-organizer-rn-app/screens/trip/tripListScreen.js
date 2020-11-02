@@ -1,7 +1,14 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { FlatList, Text, View, StyleSheet, Alert } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  StyleSheet,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import Card from "../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/technical/HeaderButton";
@@ -42,6 +49,13 @@ const signInScreen = (props) => {
           props.navigation.navigate("TripDestination", {
             trip: trip,
           });
+        },
+      },
+      {
+        text: "Cancel",
+        style: "cancel",
+        onPress: () => {
+          console.log("Editing");
         },
       },
     ]);
@@ -94,6 +108,13 @@ const signInScreen = (props) => {
     <View style={styles.screen}>
       <FlatList
         onRefresh={loadTrips}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={loadTrips}
+            tintColor="#F2F2F7"
+          />
+        }
         refreshing={isRefreshing}
         data={trips}
         bounces={true}
@@ -139,9 +160,10 @@ const signInScreen = (props) => {
 signInScreen.navigationOptions = (navData) => {
   return {
     headerTitle: "Your Trips",
-    headerLeft: (
+    headerLeft: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
+          buttonStyle={{ color: "white" }}
           title="Menu"
           iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
           onPress={() => {
@@ -150,10 +172,12 @@ signInScreen.navigationOptions = (navData) => {
         />
       </HeaderButtons>
     ),
-    headerRight: (
+    headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
+          buttonStyle={{ color: "white" }}
           title="Add"
+          style={{ color: "#F2F2F7" }}
           // iconName={isEditMode ? "ios-save" : "ios-add"}
           iconName="ios-add"
           onPress={() => {
@@ -167,15 +191,15 @@ signInScreen.navigationOptions = (navData) => {
 
 const styles = StyleSheet.create({
   screen: {
-    //backgroundColor: "white",
+    backgroundColor: "#2C2C2E",
   },
   cartItem: {
     padding: 10,
-    backgroundColor: "white",
+    backgroundColor: "black",
     // flexDirection: "row",
     justifyContent: "flex-start",
     marginHorizontal: 20,
-    marginTop: 30,
+    marginTop: 20,
     minHeight: 120,
     flex: 1,
     flexDirection: "column",
@@ -186,17 +210,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 1,
     padding: 5,
+    color: "#F2F2F7",
   },
   dateText: {
     fontSize: 17,
     letterSpacing: 1,
     padding: 5,
+    color: "#F2F2F7",
   },
   destination: {
     fontSize: 17,
     letterSpacing: 1,
     fontWeight: "bold",
     paddingLeft: 5,
+    color: "#F2F2F7",
   },
 });
 
