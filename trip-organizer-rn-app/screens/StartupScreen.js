@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   ActivityIndicator,
@@ -9,18 +9,34 @@ import {
 import { useDispatch } from "react-redux";
 
 import Colors from "../constants/Colors";
+import { auth, database } from "../firebase";
 import * as authActions from "../store/actions/auth";
 
 const StartupScreen = (props) => {
   const dispatch = useDispatch();
 
+  console.log("StartUpScreen");
+
   useEffect(() => {
     const tryLogin = async () => {
       const userData = await AsyncStorage.getItem("userData");
-      if (!userData) {
+      const userDataJSON = JSON.parse(userData);
+      console.log("UD: ");
+      console.log(userDataJSON);
+      console.log(userDataJSON.userId);
+      console.log(!!userDataJSON);
+      if (!!!userDataJSON) {
+        // dispatch(
+        //   authActions.authenticate(
+        //     userDataJSON.userId,
+        //     userDataJSON.token,
+        //     userDataJSON.expirationTime
+        //   )
+        // );
         props.navigation.navigate("Auth");
         return;
       }
+
       const transformedData = JSON.parse(userData);
       const { token, userId, expiryDate } = transformedData;
       const expirationDate = new Date(expiryDate);
@@ -32,8 +48,8 @@ const StartupScreen = (props) => {
 
       const expirationTime = expirationDate.getTime() - new Date().getTime();
 
-      props.navigation.navigate("Drawer");
       dispatch(authActions.authenticate(userId, token, expirationTime));
+      props.navigation.navigate("Drawer");
     };
 
     tryLogin();

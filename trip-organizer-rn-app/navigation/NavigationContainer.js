@@ -10,6 +10,7 @@ const NavigationContainer = (props) => {
 
   useEffect(() => {
     if (!isAuth) {
+      console.log("NOT LOGGED");
       navRef.current.dispatch(
         NavigationActions.navigate({ routeName: "Auth" })
       );

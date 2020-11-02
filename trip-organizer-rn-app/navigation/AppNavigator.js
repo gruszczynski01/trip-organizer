@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 
 import * as authActions from "../store/actions/auth";
+import { auth, database } from "../firebase";
 
 import Colors from "../constants/Colors";
 
@@ -169,8 +170,16 @@ const DrawerNavigator = createDrawerNavigator(
               title="Logout"
               color="red" //{Colors.primary}
               onPress={() => {
+                auth
+                  .signOut()
+                  .then(function () {
+                    console.log("Wylogowano poprawnie");
+                  })
+                  .catch(function (error) {
+                    console.log("Błąd przy wylogowywaniu");
+                  });
                 dispatch(authActions.logout());
-                props.navigation.navigate("Auth");
+                // props.navigation.navigate("Auth");
               }}
             />
           </SafeAreaView>

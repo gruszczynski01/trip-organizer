@@ -4,6 +4,7 @@ export const GET_USER_TRIP = "GET_USER_TRIP";
 export const DELETE_TRIP = "DELETE_TRIP";
 
 import { auth, database } from "../../firebase";
+import trips from "../reducers/trips";
 
 export const addTrip = (
   tripName,
@@ -68,40 +69,41 @@ export const getTrips = () => {
   return async (dispatch, getState) => {
     const userId = getState().auth.userId;
 
-    let userTripsIds = [];
+    let userTrips = [];
 
-    database
+    const response = await database
       .ref("users/" + userId + "/userTrips")
       .once("value")
-      .then(function (dataSnapshot) {
-        console.log("DS:");
-        console.log(dataSnapshot);
-        // dataSnapshot.forEach((element) => {
-        //   console.log(element.val);
-        // });
-      });
+      .then(async function (dataSnapshot) {
+        // console.log("DS:");
+        // console.log(dataSnapshot);
+        const data = JSON.parse(JSON.stringify(dataSnapshot));
+        // console.log(data);
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            // console.log(key + " -> " + data[key]);
+            const tripId = data[key];
 
-    // const videosToFetch = ["23423lkj234", "20982lkjbba"];
-    // Map the Firebase promises into an array
-    // const tripsPromises = userTripsIds.map((id) => {
-    //   return databaseRef
-    //     .child("trips")
-    //     .child(id)
-    //     .on("value", (s) => s);
-    // });
-    // // Wait for all the async requests mapped into
-    // // the array to complete
-    // Promise.all(tripsPromises)
-    //   .then((trips) => {
-    //     // do something with the data
-    //   })
-    //   .catch((err) => {
-    //     // handle error
-    //   });
+            const nestedResponse = await database
+              .ref("trips/" + tripId)
+              .once("value")
+              .then(function (dataSnapshot) {
+                // console.log("DS2:");
+                // console.log(dataSnapshot);
+                userTrips.push({
+                  ...JSON.parse(JSON.stringify(dataSnapshot)),
+                  id: tripId,
+                });
+              });
+          }
+        }
+      });
+    console.log("UT:");
+    console.log(userTrips);
 
     dispatch({
       type: GET_USER_TRIP,
-      tripsData: {},
+      tripsData: userTrips,
     });
   };
 };

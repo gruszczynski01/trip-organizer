@@ -31,8 +31,7 @@ export default (state = initialState, action) => {
       };
     case GET_USER_TRIP:
       return {
-        token: action.token,
-        userId: action.userId,
+        userTrips: action.tripsData,
       };
     case DELETE_TRIP:
       return {

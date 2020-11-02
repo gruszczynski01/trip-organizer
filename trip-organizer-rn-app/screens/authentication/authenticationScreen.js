@@ -91,7 +91,7 @@ const authenticationScreen = (props) => {
     setIsLoading(true);
     try {
       await dispatch(action);
-      props.navigation.navigate("MainTabs");
+      props.navigation.navigate("Drawer");
     } catch (err) {
       setError(err.message);
       setIsLoading(false);

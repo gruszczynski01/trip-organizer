@@ -34,6 +34,7 @@ export const authenticate = (userId, token, expiryTime) => {
 };
 
 const saveDataToStorage = (token, userId, expirationDate) => {
+  console.log("Saving userData to AsyncStorage");
   AsyncStorage.setItem(
     "userData",
     JSON.stringify({

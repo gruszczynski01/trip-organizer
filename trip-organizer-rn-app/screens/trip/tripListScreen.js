@@ -1,109 +1,134 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { FlatList, Text, View, StyleSheet } from "react-native";
+import { FlatList, Text, View, StyleSheet, Alert } from "react-native";
 import Card from "../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/technical/HeaderButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Colors from "../../constants/Colors";
+import Moment from "moment";
+
 import * as Animatable from "react-native-animatable";
 import * as tripActions from "../../store/actions/trips";
 
-const cards = [
-  {
-    type: "card - 1",
-  },
-  {
-    type: "card - 2",
-  },
-  {
-    type: "card - 3",
-  },
-  {
-    type: "card - 4",
-  },
-  {
-    type: "card - 5",
-  },
-  {
-    type: "card - 6",
-  },
-  {
-    type: "card - 7",
-  },
-  {
-    type: "card - 8",
-  },
-  {
-    type: "card - 9",
-  },
-  {
-    type: "card - 10",
-  },
-  {
-    type: "card - 12",
-  },
-  {
-    type: "card - 13",
-  },
-  {
-    type: "card - 14",
-  },
-  {
-    type: "card - 15",
-  },
-  {
-    type: "card - 16",
-  },
-  {
-    type: "card - 17",
-  },
-  {
-    type: "card - 18",
-  },
-  {
-    type: "card - 19",
-  },
-];
 const signInScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isEditMode, setEditMode] = useState(false);
+  const [error, setError] = useState();
+  const trips = useSelector((state) => state.trips.userTrips);
   const dispatch = useDispatch();
+  // dispatch(tripActions.getTrips());
+  // console.log("TRIPS:");
+  // console.log(trips);
 
-  dispatch(tripActions.getTrips());
+  const longPressHandler = (trip) => {
+    Alert.alert(trip.name, "What do you want to do with?", [
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          console.log("Deleting");
+          console.log(trip);
+          // dispatch(productsActions.deleteProduct(id));
+        },
+      },
+      {
+        text: "Edit",
+        style: "default",
+        onPress: () => {
+          console.log("Editing");
+          console.log(trip);
+        },
+      },
+    ]);
+  };
+
+  const loadTrips = useCallback(async () => {
+    setError(null);
+    setIsRefreshing(true);
+    try {
+      await dispatch(tripActions.getTrips());
+    } catch (err) {
+      setError(err.message);
+    }
+    setIsRefreshing(false);
+  }, [dispatch, setIsLoading, setError]);
+
+  useEffect(() => {
+    const willFocusSub = props.navigation.addListener("willFocus", loadTrips);
+
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadTrips]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    loadTrips().then(() => {
+      setIsLoading(false);
+    });
+  }, [dispatch, loadTrips]);
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>An error occurred!</Text>
+        <Button title="Try again" onPress={loadTrips} color="red" />
+      </View>
+    );
+  }
+
+  if (!isLoading && trips.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text>No trips found. Maybe start adding some!</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>
       <FlatList
-        bounces={false}
-        data={cards}
-        renderItem={({ index, item: { type } }) => (
+        onRefresh={loadTrips}
+        refreshing={isRefreshing}
+        data={trips}
+        bounces={true}
+        keyExtractor={(item) => item.id}
+        renderItem={(itemData) => (
           <TouchableOpacity
-            animation="pulse"
-            easing="ease-out"
-            iterationCount="infinite"
             onPress={() => {
               props.navigation.navigate("MainMenu");
             }}
             onLongPress={(trip) => {
-              console.log("onLongPress: trip: " + trip);
+              console.log("onLongPress: trip: " + itemData.item.id);
+              // setEditMode(true);
+              longPressHandler(itemData.item);
             }}
           >
             <Animatable.View
               animation="bounceInLeft"
-              easing="ease-out"
-              iterationCount="1"
+              iterationCount={1}
+              easing="linear"
             >
               <Card style={styles.cartItem}>
                 <Animatable.Text style={styles.title}>
-                  Wyjazd po sesji{" "}
+                  {itemData.item.name}
                 </Animatable.Text>
-                <Text style={styles.dateText}>03.04.2020 - 07.04.2020</Text>
-                <Text style={styles.destination}>Mediolan</Text>
+                <Text style={styles.dateText}>
+                  {Moment(itemData.item.tripBeginning).format("DD.MM.YYYY")} -{" "}
+                  {Moment(itemData.item.tripEnding)
+                    .utcOffset(-1)
+                    .format("DD.MM.YYYY")}
+                </Text>
+                <Text style={styles.destination}>
+                  {itemData.item.destination}
+                </Text>
               </Card>
             </Animatable.View>
           </TouchableOpacity>
         )}
-        keyExtractor={(item) => item.index}
       />
     </View>
   );
@@ -127,6 +152,7 @@ signInScreen.navigationOptions = (navData) => {
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="Add"
+          // iconName={isEditMode ? "ios-save" : "ios-add"}
           iconName="ios-add"
           onPress={() => {
             navData.navigation.navigate("TripDestination");
