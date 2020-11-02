@@ -38,13 +38,13 @@ export const addTrip = (
 
     database
       .ref()
-      .child("trips/" + newTripKey + "/members")
-      .push(userId);
+      .child("trips/" + newTripKey + "/members/" + userId)
+      .set(0);
 
     database
       .ref()
-      .child("users/" + userId + "/userTrips")
-      .push(newTripKey);
+      .child("users/" + userId + "/userTrips/" + newTripKey)
+      .set(0);
 
     //te dwa pushe mozna przerobic do tablicy updates
 
@@ -75,21 +75,15 @@ export const getTrips = () => {
       .ref("users/" + userId + "/userTrips")
       .once("value")
       .then(async function (dataSnapshot) {
-        // console.log("DS:");
-        // console.log(dataSnapshot);
         const data = JSON.parse(JSON.stringify(dataSnapshot));
-        // console.log(data);
         for (var key in data) {
           if (data.hasOwnProperty(key)) {
-            // console.log(key + " -> " + data[key]);
-            const tripId = data[key];
-
+            const tripId = key;
             const nestedResponse = await database
               .ref("trips/" + tripId)
               .once("value")
               .then(function (dataSnapshot) {
-                // console.log("DS2:");
-                // console.log(dataSnapshot);
+                console.log(dataSnapshot);
                 userTrips.push({
                   ...JSON.parse(JSON.stringify(dataSnapshot)),
                   id: tripId,
@@ -98,12 +92,40 @@ export const getTrips = () => {
           }
         }
       });
-    console.log("UT:");
-    console.log(userTrips);
-
     dispatch({
       type: GET_USER_TRIP,
       tripsData: userTrips,
+    });
+  };
+};
+
+export const deleteTrip = (tripId) => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
+
+    var tripToDeleteRef = await database
+      .ref("trips/" + tripId)
+      .remove()
+      .then(function () {
+        console.log("Remove succeeded.");
+      })
+      .catch(function (error) {
+        console.log("Remove failed: " + error.message);
+      });
+
+    tripToDeleteRef = await database
+      .ref("users/" + userId + "/userTrips/" + tripId)
+      .remove()
+      .then(function () {
+        console.log("Remove succeeded.");
+      })
+      .catch(function (error) {
+        console.log("Remove failed: " + error.message);
+      });
+
+    dispatch({
+      type: DELETE_TRIP,
+      tripId: tripId,
     });
   };
 };

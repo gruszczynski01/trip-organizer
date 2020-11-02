@@ -31,7 +31,7 @@ const signInScreen = (props) => {
         onPress: () => {
           console.log("Deleting");
           console.log(trip);
-          // dispatch(productsActions.deleteProduct(id));
+          dispatch(tripActions.deleteTrip(trip.id));
         },
       },
       {
@@ -39,7 +39,9 @@ const signInScreen = (props) => {
         style: "default",
         onPress: () => {
           console.log("Editing");
-          console.log(trip);
+          props.navigation.navigate("TripDestination", {
+            trip: trip,
+          });
         },
       },
     ]);

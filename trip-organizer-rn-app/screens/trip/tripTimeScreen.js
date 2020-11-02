@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
+import { useSelector } from "react-redux";
 import Card from "../../components/technical/Card";
 import Input from "../../components/technical/Input";
 // import { Calendar } from "react-native-calendars";
@@ -8,10 +9,24 @@ import Calendar from "react-native-calendar-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const tripTimeScreen = (props) => {
+  const trip = props.navigation.getParam("trip");
+  const editedTrip = useSelector((state) =>
+    state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
+  );
+
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [date, setDate] = useState(new Date(1598051730000));
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (!!editedTrip) {
+      setStartDate(editedTrip.tripBeginning);
+      setEndDate(editedTrip.tripEnding);
+    }
+  }, [startDate, endDate]);
+
+  // poprawic pickery
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || startDate;

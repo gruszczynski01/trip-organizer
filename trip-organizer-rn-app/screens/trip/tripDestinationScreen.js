@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Card from "../../components/technical/Card";
 import Input from "../../components/technical/Input";
 
@@ -37,17 +37,21 @@ const formReducer = (state, action) => {
 };
 
 const tripDestinationScreen = (props) => {
+  const trip = props.navigation.getParam("trip");
+  const editedTrip = useSelector((state) =>
+    state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
+  );
   const [error, setError] = useState();
   const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
-      name: "",
+      name: editedTrip ? editedTrip.name : "",
     },
     inputValidities: {
-      name: false,
+      name: editedTrip ? true : false,
     },
-    formIsValid: false,
+    formIsValid: editedTrip ? true : false,
   });
 
   useEffect(() => {
@@ -69,33 +73,12 @@ const tripDestinationScreen = (props) => {
   );
 
   const nextHandler = async () => {
-    // inputChangeHandler();
     console.log(formState);
 
     props.navigation.navigate("TripTime", {
       destination: formState.inputValues.name,
+      trip: trip,
     });
-    // let action;
-    // if (isSignup) {
-    //   action = authActions.signup(
-    //     formState.inputValues.email,
-    //     formState.inputValues.password
-    //   );
-    // } else {
-    //   action = authActions.login(
-    //     formState.inputValues.email,
-    //     formState.inputValues.password
-    //   );
-    // }
-    // setError(null);
-    // setIsLoading(true);
-    // try {
-    //   await dispatch(action);
-    //   props.navigation.navigate("Shop");
-    // } catch (err) {
-    //   setError(err.message);
-    //   setIsLoading(false);
-    // }
   };
 
   return (
@@ -115,7 +98,8 @@ const tripDestinationScreen = (props) => {
               autoCapitalize="none"
               errorText="Please enter a valid name."
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue={editedTrip ? editedTrip.name : ""}
+              initiallyValid={!!editedTrip}
             />
             <View style={styles.buttonContainer}>
               <Button title="Next" onPress={nextHandler} />

@@ -21,7 +21,7 @@ export default (state = initialState, action) => {
         action.tripData.toDoList
       );
       return {
-        ...state,
+        //...state,
         userTrips: state.userTrips.concat(newTrip),
       };
     case EDIT_TRIP:
@@ -35,8 +35,8 @@ export default (state = initialState, action) => {
       };
     case DELETE_TRIP:
       return {
-        token: action.token,
-        userId: action.userId,
+        //...state,
+        userTrips: state.userTrips.filter((trip) => trip.id !== action.tripId),
       };
     default:
       return state;
