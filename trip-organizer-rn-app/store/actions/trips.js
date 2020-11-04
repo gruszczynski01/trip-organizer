@@ -65,6 +65,37 @@ export const addTrip = (
   };
 };
 
+export const editTrip = (
+  tripId,
+  tripName,
+  tripDestination,
+  tripBeginning,
+  tripEnding
+) => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
+
+    var updates = {};
+    updates["trips/" + tripId + "/name"] = tripName;
+    updates["trips/" + tripId + "/destination"] = tripDestination;
+    updates["trips/" + tripId + "/tripBeginning"] = tripBeginning;
+    updates["trips/" + tripId + "/tripEnding"] = tripEnding;
+
+    database.ref().update(updates);
+
+    dispatch({
+      type: EDIT_TRIP,
+      tripData: {
+        id: tripId,
+        name: tripName,
+        destination: tripDestination,
+        tripBeginning: tripBeginning,
+        tripEnding: tripEnding,
+      },
+    });
+  };
+};
+
 export const getTrips = () => {
   return async (dispatch, getState) => {
     const userId = getState().auth.userId;

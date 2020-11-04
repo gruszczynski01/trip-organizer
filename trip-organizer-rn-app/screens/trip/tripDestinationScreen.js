@@ -38,15 +38,18 @@ const formReducer = (state, action) => {
 
 const tripDestinationScreen = (props) => {
   const trip = props.navigation.getParam("trip");
-  const editedTrip = useSelector((state) =>
-    state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
-  );
+  var editedTrip = null;
+  if (trip != -1) {
+    editedTrip = useSelector((state) =>
+      state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
+    );
+  }
   const [error, setError] = useState();
   const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
-      name: editedTrip ? editedTrip.name : "",
+      name: editedTrip ? editedTrip.destination : "",
     },
     inputValidities: {
       name: editedTrip ? true : false,
@@ -98,7 +101,7 @@ const tripDestinationScreen = (props) => {
               autoCapitalize="none"
               errorText="Please enter a valid name."
               onInputChange={inputChangeHandler}
-              initialValue={editedTrip ? editedTrip.name : ""}
+              initialValue={editedTrip ? editedTrip.destination : ""}
               initiallyValid={!!editedTrip}
             />
             <View style={styles.buttonContainer}>

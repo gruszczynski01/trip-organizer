@@ -25,9 +25,25 @@ export default (state = initialState, action) => {
         userTrips: state.userTrips.concat(newTrip),
       };
     case EDIT_TRIP:
+      let tmpUserTrips = state.userTrips;
+      tmpUserTrips.forEach(function (trip, index, array) {
+        if (trip.id == action.tripData.id) {
+          array[index] = {
+            ...trip,
+            name: action.tripData.name,
+            destination: action.tripData.destination,
+            tripBeginning: action.tripData.tripBeginning,
+            tripEnding: action.tripData.tripEnding,
+          };
+          console.log("new trip");
+          console.log(array[index]);
+        }
+      });
+      console.log("NOWA TABLICA");
+      console.log(tmpUserTrips);
       return {
-        token: action.token,
-        userId: action.userId,
+        ...state,
+        userTrips: tmpUserTrips,
       };
     case GET_USER_TRIP:
       return {

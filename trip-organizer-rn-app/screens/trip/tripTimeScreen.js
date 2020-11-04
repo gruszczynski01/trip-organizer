@@ -7,35 +7,42 @@ import Input from "../../components/technical/Input";
 import CalendarStrip from "react-native-calendar-strip";
 import Calendar from "react-native-calendar-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Moment from "moment";
 
 const tripTimeScreen = (props) => {
-  const trip = props.navigation.getParam("trip");
-  const editedTrip = useSelector((state) =>
-    state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
-  );
-
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [show, setShow] = useState(false);
+
+  const trip = props.navigation.getParam("trip");
+  var editedTrip = null;
+  if (trip != -1) {
+    editedTrip = useSelector((state) =>
+      state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
+    );
+  }
 
   useEffect(() => {
+    console.log("EDITT INIT");
     if (!!editedTrip) {
-      setStartDate(editedTrip.tripBeginning);
-      setEndDate(editedTrip.tripEnding);
+      console.log("EDITT");
+      console.log(editedTrip);
+      setStartDate(new Date(editedTrip.tripBeginning));
+      setEndDate(new Date(editedTrip.tripEnding));
     }
-  }, [startDate, endDate]);
+  }, []);
 
   // poprawic pickery, pamietac o offsecie // dokończyć edit
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || startDate;
-    setShow(Platform.OS === "ios");
+    const currentDate = selectedDate;
     setStartDate(currentDate);
+    if (currentDate > endDate) {
+      setEndDate(currentDate);
+    }
   };
   const onChangeEnd = (event, selectedDate) => {
-    const currentDate = selectedDate || endDate;
-    setShow(Platform.OS === "ios");
+    const currentDate = selectedDate;
+    setStartDate(startDate);
     setEndDate(currentDate);
   };
 
@@ -49,24 +56,28 @@ const tripTimeScreen = (props) => {
           testID="dateTimePicker"
           value={startDate}
           mode="date"
-          is24Hour={true}
+          // is24Hour={true}
           display="default"
           onChange={onChange}
-          minimumDate={new Date().getDate()}
+          minimumDate={new Date(Date.now())}
+          // locale="pl-PL"
         />
       </View>
       <Text style={styles.subtitle}>Trip ending</Text>
       <View>
         <DateTimePicker
+          // locale="pl-PL"
+          dateFormat="dayofweek day month"
           testID="dateTimePicker"
           value={endDate}
           mode="date"
-          is24Hour={true}
+          // is24Hour={true}
           display="default"
           onChange={onChangeEnd}
           minimumDate={startDate}
         />
       </View>
+
       <View style={styles.buttonContainer}>
         <Button
           title="Next"

@@ -125,7 +125,7 @@ const signInScreen = (props) => {
               props.navigation.navigate("MainMenu");
             }}
             onLongPress={(trip) => {
-              console.log("onLongPress: trip: " + itemData.item.id);
+              console.log("onLongPress: trip: ", itemData.item);
               // setEditMode(true);
               longPressHandler(itemData.item);
             }}
@@ -140,9 +140,12 @@ const signInScreen = (props) => {
                   {itemData.item.name}
                 </Animatable.Text>
                 <Text style={styles.dateText}>
-                  {Moment(itemData.item.tripBeginning).format("DD.MM.YYYY")} -{" "}
+                  {Moment(itemData.item.tripBeginning)
+                    // .utcOffset(-1)
+                    .format("DD.MM.YYYY")}{" "}
+                  -{" "}
                   {Moment(itemData.item.tripEnding)
-                    .utcOffset(-1)
+                    // .utcOffset(-1)
                     .format("DD.MM.YYYY")}
                 </Text>
                 <Text style={styles.destination}>
@@ -181,7 +184,7 @@ signInScreen.navigationOptions = (navData) => {
           // iconName={isEditMode ? "ios-save" : "ios-add"}
           iconName="ios-add"
           onPress={() => {
-            navData.navigation.navigate("TripDestination");
+            navData.navigation.navigate("TripDestination", { trip: -1 });
           }}
         />
       </HeaderButtons>

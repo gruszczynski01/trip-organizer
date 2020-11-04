@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { not } from "react-native-reanimated";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Card from "../../components/technical/Card";
 import Input from "../../components/technical/Input";
 import * as tripActions from "../../store/actions/trips";
@@ -42,14 +42,22 @@ const tripNameScreen = (props) => {
   const [error, setError] = useState();
   const dispatch = useDispatch();
 
+  const trip = props.navigation.getParam("trip");
+  var editedTrip = null;
+  if (trip != -1) {
+    editedTrip = useSelector((state) =>
+      state.trips.userTrips.find((tripElem) => tripElem.id === trip.id)
+    );
+  }
+
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
-      name: "",
+      name: editedTrip ? editedTrip.name : "",
     },
     inputValidities: {
-      name: false,
+      name: editedTrip ? true : false,
     },
-    formIsValid: false,
+    formIsValid: editedTrip ? true : false,
   });
 
   useEffect(() => {
@@ -78,33 +86,28 @@ const tripNameScreen = (props) => {
       name: formState.inputValues.name,
     };
 
-    console.log({
-      name: body.name,
-      dest: body.destination,
-      beg: body.tripBeginning,
-      end: body.tripEnding,
-    });
-
-    await dispatch(
-      tripActions.addTrip(
-        body.name,
-        body.destination,
-        body.tripBeginning,
-        body.tripEnding
-      )
-    );
+    if (!!editedTrip) {
+      await dispatch(
+        tripActions.editTrip(
+          editedTrip.id,
+          body.name,
+          body.destination,
+          body.tripBeginning,
+          body.tripEnding
+        )
+      );
+    } else {
+      await dispatch(
+        tripActions.addTrip(
+          body.name,
+          body.destination,
+          body.tripBeginning,
+          body.tripEnding
+        )
+      );
+    }
 
     props.navigation.navigate("TripList");
-
-    // setError(null);
-    // setIsLoading(true);
-    // try {
-    //   await dispatch(action);
-    //   props.navigation.navigate("Shop");
-    // } catch (err) {
-    //   setError(err.message);
-    //   setIsLoading(false);
-    // }
   };
 
   return (
@@ -124,7 +127,8 @@ const tripNameScreen = (props) => {
               autoCapitalize="none"
               errorText="Please enter a valid name."
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue={editedTrip ? editedTrip.name : ""}
+              initiallyValid={!!editedTrip}
             />
             <View style={styles.buttonContainer}>
               <Button title="Save" onPress={nextHandler} />
