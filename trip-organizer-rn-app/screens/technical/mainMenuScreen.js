@@ -10,14 +10,16 @@ import * as Animatable from "react-native-animatable";
 // const image = { uri: "https://reactjs.org/logo-og.png" };
 
 const mainMenuScreen = (props) => {
+  const trip = props.navigation.getParam("trip");
+
   return (
-    <ScrollView>
+    <ScrollView style={styles.scrollScreen}>
       <View style={styles.screen}>
-        <Text style={styles.title}>WYJAZD PO SESJI</Text>
+        <Text style={styles.title}>{trip.name}</Text>
         <Animatable.View
           animation="bounceInLeft"
           easing="ease-out"
-          iterationCount="1"
+          iterationCount={1}
         >
           <TouchableOpacity
             style={styles.tileOpacity}
@@ -98,8 +100,13 @@ mainMenuScreen.navigationOptions = {
 };
 
 const styles = StyleSheet.create({
+  scrollScreen: {
+    backgroundColor: "#2C2C2E",
+  },
   screen: {
     flex: 1,
+    backgroundColor: "#2C2C2E",
+
     // justifyContent: "center",
     // alignItems: "center",
   },
@@ -110,6 +117,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     margin: 30,
     // alignSelf: "center",
+    color: "#F2F2F7",
+
     justifyContent: "center",
   },
   tileOpacity: {
@@ -135,6 +144,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
+    color: "#F2F2F7",
+
     // backgroundColor: "red",
   },
   innerText: {

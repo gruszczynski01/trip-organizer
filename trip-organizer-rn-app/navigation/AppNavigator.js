@@ -49,11 +49,13 @@ const defaultNavOptions = {
   },
   headerTitleStyle: {
     fontFamily: "open-sans-bold",
+    color: "#F2F2F7",
   },
   headerBackTitleStyle: {
     fontFamily: "open-sans",
+    color: "#147efb",
   },
-  headerTintColor: "white",
+  headerTintColor: "#147efb",
 };
 
 const AppNavigator = createStackNavigator(
@@ -192,7 +194,7 @@ const DrawerNavigator = createDrawerNavigator(
                     console.log("Błąd przy wylogowywaniu");
                   });
                 dispatch(authActions.logout());
-                // props.navigation.navigate("Auth");
+                props.navigation.navigate("Auth");
               }}
             />
           </SafeAreaView>

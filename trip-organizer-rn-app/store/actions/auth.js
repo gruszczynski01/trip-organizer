@@ -104,6 +104,8 @@ export const login = (email, password) => {
       });
 
     const resData = await JSON.parse(JSON.stringify(response));
+    console.log("LOGGIN RESPONSE");
+    console.log(resData);
     dispatch(
       authenticate(
         resData.user.uid,
@@ -115,7 +117,11 @@ export const login = (email, password) => {
       new Date().getTime() +
         parseInt(resData.user.stsTokenManager.expirationTime) * 1000
     );
-    saveDataToStorage(resData.user.uid, resData.user.uid, expirationDate);
+    saveDataToStorage(
+      resData.user.stsTokenManager.accessToken,
+      resData.user.uid,
+      expirationDate
+    );
   };
 };
 

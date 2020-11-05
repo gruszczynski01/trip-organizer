@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   RefreshControl,
+  Button,
 } from "react-native";
 import Card from "../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
@@ -91,6 +92,7 @@ const signInScreen = (props) => {
     return (
       <View style={styles.centered}>
         <Text>An error occurred!</Text>
+        <Text>{error}</Text>
         <Button title="Try again" onPress={loadTrips} color="red" />
       </View>
     );
@@ -122,10 +124,12 @@ const signInScreen = (props) => {
         renderItem={(itemData) => (
           <TouchableOpacity
             onPress={() => {
-              props.navigation.navigate("MainMenu");
+              props.navigation.navigate("MainMenu", {
+                trip: itemData.item,
+              });
             }}
             onLongPress={(trip) => {
-              console.log("onLongPress: trip: ", itemData.item);
+              // console.log("onLongPress: trip: ", itemData.item);
               // setEditMode(true);
               longPressHandler(itemData.item);
             }}
@@ -166,7 +170,7 @@ signInScreen.navigationOptions = (navData) => {
     headerLeft: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
-          buttonStyle={{ color: "white" }}
+          buttonStyle={{ color: "#147efb" }}
           title="Menu"
           iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
           onPress={() => {
@@ -178,9 +182,8 @@ signInScreen.navigationOptions = (navData) => {
     headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
-          buttonStyle={{ color: "white" }}
+          buttonStyle={{ color: "#147efb" }}
           title="Add"
-          style={{ color: "#F2F2F7" }}
           // iconName={isEditMode ? "ios-save" : "ios-add"}
           iconName="ios-add"
           onPress={() => {
