@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 
 import Timeline from "react-native-timeline-flatlist";
@@ -10,6 +10,7 @@ import HeaderButton from "../../../components/technical/HeaderButton";
 const tripTimelineScreen = (props) => {
   const trip = props.navigation.getParam("trip");
   console.log(trip);
+  // props.navigation.setParams();
   const [date, setDate] = useState(new Date(trip.tripBeginning));
 
   const data = [
@@ -48,6 +49,11 @@ const tripTimelineScreen = (props) => {
   const onChangeEnd = (event, selectedDate) => {
     console.log(selectedDate);
   };
+
+  useEffect(() => {
+    props.navigation.setParams({ trip: trip });
+  }, [trip]);
+
   onDateSelected = (date) => {
     console.log("Selected Date:==>", date);
     setDate(date);
@@ -95,16 +101,18 @@ const tripTimelineScreen = (props) => {
 };
 
 tripTimelineScreen.navigationOptions = (navData) => {
+  const trip = navData.navigation.getParam("trip");
+
   return {
     headerTitle: "Timeline",
-    headerRight: (
+    headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           buttonStyle={{ color: "#147efb" }}
           title="Add"
           iconName="ios-add"
           onPress={() => {
-            navData.navigation.navigate("AddEvent");
+            navData.navigation.navigate("AddEvent", { trip: trip, event: -1 });
           }}
         />
       </HeaderButtons>

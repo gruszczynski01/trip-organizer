@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useCallback, useEffect } from "react";
 import {
   Text,
   View,
@@ -15,7 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../../components/technical/HeaderButton";
 import * as eventActions from "../../../store/actions/events";
-
+import Moment from "moment";
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
@@ -43,7 +43,7 @@ const formReducer = (state, action) => {
 
 const addEventScreen = (props) => {
   const [date, setDate] = useState(new Date(1598051730000));
-
+  const trip = props.navigation.getParam("trip");
   const event = props.navigation.getParam("event");
   var editedEvent = null;
   if (event != -1) {
@@ -51,37 +51,49 @@ const addEventScreen = (props) => {
       state.events.tripEvents.find((eventElem) => eventElem.id === event.id)
     );
   }
-
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
-      name: editedEvent ? editedEvent.name : "",
+      title: editedEvent ? editedEvent.title : "",
       desc: editedEvent ? editedEvent.desc : "",
     },
     inputValidities: {
-      name: editedEvent ? true : false,
+      title: editedEvent ? true : false,
       desc: editedEvent ? true : false,
     },
     formIsValid: editedEvent ? true : false,
   });
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    console.log(currentDate);
-    setDate(currentDate);
-  };
-  const saveHandler = async () => {
+  const dispatch = useDispatch();
+
+  const submitHandler = useCallback(async () => {
     // inputChangeHandler();
 
+    console.log("DANE:");
+    console.log(formState.inputValues);
+    console.log(Moment(date).format("DD.MM.YYYY"));
+    console.log(Moment(date).format("HH:mm"));
+
     // var body = {
-    //   ...props.navigation.state.params,
-    //   name: formState.inputValues.name,
+    //   ...navData.navigation.state.params,
+    //   title: formState.inputValues.title,
     // };
 
-    if (!!saveHandler) {
+    if (!!editedEvent) {
       // await dispatch(
       //   tripActions.editTrip(
       //     editedTrip.id,
-      //     body.name,
+      //     body.title,
       //     body.destination,
       //     body.tripBeginning,
       //     body.tripEnding
@@ -89,18 +101,28 @@ const addEventScreen = (props) => {
       // );
     } else {
       await dispatch(
-        eventActions
-          .addEvent
-          // body.name,
-          // body.destination,
-          // body.tripBeginning,
-          // body.tripEnding
-          ()
+        eventActions.addEvent(
+          formState.inputValues.title,
+          formState.inputValues.desc,
+          Moment(date).format("DD.MM.YYYY"),
+          Moment(date).format("HH:mm"),
+          trip.id
+        )
       );
     }
 
-    navData.navigation.goBack();
+    props.navigation.goBack();
+  }, [dispatch, editedEvent, formState]);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    console.log(currentDate);
+    setDate(currentDate);
   };
+
+  useEffect(() => {
+    props.navigation.setParams({ submit: submitHandler });
+  }, [submitHandler]);
 
   return (
     <KeyboardAvoidingView behavior="position" style={styles.screen}>
@@ -118,7 +140,18 @@ const addEventScreen = (props) => {
           style={{ color: "white" }}
         />
       </View>
-      <View style={{ alignItems: "center" }}>
+      <View>
+        <Text style={{ color: "white" }}>
+          {Moment(date)
+            // .utcOffset(-1)
+            .format("DD.MM.YYYY")}{" "}
+          -{" "}
+          {Moment(date)
+            // .utcOffset(-1)
+            .format("HH:mm")}
+        </Text>
+      </View>
+      <View style={styles.cardContainer}>
         <Card style={styles.card}>
           <ScrollView>
             <Input
@@ -127,7 +160,7 @@ const addEventScreen = (props) => {
               keyboardType="default"
               required
               errorText="Please enter a valid title."
-              // onInputChange={inputChangeHandler}
+              onInputChange={inputChangeHandler}
               initialValue=""
             />
 
@@ -139,7 +172,7 @@ const addEventScreen = (props) => {
               errorText="Please enter a valid description."
               multiline={true}
               umberOfLines={4}
-              // onInputChange={inputChangeHandler}
+              onInputChange={inputChangeHandler}
               initialValue=""
             />
           </ScrollView>
@@ -150,15 +183,17 @@ const addEventScreen = (props) => {
 };
 
 addEventScreen.navigationOptions = (navData) => {
+  const submitFn = navData.navigation.getParam("submit");
+
   return {
     headerTitle: "Add new event",
-    headerRight: (
+    headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           buttonStyle={{ color: "#147efb" }}
           title="Add"
           iconName="ios-save"
-          onPress={saveHandler}
+          onPress={submitFn}
           //TO DO: save or edit event
 
           // navData.navigation.goBack();
@@ -195,9 +230,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginLeft: 30,
   },
+  cardContainer: { alignItems: "center" },
   card: {
     width: "95%",
-    maxWidth: 400,
+    // maxWidth: 400,
     maxHeight: 400,
     padding: 20,
     backgroundColor: "#cccccc",

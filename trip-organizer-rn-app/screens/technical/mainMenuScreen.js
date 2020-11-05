@@ -44,7 +44,7 @@ const mainMenuScreen = (props) => {
         <Animatable.View
           animation="bounceInLeft"
           easing="ease-out"
-          iterationCount="1"
+          iterationCount={1}
         >
           <TouchableOpacity style={styles.tileOpacity}>
             <Card style={styles.tile}>
@@ -61,7 +61,7 @@ const mainMenuScreen = (props) => {
         <Animatable.View
           animation="bounceInLeft"
           easing="ease-out"
-          iterationCount="1"
+          iterationCount={1}
         >
           <TouchableOpacity style={styles.tileOpacity}>
             <Card style={styles.tile}>
@@ -79,7 +79,7 @@ const mainMenuScreen = (props) => {
         <Animatable.View
           animation="bounceInLeft"
           easing="ease-out"
-          iterationCount="1"
+          iterationCount={1}
         >
           <TouchableOpacity style={styles.tileOpacity}>
             <Card style={styles.tile}>
@@ -97,8 +97,10 @@ const mainMenuScreen = (props) => {
     </ScrollView>
   );
 };
-mainMenuScreen.navigationOptions = {
-  headerTitle: "Your Trip",
+mainMenuScreen.navigationOptions = (navData) => {
+  return {
+    headerTitle: "Your Trip",
+  };
 };
 
 const styles = StyleSheet.create({
