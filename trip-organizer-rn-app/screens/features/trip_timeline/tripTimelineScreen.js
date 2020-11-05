@@ -8,7 +8,9 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../../components/technical/HeaderButton";
 
 const tripTimelineScreen = (props) => {
-  const [dates, setDates] = useState(new Date(1598051730000));
+  const trip = props.navigation.getParam("trip");
+  console.log(trip);
+  const [date, setDate] = useState(new Date(trip.tripBeginning));
 
   const data = [
     {
@@ -16,23 +18,31 @@ const tripTimelineScreen = (props) => {
       title: "Archery Training",
       description:
         "The Beginner Archery and Beginner Crossbow course does not require you to bring any equipment, since everything you need will be provided for the course. ",
-      circleColor: "#009688",
-      lineColor: "#009688",
+      // circleColor: "orange",
+      // lineColor: "",
     },
     {
       time: "10:45",
       title: "Play Badminton",
       description:
         "Badminton is a racquet sport played using racquets to hit a shuttlecock across a net.",
+      lineColor: "grey",
+      circleColor: "orange",
     },
-    { time: "12:00", title: "Lunch" },
-    { time: "13:00", title: "Dinner" },
+    { time: "12:00", title: "Lunch", lineColor: "grey", circleColor: "orange" },
+    {
+      time: "13:00",
+      title: "Dinner",
+      lineColor: "grey",
+      circleColor: "orange",
+    },
     {
       time: "14:00",
       title: "Watch Soccer",
       description:
         "Team sport played between two teams of eleven players with a spherical ball. ",
-      lineColor: "#009688",
+      lineColor: "grey",
+      circleColor: "orange",
     },
   ];
   const onChangeEnd = (event, selectedDate) => {
@@ -40,24 +50,19 @@ const tripTimelineScreen = (props) => {
   };
   onDateSelected = (date) => {
     console.log("Selected Date:==>", date);
+    setDate(date);
   };
   return (
     <View style={styles.container}>
+      <Text></Text>
       <View style={styles.datePickerContainer}>
-        {/* <DateTimePicker
-          testID="dateTimePicker"
-          mode="date"
-          value={dates}
-          is24Hour={true}
-          display="default"
-          onChange={onChangeEnd}
-          // minimumDate={startDate}
-        /> */}
         <HorizontalDatePicker
+          minDate={new Date(trip.tripBeginning)}
+          maxDate={new Date(trip.tripEnding)}
           style={styles.datePicker}
           pickerType={"date"}
           onDateSelected={onDateSelected}
-          isShowYear={false}
+          isShowYear={true}
         />
       </View>
       <Timeline
@@ -68,17 +73,18 @@ const tripTimelineScreen = (props) => {
         onEventPress={(event) => {
           console.log(event);
         }}
-        circleColor="rgb(45,156,219)"
-        lineColor="rgb(45,156,219)"
+        circleColor="orange"
+        lineColor="grey"
         timeContainerStyle={{ minWidth: 52, marginTop: -5 }}
         timeStyle={{
           textAlign: "center",
-          backgroundColor: "#ff9797",
+          backgroundColor: "#147efb",
           color: "white",
           padding: 5,
           borderRadius: 13,
           overflow: "hidden",
         }}
+        titleStyle={{ color: "white" }}
         descriptionStyle={{ color: "gray" }}
         options={{
           style: { paddingTop: 5 },
@@ -94,6 +100,7 @@ tripTimelineScreen.navigationOptions = (navData) => {
     headerRight: (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
+          buttonStyle={{ color: "#147efb" }}
           title="Add"
           iconName="ios-add"
           onPress={() => {
@@ -106,15 +113,21 @@ tripTimelineScreen.navigationOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
+  datePickerContainer: {
+    paddingBottom: 10,
+    borderBottomColor: "grey",
+    borderBottomWidth: 2,
+  },
   container: {
     flex: 1,
     padding: 20,
     //paddingTop: 65,
-    backgroundColor: "white",
+    backgroundColor: "#2C2C2E",
   },
   list: {
     flex: 1,
-    marginTop: 20,
+    paddingTop: 5,
+    // marginTop: 3,
   },
   datePicker: {
     width: "100%",

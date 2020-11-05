@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 1,
     padding: 5,
-    color: "#F2F2F7",
+    color: "white",
   },
   dateText: {
     fontSize: 17,

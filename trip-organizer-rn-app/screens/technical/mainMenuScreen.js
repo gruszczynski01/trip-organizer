@@ -24,7 +24,9 @@ const mainMenuScreen = (props) => {
           <TouchableOpacity
             style={styles.tileOpacity}
             onPress={() => {
-              props.navigation.navigate("TripTimeline");
+              props.navigation.navigate("TripTimeline", {
+                trip: trip,
+              });
             }}
           >
             <Card style={styles.tile}>

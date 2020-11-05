@@ -51,6 +51,7 @@ export const addTrip = (
     dispatch({
       type: ADD_TRIP,
       tripData: {
+        id: newTripKey,
         owner: userId,
         name: tripName,
         destination: tripDestination,
