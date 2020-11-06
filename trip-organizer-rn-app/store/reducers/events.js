@@ -26,6 +26,13 @@ export default (state = initialState, action) => {
       return {
         tripEvents: action.tripEvents,
       };
+    case DELETE_EVENT:
+      return {
+        //...state,
+        tripEvents: state.tripEvents.filter(
+          (event) => event.id !== action.eventId
+        ),
+      };
     default:
       return state;
   }

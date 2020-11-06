@@ -22,10 +22,7 @@ const tripTimeScreen = (props) => {
   }
 
   useEffect(() => {
-    console.log("EDITT INIT");
     if (!!editedTrip) {
-      console.log("EDITT");
-      console.log(editedTrip);
       setStartDate(new Date(editedTrip.tripBeginning));
       setEndDate(new Date(editedTrip.tripEnding));
     }

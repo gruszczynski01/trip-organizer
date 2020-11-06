@@ -73,8 +73,6 @@ export const addEvent = (
 
 export const getEvents = (tripId) => {
   return async (dispatch, getState) => {
-    const userId = getState().auth.userId;
-
     let tripEvents = [];
 
     const response = await database
@@ -108,36 +106,34 @@ export const getEvents = (tripId) => {
   };
 };
 
-// export const deleteTrip = (tripId) => {
-//   return async (dispatch, getState) => {
-//     const userId = getState().auth.userId;
+export const deleteEvent = (eventId, tripId) => {
+  return async (dispatch, getState) => {
+    var tripToDeleteRef = await database
+      .ref("events/" + eventId)
+      .remove()
+      .then(function () {
+        console.log("Remove succeeded.");
+      })
+      .catch(function (error) {
+        console.log("Remove failed: " + error.message);
+      });
 
-//     var tripToDeleteRef = await database
-//       .ref("trips/" + tripId)
-//       .remove()
-//       .then(function () {
-//         console.log("Remove succeeded.");
-//       })
-//       .catch(function (error) {
-//         console.log("Remove failed: " + error.message);
-//       });
+    eventToDeleteRef = await database
+      .ref("trips/" + tripId + "/events/" + eventId)
+      .remove()
+      .then(function () {
+        console.log("Remove succeeded.");
+      })
+      .catch(function (error) {
+        console.log("Remove failed: " + error.message);
+      });
 
-//     tripToDeleteRef = await database
-//       .ref("users/" + userId + "/userTrips/" + tripId)
-//       .remove()
-//       .then(function () {
-//         console.log("Remove succeeded.");
-//       })
-//       .catch(function (error) {
-//         console.log("Remove failed: " + error.message);
-//       });
-
-//     dispatch({
-//       type: DELETE_TRIP,
-//       tripId: tripId,
-//     });
-//   };
-// };
+    dispatch({
+      type: DELETE_EVENT,
+      eventId: eventId,
+    });
+  };
+};
 
 // Artykuł jak pobierac dane tripy dla jednego usera
 // https://medium.com/@justintulk/how-to-query-arrays-of-data-in-firebase-aa28a90181bad

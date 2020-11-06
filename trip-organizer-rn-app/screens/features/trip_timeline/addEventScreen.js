@@ -42,7 +42,6 @@ const formReducer = (state, action) => {
 };
 
 const addEventScreen = (props) => {
-  const [date, setDate] = useState(new Date(1598051730000));
   const trip = props.navigation.getParam("trip");
   const event = props.navigation.getParam("event");
   var editedEvent = null;
@@ -51,10 +50,13 @@ const addEventScreen = (props) => {
       state.events.tripEvents.find((eventElem) => eventElem.id === event.id)
     );
   }
+  const [date, setDate] = useState(
+    new Date(new Date(trip.tripBeginning).setHours(9, 0, 0, 0))
+  );
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       title: editedEvent ? editedEvent.title : "",
-      desc: editedEvent ? editedEvent.desc : "",
+      desc: editedEvent ? editedEvent.description : "",
     },
     inputValidities: {
       title: editedEvent ? true : false,
@@ -77,17 +79,14 @@ const addEventScreen = (props) => {
   const dispatch = useDispatch();
 
   const submitHandler = useCallback(async () => {
-    // inputChangeHandler();
+    console.log("DEBUG: SUBMIT HANDLER");
 
-    console.log("DANE:");
-    console.log(formState.inputValues);
+    console.log(formState.inputValues.title);
+    console.log(formState.inputValues.desc);
     console.log(Moment(date).format("DD-MM-YYYY"));
     console.log(Moment(date).format("HH:mm"));
 
-    // var body = {
-    //   ...navData.navigation.state.params,
-    //   title: formState.inputValues.title,
-    // };
+    // const dispatch = useDispatch();
 
     if (!!editedEvent) {
       // await dispatch(
@@ -110,64 +109,94 @@ const addEventScreen = (props) => {
         )
       );
     }
+    console.log("DEBUG: SUBMIT HANDLER BEFORE NAV");
 
     props.navigation.goBack();
   }, [dispatch, editedEvent, formState]);
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    console.log(currentDate);
-    setDate(currentDate);
-  };
+    const currentDate = selectedDate || date;
+    console.log(" DEBUG: ONCHANGE000 START");
+    //console.log(currentDate.getTime());
 
+    setDate(currentDate);
+    console.log("DEBUG: ONCHANGE000 STOP");
+  };
   useEffect(() => {
     props.navigation.setParams({ submit: submitHandler });
   }, [submitHandler]);
 
+  // useEffect(() => {
+  //   if (!!editedEvent) {
+  //     setDate(
+  //       new Date(
+  //         editedEvent.date.substring(6, 10),
+  //         editedEvent.date.substring(3, 5) - 1,
+  //         editedEvent.date.substring(0, 2),
+  //         editedEvent.time.substring(0, 2),
+  //         editedEvent.time.substring(3, 5)
+  //       ).toISOString()
+  //     );
+  //   } else {
+  //     // setDate(new Date(trip.tripBeginning));
+  //     setDate(new Date(new Date(trip.tripBeginning).setHours(9, 0, 0, 0)));
+  //   }
+  // }, []);
+
   return (
     <KeyboardAvoidingView behavior="position" style={styles.screen}>
-      <Text style={styles.title}>Select time</Text>
+      <View style={styles.mainContainer}>
+        <View style={styles.dataTimePickerContainer}>
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="datetime"
+            is24Hour={true}
+            display="default"
+            onChange={onChange}
+            // onChange={() => {
+            //   console.log("ZAMIAAANAA");
+            // }}
+            style={{ color: "white" }}
+            minimumDate={new Date(trip.tripBeginning).setHours(0, 0, 0, 0)}
+            maximumDate={new Date(trip.tripEnding).setHours(23, 59, 59, 0)}
+          />
+        </View>
 
-      <View style={styles.dataTimePickerContainer}>
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="datetime"
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-          style={{ color: "white" }}
-          minimumDate={new Date(trip.tripBeginning).setHours(0, 0, 0, 0)}
-          maximumDate={new Date(trip.tripEnding).setHours(23, 59, 59, 0)}
-        />
-      </View>
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+            <ScrollView>
+              <Input
+                labelStyle={styles.input}
+                inputStyle={styles.inputStyle}
+                id="title"
+                label="Title"
+                keyboardType="default"
+                required
+                errorText="Please enter a valid title."
+                onInputChange={inputChangeHandler}
+                initialValue={editedEvent ? editedEvent.title : ""}
+                initiallyValid={!!editedEvent}
+              />
 
-      <View style={styles.cardContainer}>
-        <Card style={styles.card}>
-          <ScrollView>
-            <Input
-              id="title"
-              label="Title"
-              keyboardType="default"
-              required
-              errorText="Please enter a valid title."
-              onInputChange={inputChangeHandler}
-              initialValue=""
-            />
-
-            <Input
-              id="desc"
-              label="Description"
-              keyboardType="default"
-              required
-              errorText="Please enter a valid description."
-              multiline={true}
-              umberOfLines={4}
-              onInputChange={inputChangeHandler}
-              initialValue=""
-            />
-          </ScrollView>
-        </Card>
+              <Input
+                labelStyle={styles.input}
+                inputStyle={styles.inputStyle}
+                style={styles.input}
+                id="desc"
+                label="Description"
+                keyboardType="default"
+                required
+                errorText="Please enter a valid description."
+                multiline={true}
+                umberOfLines={4}
+                onInputChange={inputChangeHandler}
+                initialValue={editedEvent ? editedEvent.description : ""}
+                initiallyValid={!!editedEvent}
+              />
+            </ScrollView>
+          </Card>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -195,15 +224,18 @@ addEventScreen.navigationOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    width: "100%",
+    // alignItems: "center",
+  },
   dataTimePickerContainer: {
-    backgroundColor: "#cccccc",
-    borderRadius: 40,
-    marginBottom: 20,
+    marginVertical: 20,
   },
   screen: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "center",
+    alignContent: "center",
+    // alignItems: "center",
     backgroundColor: "#2C2C2E",
   },
   title: {
@@ -214,20 +246,17 @@ const styles = StyleSheet.create({
     margin: 30,
     color: "white",
   },
-  subtitle: {
-    textTransform: "uppercase",
-    fontSize: 15,
-    fontWeight: "bold",
-    letterSpacing: 1,
-    marginLeft: 30,
-  },
+  input: { color: "#F2F2F7" },
+  inputStyle: { color: "#F2F2F7" },
+
   cardContainer: { alignItems: "center" },
   card: {
-    width: "95%",
+    width: "90%",
     // maxWidth: 400,
     maxHeight: 400,
     padding: 20,
-    backgroundColor: "#cccccc",
+    // backgroundColor: "#202022",
+    backgroundColor: "black",
   },
 });
 

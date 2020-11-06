@@ -45,7 +45,8 @@
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "tslib": "^2.0.3"
+    "tslib": "^2.0.3",
+    "react-native-appearance": "~0.3.3"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"

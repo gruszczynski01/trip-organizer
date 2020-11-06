@@ -182,7 +182,7 @@ signInScreen.navigationOptions = (navData) => {
           buttonStyle={{ color: "#147efb" }}
           title="Add"
           // iconName={isEditMode ? "ios-save" : "ios-add"}
-          iconName="ios-add"
+          iconName="ios-add-circle-outline"
           onPress={() => {
             navData.navigation.navigate("TripDestination", { trip: -1 });
           }}

@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import Timeline from "react-native-timeline-flatlist";
@@ -28,13 +36,29 @@ const tripTimelineScreen = (props) => {
   }, [trip]);
 
   useEffect(() => {
-    setData(events.filter((elem) => elem.date == date));
+    setData(events.filter((elem) => elem.date == date).sort(compareEvents));
   }, [date, events]);
 
   onDateSelected = (date) => {
     console.log("Selected Date:==>", date);
     setDate(date);
   };
+
+  function compareEvents(a, b) {
+    if (
+      new Date().setHours(a.time.substr(0, 2), a.time.substr(3), 0, 0) <
+      new Date().setHours(b.time.substr(0, 2), b.time.substr(3), 0, 0)
+    ) {
+      return -1;
+    }
+    if (
+      new Date().setHours(a.time.substr(0, 2), a.time.substr(3), 0, 0) >
+      new Date().setHours(b.time.substr(0, 2), b.time.substr(3), 0, 0)
+    ) {
+      return 1;
+    }
+    return 0;
+  }
 
   const loadEvents = useCallback(async () => {
     setError(null);
@@ -62,6 +86,37 @@ const tripTimelineScreen = (props) => {
     });
   }, [dispatch, loadEvents]);
 
+  const pressHandler = (event) => {
+    Alert.alert(event.title, "What do you want to do with?", [
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          console.log("Deleting");
+
+          dispatch(eventActions.deleteEvent(event.id, trip.id));
+        },
+      },
+      {
+        text: "Edit",
+        style: "default",
+        onPress: () => {
+          console.log("Editing");
+          props.navigation.navigate("AddEvent", {
+            event: event,
+            trip: trip,
+          });
+        },
+      },
+      {
+        text: "Cancel",
+        style: "cancel",
+        onPress: () => {
+          console.log("Editing");
+        },
+      },
+    ]);
+  };
   if (error) {
     return (
       <View style={styles.centered}>
@@ -85,32 +140,45 @@ const tripTimelineScreen = (props) => {
           isShowYear={true}
         />
       </View>
-
-      <Timeline
-        style={styles.list}
-        data={data}
-        separator={true}
-        circleSize={20}
-        onEventPress={(event) => {
-          console.log(event);
-        }}
-        circleColor="orange"
-        lineColor="grey"
-        timeContainerStyle={{ minWidth: 52, marginTop: -5 }}
-        timeStyle={{
-          textAlign: "center",
-          backgroundColor: "#147efb",
-          color: "white",
-          padding: 5,
-          borderRadius: 13,
-          overflow: "hidden",
-        }}
-        titleStyle={{ color: "white" }}
-        descriptionStyle={{ color: "gray" }}
-        options={{
-          style: { paddingTop: 5 },
-        }}
-      />
+      {isLoading ? (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" />
+        </View>
+      ) : (
+        <Timeline
+          style={styles.list}
+          data={data}
+          separator={true}
+          circleSize={20}
+          onEventPress={(event) => {
+            pressHandler(event);
+          }}
+          circleColor="orange"
+          lineColor="grey"
+          timeContainerStyle={{ minWidth: 52, marginTop: -5 }}
+          timeStyle={{
+            textAlign: "center",
+            backgroundColor: "#147efb",
+            color: "white",
+            padding: 5,
+            borderRadius: 13,
+            overflow: "hidden",
+          }}
+          titleStyle={{ color: "white" }}
+          descriptionStyle={{ color: "gray" }}
+          options={{
+            refreshControl: (
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={loadEvents}
+              />
+            ),
+            style: { paddingTop: 5 },
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -125,7 +193,7 @@ tripTimelineScreen.navigationOptions = (navData) => {
         <Item
           buttonStyle={{ color: "#147efb" }}
           title="Add"
-          iconName="ios-add"
+          iconName="ios-add-circle-outline"
           onPress={() => {
             navData.navigation.navigate("AddEvent", { trip: trip, event: -1 });
           }}
