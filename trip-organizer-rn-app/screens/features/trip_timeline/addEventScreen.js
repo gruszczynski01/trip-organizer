@@ -81,7 +81,7 @@ const addEventScreen = (props) => {
 
     console.log("DANE:");
     console.log(formState.inputValues);
-    console.log(Moment(date).format("DD.MM.YYYY"));
+    console.log(Moment(date).format("DD-MM-YYYY"));
     console.log(Moment(date).format("HH:mm"));
 
     // var body = {
@@ -104,7 +104,7 @@ const addEventScreen = (props) => {
         eventActions.addEvent(
           formState.inputValues.title,
           formState.inputValues.desc,
-          Moment(date).format("DD.MM.YYYY"),
+          Moment(date).format("DD-MM-YYYY"),
           Moment(date).format("HH:mm"),
           trip.id
         )
@@ -136,21 +136,12 @@ const addEventScreen = (props) => {
           is24Hour={true}
           display="default"
           onChange={onChange}
-          minimumDate={new Date().getDate()}
           style={{ color: "white" }}
+          minimumDate={new Date(trip.tripBeginning).setHours(0, 0, 0, 0)}
+          maximumDate={new Date(trip.tripEnding).setHours(23, 59, 59, 0)}
         />
       </View>
-      <View>
-        <Text style={{ color: "white" }}>
-          {Moment(date)
-            // .utcOffset(-1)
-            .format("DD.MM.YYYY")}{" "}
-          -{" "}
-          {Moment(date)
-            // .utcOffset(-1)
-            .format("HH:mm")}
-        </Text>
-      </View>
+
       <View style={styles.cardContainer}>
         <Card style={styles.card}>
           <ScrollView>

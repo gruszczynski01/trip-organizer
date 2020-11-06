@@ -4,7 +4,7 @@ export const GET_USER_TRIP = "GET_USER_TRIP";
 export const DELETE_TRIP = "DELETE_TRIP";
 
 import { auth, database } from "../../firebase";
-import trips from "../reducers/trips";
+// import trips from "../reducers/trips";
 
 export const addTrip = (
   tripName,

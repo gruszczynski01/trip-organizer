@@ -18,8 +18,8 @@ export const addEvent = (
 
     var updates = {};
     updates["events/" + newEventKey] = {
-      name: eventName,
-      desc: eventDesc,
+      title: eventName,
+      description: eventDesc,
       date: eventDate,
       time: eventTime,
     };
@@ -31,8 +31,8 @@ export const addEvent = (
     dispatch({
       type: ADD_EVENT,
       eventData: {
-        name: eventName,
-        desc: eventDesc,
+        title: eventName,
+        description: eventDesc,
         date: eventDate,
         time: eventTime,
       },
@@ -71,39 +71,42 @@ export const addEvent = (
 //   };
 // };
 
-// export const getEvent = () => {
-//   return async (dispatch, getState) => {
-//     const userId = getState().auth.userId;
+export const getEvents = (tripId) => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
 
-//     let userTrips = [];
+    let tripEvents = [];
 
-//     const response = await database
-//       .ref("users/" + userId + "/userTrips")
-//       .once("value")
-//       .then(async function (dataSnapshot) {
-//         const data = JSON.parse(JSON.stringify(dataSnapshot));
-//         for (var key in data) {
-//           if (data.hasOwnProperty(key)) {
-//             const tripId = key;
-//             const nestedResponse = await database
-//               .ref("trips/" + tripId)
-//               .once("value")
-//               .then(function (dataSnapshot) {
-//                 console.log(dataSnapshot);
-//                 userTrips.push({
-//                   ...JSON.parse(JSON.stringify(dataSnapshot)),
-//                   id: tripId,
-//                 });
-//               });
-//           }
-//         }
-//       });
-//     dispatch({
-//       type: GET_USER_TRIP,
-//       tripsData: userTrips,
-//     });
-//   };
-// };
+    const response = await database
+      .ref("trips/" + tripId + "/events")
+      .once("value")
+      .then(async function (dataSnapshot) {
+        const data = JSON.parse(JSON.stringify(dataSnapshot));
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            const eventId = key;
+            const nestedResponse = await database
+              .ref("events/" + eventId)
+              .once("value")
+              .then(function (dataSnapshot) {
+                console.log(dataSnapshot);
+                tripEvents.push({
+                  ...JSON.parse(JSON.stringify(dataSnapshot)),
+                  id: eventId,
+                });
+              });
+          }
+        }
+      });
+    console.log("ACTION EVENTS:");
+    console.log(tripEvents);
+
+    dispatch({
+      type: GET_TRIP_EVENTS,
+      tripEvents: tripEvents,
+    });
+  };
+};
 
 // export const deleteTrip = (tripId) => {
 //   return async (dispatch, getState) => {

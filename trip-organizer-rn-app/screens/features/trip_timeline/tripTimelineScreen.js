@@ -1,63 +1,77 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { Text, View, StyleSheet, Button } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 import Timeline from "react-native-timeline-flatlist";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import HorizontalDatePicker from "@logisticinfotech/react-native-horizontal-date-picker";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../../components/technical/HeaderButton";
+import * as eventActions from "../../../store/actions/events";
 
 const tripTimelineScreen = (props) => {
-  const trip = props.navigation.getParam("trip");
-  console.log(trip);
-  // props.navigation.setParams();
-  const [date, setDate] = useState(new Date(trip.tripBeginning));
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isEditMode, setEditMode] = useState(false);
+  const [error, setError] = useState();
+  const events = useSelector((state) => state.events.tripEvents);
+  let dayEvents = events.filter((elem) => {
+    elem.date == date;
+  });
+  const dispatch = useDispatch();
 
-  const data = [
-    {
-      time: "09:00",
-      title: "Archery Training",
-      description:
-        "The Beginner Archery and Beginner Crossbow course does not require you to bring any equipment, since everything you need will be provided for the course. ",
-      // circleColor: "orange",
-      // lineColor: "",
-    },
-    {
-      time: "10:45",
-      title: "Play Badminton",
-      description:
-        "Badminton is a racquet sport played using racquets to hit a shuttlecock across a net.",
-      lineColor: "grey",
-      circleColor: "orange",
-    },
-    { time: "12:00", title: "Lunch", lineColor: "grey", circleColor: "orange" },
-    {
-      time: "13:00",
-      title: "Dinner",
-      lineColor: "grey",
-      circleColor: "orange",
-    },
-    {
-      time: "14:00",
-      title: "Watch Soccer",
-      description:
-        "Team sport played between two teams of eleven players with a spherical ball. ",
-      lineColor: "grey",
-      circleColor: "orange",
-    },
-  ];
-  const onChangeEnd = (event, selectedDate) => {
-    console.log(selectedDate);
-  };
+  const trip = props.navigation.getParam("trip");
+  const [date, setDate] = useState(new Date(trip.tripBeginning));
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     props.navigation.setParams({ trip: trip });
   }, [trip]);
 
+  useEffect(() => {
+    setData(events.filter((elem) => elem.date == date));
+  }, [date, events]);
+
   onDateSelected = (date) => {
     console.log("Selected Date:==>", date);
     setDate(date);
   };
+
+  const loadEvents = useCallback(async () => {
+    setError(null);
+    setIsRefreshing(true);
+    try {
+      await dispatch(eventActions.getEvents(trip.id));
+    } catch (err) {
+      setError(err.message);
+    }
+    setIsRefreshing(false);
+  }, [dispatch, setIsLoading, setError]);
+
+  useEffect(() => {
+    const willFocusSub = props.navigation.addListener("willFocus", loadEvents);
+
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadEvents]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    loadEvents().then(() => {
+      setIsLoading(false);
+    });
+  }, [dispatch, loadEvents]);
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>An error occurred!</Text>
+        <Text>{error}</Text>
+        <Button title="Try again" onPress={loadEvents} color="red" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text></Text>
@@ -71,6 +85,7 @@ const tripTimelineScreen = (props) => {
           isShowYear={true}
         />
       </View>
+
       <Timeline
         style={styles.list}
         data={data}

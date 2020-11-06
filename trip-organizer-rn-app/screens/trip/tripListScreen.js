@@ -27,9 +27,6 @@ const signInScreen = (props) => {
   const [error, setError] = useState();
   const trips = useSelector((state) => state.trips.userTrips);
   const dispatch = useDispatch();
-  // dispatch(tripActions.getTrips());
-  // console.log("TRIPS:");
-  // console.log(trips);
 
   const longPressHandler = (trip) => {
     Alert.alert(trip.name, "What do you want to do with?", [

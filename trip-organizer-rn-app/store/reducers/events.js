@@ -22,6 +22,10 @@ export default (state = initialState, action) => {
       return {
         tripEvents: state.tripEvents.concat(newEvent),
       };
+    case GET_TRIP_EVENTS:
+      return {
+        tripEvents: action.tripEvents,
+      };
     default:
       return state;
   }
