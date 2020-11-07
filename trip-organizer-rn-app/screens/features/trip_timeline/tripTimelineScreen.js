@@ -101,8 +101,7 @@ const tripTimelineScreen = (props) => {
         text: "Edit",
         style: "default",
         onPress: () => {
-          console.log("Editing");
-          props.navigation.navigate("AddEvent", {
+          props.navigation.navigate("EventTime", {
             event: event,
             trip: trip,
           });
@@ -112,7 +111,7 @@ const tripTimelineScreen = (props) => {
         text: "Cancel",
         style: "cancel",
         onPress: () => {
-          console.log("Editing");
+          console.log("Canceling");
         },
       },
     ]);
@@ -195,7 +194,7 @@ tripTimelineScreen.navigationOptions = (navData) => {
           title="Add"
           iconName="ios-add-circle-outline"
           onPress={() => {
-            navData.navigation.navigate("AddEvent", { trip: trip, event: -1 });
+            navData.navigation.navigate("EventTime", { trip: trip, event: -1 });
           }}
         />
       </HeaderButtons>

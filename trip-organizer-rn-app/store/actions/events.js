@@ -40,36 +40,34 @@ export const addEvent = (
   };
 };
 
-// export const editTrip = (
-//   tripId,
-//   tripName,
-//   tripDestination,
-//   tripBeginning,
-//   tripEnding
-// ) => {
-//   return async (dispatch, getState) => {
-//     const userId = getState().auth.userId;
+export const editEvent = (
+  eventId,
+  eventName,
+  eventDesc,
+  eventDate,
+  eventTime
+) => {
+  return async (dispatch, getState) => {
+    var updates = {};
+    updates["events/" + eventId + "/title"] = eventName;
+    updates["events/" + eventId + "/description"] = eventDesc;
+    updates["events/" + eventId + "/date"] = eventDate;
+    updates["events/" + eventId + "/time"] = eventTime;
 
-//     var updates = {};
-//     updates["trips/" + tripId + "/name"] = tripName;
-//     updates["trips/" + tripId + "/destination"] = tripDestination;
-//     updates["trips/" + tripId + "/tripBeginning"] = tripBeginning;
-//     updates["trips/" + tripId + "/tripEnding"] = tripEnding;
+    database.ref().update(updates);
 
-//     database.ref().update(updates);
-
-//     dispatch({
-//       type: EDIT_TRIP,
-//       tripData: {
-//         id: tripId,
-//         name: tripName,
-//         destination: tripDestination,
-//         tripBeginning: tripBeginning,
-//         tripEnding: tripEnding,
-//       },
-//     });
-//   };
-// };
+    dispatch({
+      type: EDIT_EVENT,
+      eventData: {
+        id: eventId,
+        title: eventName,
+        description: eventDesc,
+        date: eventDate,
+        time: eventTime,
+      },
+    });
+  };
+};
 
 export const getEvents = (tripId) => {
   return async (dispatch, getState) => {

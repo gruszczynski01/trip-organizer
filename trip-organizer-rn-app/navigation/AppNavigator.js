@@ -36,7 +36,8 @@ import currencyExchangeScreen from "../screens/features/currency_exchange/curren
 import toDoListScreen from "../screens/features/to_do_list/toDoListScreen";
 import tripMembersScreen from "../screens/features/trip_members/tripMembersScreen";
 import tripTimelineScreen from "../screens/features/trip_timeline/tripTimelineScreen";
-import addEventScreen from "../screens/features/trip_timeline/addEventScreen";
+import eventDataScreen from "../screens/features/trip_timeline/eventDataScreen";
+import eventTimeScreen from "../screens/features/trip_timeline/eventTimeScreen";
 
 const defaultNavOptions = {
   headerStyle: {
@@ -71,7 +72,8 @@ const AppNavigator = createStackNavigator(
     ToDoList: toDoListScreen,
     TripMembers: tripMembersScreen,
     TripTimeline: tripTimelineScreen,
-    AddEvent: addEventScreen,
+    EventData: eventDataScreen,
+    EventTime: eventTimeScreen,
   },
   {
     defaultNavigationOptions: defaultNavOptions,

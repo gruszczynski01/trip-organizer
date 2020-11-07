@@ -20,10 +20,9 @@ import Moment from "moment";
 import * as Animatable from "react-native-animatable";
 import * as tripActions from "../../store/actions/trips";
 
-const signInScreen = (props) => {
+const tripListScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isEditMode, setEditMode] = useState(false);
   const [error, setError] = useState();
   const trips = useSelector((state) => state.trips.userTrips);
   const dispatch = useDispatch();
@@ -161,7 +160,7 @@ const signInScreen = (props) => {
   );
 };
 
-signInScreen.navigationOptions = (navData) => {
+tripListScreen.navigationOptions = (navData) => {
   return {
     headerTitle: "Your Trips",
     headerLeft: () => (
@@ -230,4 +229,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default signInScreen;
+export default tripListScreen;

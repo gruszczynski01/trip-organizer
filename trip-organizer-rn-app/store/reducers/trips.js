@@ -35,12 +35,8 @@ export default (state = initialState, action) => {
             tripBeginning: action.tripData.tripBeginning,
             tripEnding: action.tripData.tripEnding,
           };
-          console.log("new trip");
-          console.log(array[index]);
         }
       });
-      console.log("NOWA TABLICA");
-      console.log(tmpUserTrips);
       return {
         ...state,
         userTrips: tmpUserTrips,

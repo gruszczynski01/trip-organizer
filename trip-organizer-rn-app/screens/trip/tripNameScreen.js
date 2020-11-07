@@ -39,7 +39,6 @@ const formReducer = (state, action) => {
 };
 
 const tripNameScreen = (props) => {
-  const [error, setError] = useState();
   const dispatch = useDispatch();
 
   const trip = props.navigation.getParam("trip");
@@ -59,12 +58,6 @@ const tripNameScreen = (props) => {
     },
     formIsValid: editedTrip ? true : false,
   });
-
-  useEffect(() => {
-    if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
-    }
-  }, [error]);
 
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {

@@ -41,7 +41,9 @@ const formReducer = (state, action) => {
   return state;
 };
 
-const addEventScreen = (props) => {
+const eventDataScreen = (props) => {
+  const dispatch = useDispatch();
+
   const trip = props.navigation.getParam("trip");
   const event = props.navigation.getParam("event");
   var editedEvent = null;
@@ -50,9 +52,7 @@ const addEventScreen = (props) => {
       state.events.tripEvents.find((eventElem) => eventElem.id === event.id)
     );
   }
-  const [date, setDate] = useState(
-    new Date(new Date(trip.tripBeginning).setHours(9, 0, 0, 0))
-  );
+
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       title: editedEvent ? editedEvent.title : "",
@@ -64,6 +64,7 @@ const addEventScreen = (props) => {
     },
     formIsValid: editedEvent ? true : false,
   });
+
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -76,93 +77,54 @@ const addEventScreen = (props) => {
     [dispatchFormState]
   );
 
-  const dispatch = useDispatch();
-
   const submitHandler = useCallback(async () => {
-    console.log("DEBUG: SUBMIT HANDLER");
+    var body = {
+      ...props.navigation.state.params,
+      title: formState.inputValues.title,
+      description: formState.inputValues.desc,
+    };
 
-    console.log(formState.inputValues.title);
-    console.log(formState.inputValues.desc);
-    console.log(Moment(date).format("DD-MM-YYYY"));
-    console.log(Moment(date).format("HH:mm"));
+    console.log("DEBUG: SUBMIT HANDLER");
+    console.log(body);
+
+    // console.log(formState.inputValues.title);
+    // console.log(formState.inputValues.desc);
+    // console.log(Moment(props.navigation.state.params.).format("DD-MM-YYYY"));
+    // console.log(Moment(date).format("HH:mm"));
 
     // const dispatch = useDispatch();
 
     if (!!editedEvent) {
-      // await dispatch(
-      //   tripActions.editTrip(
-      //     editedTrip.id,
-      //     body.title,
-      //     body.destination,
-      //     body.tripBeginning,
-      //     body.tripEnding
-      //   )
-      // );
+      await dispatch(
+        eventActions.editEvent(
+          editedEvent.id,
+          body.title,
+          body.description,
+          Moment(body.date).format("DD-MM-YYYY"),
+          Moment(body.date).format("HH:mm")
+        )
+      );
     } else {
       await dispatch(
         eventActions.addEvent(
-          formState.inputValues.title,
-          formState.inputValues.desc,
-          Moment(date).format("DD-MM-YYYY"),
-          Moment(date).format("HH:mm"),
+          body.title,
+          body.description,
+          Moment(body.date).format("DD-MM-YYYY"),
+          Moment(body.date).format("HH:mm"),
           trip.id
         )
       );
     }
-    console.log("DEBUG: SUBMIT HANDLER BEFORE NAV");
-
-    props.navigation.goBack();
+    props.navigation.navigate("TripTimeline", { trip: trip });
   }, [dispatch, editedEvent, formState]);
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    console.log(" DEBUG: ONCHANGE000 START");
-    //console.log(currentDate.getTime());
-
-    setDate(currentDate);
-    console.log("DEBUG: ONCHANGE000 STOP");
-  };
   useEffect(() => {
     props.navigation.setParams({ submit: submitHandler });
   }, [submitHandler]);
 
-  // useEffect(() => {
-  //   if (!!editedEvent) {
-  //     setDate(
-  //       new Date(
-  //         editedEvent.date.substring(6, 10),
-  //         editedEvent.date.substring(3, 5) - 1,
-  //         editedEvent.date.substring(0, 2),
-  //         editedEvent.time.substring(0, 2),
-  //         editedEvent.time.substring(3, 5)
-  //       ).toISOString()
-  //     );
-  //   } else {
-  //     // setDate(new Date(trip.tripBeginning));
-  //     setDate(new Date(new Date(trip.tripBeginning).setHours(9, 0, 0, 0)));
-  //   }
-  // }, []);
-
   return (
-    <KeyboardAvoidingView behavior="position" style={styles.screen}>
+    <KeyboardAvoidingView behavior="padding" style={styles.screen}>
       <View style={styles.mainContainer}>
-        <View style={styles.dataTimePickerContainer}>
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode="datetime"
-            is24Hour={true}
-            display="default"
-            onChange={onChange}
-            // onChange={() => {
-            //   console.log("ZAMIAAANAA");
-            // }}
-            style={{ color: "white" }}
-            minimumDate={new Date(trip.tripBeginning).setHours(0, 0, 0, 0)}
-            maximumDate={new Date(trip.tripEnding).setHours(23, 59, 59, 0)}
-          />
-        </View>
-
         <View style={styles.cardContainer}>
           <Card style={styles.card}>
             <ScrollView>
@@ -202,7 +164,7 @@ const addEventScreen = (props) => {
   );
 };
 
-addEventScreen.navigationOptions = (navData) => {
+eventDataScreen.navigationOptions = (navData) => {
   const submitFn = navData.navigation.getParam("submit");
 
   return {
@@ -226,11 +188,10 @@ addEventScreen.navigationOptions = (navData) => {
 const styles = StyleSheet.create({
   mainContainer: {
     width: "100%",
+    marginTop: 30,
     // alignItems: "center",
   },
-  dataTimePickerContainer: {
-    marginVertical: 20,
-  },
+
   screen: {
     flex: 1,
     justifyContent: "flex-start",
@@ -260,4 +221,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default addEventScreen;
+export default eventDataScreen;

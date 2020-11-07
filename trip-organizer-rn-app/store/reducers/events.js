@@ -22,6 +22,23 @@ export default (state = initialState, action) => {
       return {
         tripEvents: state.tripEvents.concat(newEvent),
       };
+    case EDIT_EVENT:
+      let tmpTripEvents = state.tripEvents;
+      tmpTripEvents.forEach(function (event, index, array) {
+        if (event.id == action.eventData.id) {
+          array[index] = {
+            ...event,
+            title: action.eventData.eventName,
+            description: action.eventData.eventDesc,
+            date: action.eventData.eventDate,
+            time: action.eventData.time,
+          };
+        }
+      });
+      return {
+        ...state,
+        tripEvents: tmpTripEvents,
+      };
     case GET_TRIP_EVENTS:
       return {
         tripEvents: action.tripEvents,
