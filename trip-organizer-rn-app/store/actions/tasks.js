@@ -82,7 +82,8 @@ export const getTasks = (toDoListId) => {
                 console.log(dataSnapshot);
                 toDoListTasks.push({
                   ...JSON.parse(JSON.stringify(dataSnapshot)),
-                  id: toDoListId,
+                  id: taskId,
+                  showDetails: false,
                 });
               });
           }

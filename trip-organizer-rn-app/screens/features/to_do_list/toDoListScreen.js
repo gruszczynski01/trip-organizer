@@ -24,11 +24,22 @@ const toDoListScreen = (props) => {
   const trip = props.navigation.getParam("trip");
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [error, setError] = useState();
   const tasks = useSelector((state) => state.tasks.toDoListTasks);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const dispatch = useDispatch();
+
+  const [data, setData] = useState([]);
+
+  // setState({
+  //   data: [
+  //     ...this.state.data.slice(0, i),
+  //     Object.assign({}, this.state.data[i], { quantity: item.quantity + 1 }),
+  //     ...this.state.data.slice(i + 1)
+  //   ]
+  // });
 
   const longPressHandler = (trip) => {
     Alert.alert(trip.name, "What do you want to do with?", [
@@ -69,6 +80,7 @@ const toDoListScreen = (props) => {
     } catch (err) {
       setError(err.message);
     }
+    setData();
     setIsRefreshing(false);
   }, [dispatch, setIsLoading, setError]);
 
@@ -132,15 +144,19 @@ const toDoListScreen = (props) => {
         }
         refreshing={isRefreshing}
         data={tasks}
+        extraData={refresh}
         bounces={true}
         keyExtractor={(item) => item.id}
         renderItem={(itemData) => (
           <TouchableOpacity
             onPress={() => {
               console.log(itemData.item);
-              // props.navigation.navigate("MainMenu", {
-              //   trip: itemData.item,
-              // });
+              setRefresh(!refresh);
+              tasks.forEach((task) => {
+                if (task.id == itemData.item.id) {
+                  task.showDetails = !task.showDetails;
+                }
+              });
             }}
             onLongPress={(trip) => {
               // console.log("onLongPress: trip: ", itemData.item);
@@ -162,7 +178,7 @@ const toDoListScreen = (props) => {
                         : "ios-checkmark-circle-outline"
                     }
                     size={32}
-                    color="#39ff14"
+                    color={itemData.item.ifDone === true ? "#39ff14" : "red"}
                     onPress={() => {
                       itemData.item.ifDone = !itemData.item.ifDone;
                     }}
@@ -172,10 +188,42 @@ const toDoListScreen = (props) => {
                   <Animatable.Text style={styles.title}>
                     {itemData.item.name}
                   </Animatable.Text>
+                  <View
+                    style={{
+                      borderTopColor: "grey",
+                      borderTopWidth: 1,
 
-                  {/* <Text style={styles.destination}>
-                    {itemData.item.description}
-                  </Text> */}
+                      // paddingHorizontal: 5,
+                      // marginHorizontal: 5,
+                      width: "90%",
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      alignItems: "center",
+                      alignContent: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={styles.destination}>SZYMON GRUSZCZYŃSKI</Text>
+                  </View>
+
+                  {itemData.item.showDetails && (
+                    <View
+                      style={{
+                        borderTopColor: "grey",
+                        borderTopWidth: 1,
+                        width: "90%",
+
+                        paddingTop: 10,
+                        // alignItems: "center",
+                        alignContent: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={styles.destination}>
+                        Desciption: {itemData.item.description}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </Card>
             </Animatable.View>
@@ -256,8 +304,8 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     flex: 1,
-    flexWrap: "wrap",
-    flexShrink: 1,
+    // flexWrap: "wrap",
+    // flexShrink: 1,
     alignItems: "flex-start",
     justifyContent: "center",
   },
@@ -268,6 +316,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     padding: 5,
     color: "white",
+    // borderColor: "red",
+    // borderWidth: 2,
+    borderBottomColor: "blue",
+    borderBottomWidth: 2,
   },
   dateText: {
     fontSize: 17,
