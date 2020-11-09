@@ -10,12 +10,15 @@ import {
   RefreshControl,
   Button,
   Switch,
+  TouchableHighlight,
 } from "react-native";
 import Card from "../../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../../components/technical/HeaderButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Moment from "moment";
+import Swipeable from "react-native-swipeable-row";
+
 import { Ionicons } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
 import * as taskActions from "../../../store/actions/tasks";
@@ -148,22 +151,7 @@ const toDoListScreen = (props) => {
         bounces={true}
         keyExtractor={(item) => item.id}
         renderItem={(itemData) => (
-          <TouchableOpacity
-            onPress={() => {
-              console.log(itemData.item);
-              setRefresh(!refresh);
-              tasks.forEach((task) => {
-                if (task.id == itemData.item.id) {
-                  task.showDetails = !task.showDetails;
-                }
-              });
-            }}
-            onLongPress={(trip) => {
-              // console.log("onLongPress: trip: ", itemData.item);
-              // setEditMode(true);
-              longPressHandler(itemData.item);
-            }}
-          >
+          <View>
             <Animatable.View
               animation="bounceInLeft"
               iterationCount={1}
@@ -171,63 +159,99 @@ const toDoListScreen = (props) => {
             >
               <Card style={styles.cartItem}>
                 <View style={styles.checkmarkContainer}>
-                  <Ionicons
-                    name={
-                      itemData.item.ifDone === true
-                        ? "ios-checkmark-circle"
-                        : "ios-checkmark-circle-outline"
-                    }
-                    size={32}
-                    color={itemData.item.ifDone === true ? "#39ff14" : "red"}
+                  <TouchableOpacity
                     onPress={() => {
+                      console.log("chekbox!!");
                       itemData.item.ifDone = !itemData.item.ifDone;
-                    }}
-                  />
-                </View>
-                <View style={styles.nameContainer}>
-                  <Animatable.Text style={styles.title}>
-                    {itemData.item.name}
-                  </Animatable.Text>
-                  <View
-                    style={{
-                      borderTopColor: "grey",
-                      borderTopWidth: 1,
 
-                      // paddingHorizontal: 5,
-                      // marginHorizontal: 5,
-                      width: "90%",
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      alignItems: "center",
-                      alignContent: "center",
-                      justifyContent: "center",
+                      dispatch(
+                        taskActions.editTask(
+                          itemData.item.id,
+                          itemData.item.name,
+                          itemData.item.description,
+                          itemData.item.ifDone,
+                          itemData.item.owner
+                        )
+                      );
+                      loadTasks();
                     }}
                   >
-                    <Text style={styles.destination}>SZYMON GRUSZCZYŃSKI</Text>
-                  </View>
+                    <Ionicons
+                      name={
+                        itemData.item.ifDone === true
+                          ? "ios-checkmark-circle"
+                          : "ios-checkmark-circle-outline"
+                      }
+                      size={32}
+                      color={itemData.item.ifDone === true ? "#39ff14" : "red"}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.contentContainer}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      console.log(itemData.item);
+                      setRefresh(!refresh);
+                      tasks.forEach((task) => {
+                        if (task.id == itemData.item.id) {
+                          task.showDetails = !task.showDetails;
+                        }
+                      });
+                    }}
+                    onLongPress={(trip) => {
+                      // console.log("onLongPress: trip: ", itemData.item);
+                      // setEditMode(true);
+                      longPressHandler(itemData.item);
+                    }}
+                  >
+                    <View style={styles.nameContainer}>
+                      <Animatable.Text style={styles.title}>
+                        {itemData.item.name}
+                      </Animatable.Text>
+                      <View
+                        style={{
+                          borderTopColor: "grey",
+                          borderTopWidth: 1,
 
-                  {itemData.item.showDetails && (
-                    <View
-                      style={{
-                        borderTopColor: "grey",
-                        borderTopWidth: 1,
-                        width: "90%",
+                          // paddingHorizontal: 5,
+                          // marginHorizontal: 5,
+                          width: "90%",
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          // alignItems: "center",
+                          alignContent: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={styles.destination}>
+                          {itemData.item.ownerName}
+                        </Text>
+                      </View>
 
-                        paddingTop: 10,
-                        // alignItems: "center",
-                        alignContent: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text style={styles.destination}>
-                        Desciption: {itemData.item.description}
-                      </Text>
+                      {itemData.item.showDetails && (
+                        <View
+                          style={{
+                            borderTopColor: "grey",
+                            borderTopWidth: 1,
+                            width: "90%",
+
+                            paddingTop: 10,
+                            // alignItems: "center",
+                            alignContent: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={styles.destination}>
+                            Desciption: {itemData.item.description}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                  )}
+                  </TouchableOpacity>
                 </View>
               </Card>
             </Animatable.View>
-          </TouchableOpacity>
+          </View>
         )}
       />
     </View>
@@ -290,6 +314,8 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     // flexDirection: "row",
     justifyContent: "flex-start",
+    alignItems: "stretch",
+    alignContent: "stretch",
     marginHorizontal: 20,
     marginTop: 20,
     minHeight: 75,
@@ -302,6 +328,9 @@ const styles = StyleSheet.create({
     alignContent: "center",
     paddingLeft: 3,
   },
+  contentContainer: {
+    width: "85%",
+  },
   nameContainer: {
     flex: 1,
     // flexWrap: "wrap",
@@ -311,7 +340,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textTransform: "uppercase",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     letterSpacing: 1,
     padding: 5,
@@ -320,6 +349,8 @@ const styles = StyleSheet.create({
     // borderWidth: 2,
     borderBottomColor: "blue",
     borderBottomWidth: 2,
+    flexWrap: "wrap",
+    // width: "90%",
   },
   dateText: {
     fontSize: 17,
@@ -333,6 +364,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingLeft: 5,
     color: "#F2F2F7",
+  },
+
+  container: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  listItem: {
+    height: 75,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  leftSwipeItem: {
+    flex: 1,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    paddingRight: 20,
   },
 });
 

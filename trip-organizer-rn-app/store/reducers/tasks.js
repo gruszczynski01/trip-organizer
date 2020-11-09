@@ -23,21 +23,21 @@ export default (state = initialState, action) => {
         tripEvents: state.tripEvents.concat(newEvent),
       };
     case EDIT_TASK:
-      let tmpTripEvents = state.tripEvents;
-      tmpTripEvents.forEach(function (event, index, array) {
-        if (event.id == action.eventData.id) {
+      let tmpToDoListTasks = state.toDoListTasks;
+      tmpToDoListTasks.forEach(function (task, index, array) {
+        if (task.id == action.taskData.id) {
           array[index] = {
-            ...event,
-            title: action.eventData.eventName,
-            description: action.eventData.eventDesc,
-            date: action.eventData.eventDate,
-            time: action.eventData.time,
+            ...task,
+            name: action.taskData.name,
+            description: action.taskData.description,
+            owner: action.taskData.owner,
+            ifDone: action.taskData.ifDone,
           };
         }
       });
       return {
         ...state,
-        tripEvents: tmpTripEvents,
+        toDoListTasks: tmpToDoListTasks,
       };
     case GET_TRIP_TASKS:
       return {

@@ -34,30 +34,30 @@ export const addTask = (taskName, taskDescription, toDoList) => {
   };
 };
 
-export const editEvent = (
-  eventId,
-  eventName,
-  eventDesc,
-  eventDate,
-  eventTime
+export const editTask = (
+  taskId,
+  taskName,
+  taskDescription,
+  taskIfDone,
+  taskOwnerId
 ) => {
   return async (dispatch, getState) => {
     var updates = {};
-    updates["events/" + eventId + "/title"] = eventName;
-    updates["events/" + eventId + "/description"] = eventDesc;
-    updates["events/" + eventId + "/date"] = eventDate;
-    updates["events/" + eventId + "/time"] = eventTime;
+    updates["tasks/" + taskId + "/name"] = taskName;
+    updates["tasks/" + taskId + "/description"] = taskDescription;
+    updates["tasks/" + taskId + "/ifDone"] = taskIfDone;
+    updates["tasks/" + taskId + "/owner"] = taskOwnerId;
 
     database.ref().update(updates);
 
     dispatch({
-      type: EDIT_EVENT,
-      eventData: {
-        id: eventId,
-        title: eventName,
-        description: eventDesc,
-        date: eventDate,
-        time: eventTime,
+      type: EDIT_TASK,
+      taskData: {
+        id: taskId,
+        name: taskName,
+        description: taskDescription,
+        ifDone: taskIfDone,
+        owner: taskOwnerId,
       },
     });
   };
@@ -78,13 +78,20 @@ export const getTasks = (toDoListId) => {
             const nestedResponse = await database
               .ref("tasks/" + taskId)
               .once("value")
-              .then(function (dataSnapshot) {
-                console.log(dataSnapshot);
-                toDoListTasks.push({
-                  ...JSON.parse(JSON.stringify(dataSnapshot)),
-                  id: taskId,
-                  showDetails: false,
-                });
+              .then(async function (dataSnapshot) {
+                const taskData = JSON.parse(JSON.stringify(dataSnapshot));
+                const secondNestedResponse = await database
+                  .ref("users/" + taskData.owner)
+                  .once("value")
+                  .then(async function (user) {
+                    const userData = JSON.parse(JSON.stringify(user));
+                    toDoListTasks.push({
+                      ...JSON.parse(JSON.stringify(dataSnapshot)),
+                      id: taskId,
+                      ownerName: userData.name + " " + userData.surname,
+                      showDetails: false,
+                    });
+                  });
               });
           }
         }
