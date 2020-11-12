@@ -34,7 +34,9 @@ import tripNameScreen from "../screens/trip/tripNameScreen";
 import mainMenuScreen from "../screens/technical/mainMenuScreen";
 import currencyExchangeScreen from "../screens/features/currency_exchange/currencyExchangeScreen";
 import toDoListScreen from "../screens/features/to_do_list/toDoListScreen";
+import editTaskScreen from "../screens/features/to_do_list/editTaskScreen";
 import tripMembersScreen from "../screens/features/trip_members/tripMembersScreen";
+import inviteMembersScreen from "../screens/features/trip_members/inviteMembersScreen";
 import tripTimelineScreen from "../screens/features/trip_timeline/tripTimelineScreen";
 import eventDataScreen from "../screens/features/trip_timeline/eventDataScreen";
 import eventTimeScreen from "../screens/features/trip_timeline/eventTimeScreen";
@@ -71,9 +73,11 @@ const AppNavigator = createStackNavigator(
     CurrencyExchange: currencyExchangeScreen,
     ToDoList: toDoListScreen,
     TripMembers: tripMembersScreen,
+    InviteMembers: inviteMembersScreen,
     TripTimeline: tripTimelineScreen,
     EventData: eventDataScreen,
     EventTime: eventTimeScreen,
+    EditTask: editTaskScreen,
   },
   {
     defaultNavigationOptions: defaultNavOptions,

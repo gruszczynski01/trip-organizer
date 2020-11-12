@@ -1,6 +1,7 @@
 export const ADD_TRIP = "ADD_TRIP";
 export const EDIT_TRIP = "EDIT_TRIP";
 export const GET_USER_TRIP = "GET_USER_TRIP";
+export const GET_TRIP_MEMBERS = "GET_TRIP_MEMBERS";
 export const DELETE_TRIP = "DELETE_TRIP";
 
 import { auth, database } from "../../firebase";
@@ -162,6 +163,44 @@ export const deleteTrip = (tripId) => {
   };
 };
 
-// Artykuł jak pobierac dane tripy dla jednego usera
-// https://medium.com/@justintulk/how-to-query-arrays-of-data-in-firebase-aa28a90181bad
-//
+export const getTripMembers = (tripId) => {
+  return async (dispatch, getState) => {
+    console.log("ACTRON TRIPS _ GET MEMBERS");
+    let tripMembersArray = [];
+
+    const response = await database
+      .ref("trips/" + tripId + "/members")
+      .once("value")
+      .then(async function (tripMembersDS) {
+        const data = JSON.parse(JSON.stringify(tripMembersDS));
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            const userId = key;
+            const userTripState = data[key];
+            const nestedResponse = await database
+              .ref("users/" + userId)
+              .once("value")
+              .then(function (user) {
+                console.log({
+                  ...JSON.parse(JSON.stringify(user)),
+                  id: userId,
+                });
+                tripMembersArray.push({
+                  ...JSON.parse(JSON.stringify(user)),
+                  id: userId,
+                  ifChoosen: false,
+                  ifActive: userTripState,
+                });
+              });
+          }
+        }
+      });
+
+    console.log("tripMembers");
+    console.log(tripMembersArray);
+    dispatch({
+      type: GET_TRIP_MEMBERS,
+      tripMembers: tripMembersArray,
+    });
+  };
+};

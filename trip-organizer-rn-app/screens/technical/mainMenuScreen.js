@@ -70,7 +70,14 @@ const mainMenuScreen = (props) => {
           easing="ease-out"
           iterationCount={1}
         >
-          <TouchableOpacity style={styles.tileOpacity}>
+          <TouchableOpacity
+            style={styles.tileOpacity}
+            onPress={() => {
+              props.navigation.navigate("TripMembers", {
+                trip: trip,
+              });
+            }}
+          >
             <Card style={styles.tile}>
               <ImageBackground
                 style={styles.container}

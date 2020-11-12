@@ -16,8 +16,6 @@ import Card from "../../../components/technical/Card";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../../components/technical/HeaderButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import Moment from "moment";
-import Swipeable from "react-native-swipeable-row";
 
 import { Ionicons } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
@@ -30,6 +28,12 @@ const toDoListScreen = (props) => {
   const [refresh, setRefresh] = useState(false);
   const [error, setError] = useState();
   const tasks = useSelector((state) => state.tasks.toDoListTasks);
+  const loggedUserId = useSelector((state) => state.auth.userId);
+  let userTasks = tasks.filter((task) => {
+    task.owner == loggedUserId;
+  });
+  let tasksToFlatlist = tasks;
+
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const dispatch = useDispatch();
@@ -44,15 +48,16 @@ const toDoListScreen = (props) => {
   //   ]
   // });
 
-  const longPressHandler = (trip) => {
-    Alert.alert(trip.name, "What do you want to do with?", [
+  const longPressHandler = (task) => {
+    Alert.alert(task.name, "What do you want to do with?", [
       {
         text: "Delete",
         style: "destructive",
         onPress: () => {
           console.log("Deleting");
-          console.log(trip);
-          dispatch(tripActions.deleteTrip(trip.id));
+          console.log(task);
+
+          dispatch(taskActions.deleteTask(task.id, task.toDoListParent));
         },
       },
       {
@@ -60,8 +65,9 @@ const toDoListScreen = (props) => {
         style: "default",
         onPress: () => {
           console.log("Editing");
-          props.navigation.navigate("TripDestination", {
+          props.navigation.navigate("EditTask", {
             trip: trip,
+            task: task,
           });
         },
       },
@@ -69,7 +75,7 @@ const toDoListScreen = (props) => {
         text: "Cancel",
         style: "cancel",
         onPress: () => {
-          console.log("Editing");
+          console.log("Cancel alert");
         },
       },
     ]);
@@ -102,6 +108,24 @@ const toDoListScreen = (props) => {
     });
   }, [dispatch, loadTasks]);
 
+  useEffect(() => {
+    tasks.sort(compareTasks);
+  }, [tasks]);
+
+  useEffect(() => {
+    tasksToFlatlist = userTasks;
+  }, [isEnabled]);
+
+  function compareTasks(a, b) {
+    if (a.ifDone == false && b.ifDone == true) {
+      return -1;
+    }
+    if (a.ifDone == true && b.ifDone == false) {
+      return 1;
+    }
+    return 0;
+  }
+
   if (error) {
     return (
       <View style={styles.centered}>
@@ -124,15 +148,19 @@ const toDoListScreen = (props) => {
     <View style={styles.screen}>
       <View style={styles.filterContainer}>
         <View style={styles.filterContainerItem}>
-          <Text style={styles.destination}>Tylko moje zadania</Text>
+          <Text style={styles.switchLabel}>Only my tasks</Text>
         </View>
         <View style={styles.filterContainerItem}>
           <Switch
             // trackColor={{ false: "#767577", true: "#81b0ff" }}
             // thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
+            //onValueChange={toggleSwitch}
             value={isEnabled}
+            onValueChange={() => {
+              toggleSwitch();
+              setRefresh(!refresh);
+            }}
           />
         </View>
       </View>
@@ -146,7 +174,7 @@ const toDoListScreen = (props) => {
           />
         }
         refreshing={isRefreshing}
-        data={tasks}
+        data={tasksToFlatlist}
         extraData={refresh}
         bounces={true}
         keyExtractor={(item) => item.id}
@@ -157,99 +185,107 @@ const toDoListScreen = (props) => {
               iterationCount={1}
               easing="linear"
             >
-              <Card style={styles.cartItem}>
-                <View style={styles.checkmarkContainer}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log("chekbox!!");
-                      itemData.item.ifDone = !itemData.item.ifDone;
+              {(!isEnabled || itemData.item.owner == loggedUserId) && (
+                <Card style={styles.cartItem}>
+                  <View style={styles.checkmarkContainer}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        // itemData.item.ifDone = !itemData.item.ifDone;
 
-                      dispatch(
-                        taskActions.editTask(
-                          itemData.item.id,
-                          itemData.item.name,
-                          itemData.item.description,
-                          itemData.item.ifDone,
-                          itemData.item.owner
-                        )
-                      );
-                      loadTasks();
-                    }}
-                  >
-                    <Ionicons
-                      name={
-                        itemData.item.ifDone === true
-                          ? "ios-checkmark-circle"
-                          : "ios-checkmark-circle-outline"
-                      }
-                      size={32}
-                      color={itemData.item.ifDone === true ? "#39ff14" : "red"}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.contentContainer}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log(itemData.item);
-                      setRefresh(!refresh);
-                      tasks.forEach((task) => {
-                        if (task.id == itemData.item.id) {
-                          task.showDetails = !task.showDetails;
+                        dispatch(
+                          taskActions.editTask(
+                            itemData.item.id,
+                            itemData.item.name,
+                            itemData.item.description,
+                            !itemData.item.ifDone,
+                            itemData.item.owner
+                          )
+                        );
+                        tasks.sort(compareTasks);
+                        loadTasks();
+                      }}
+                    >
+                      <Ionicons
+                        name={
+                          itemData.item.ifDone === true
+                            ? "ios-checkmark-circle"
+                            : "ios-radio-button-off"
+                          // : "ios-checkmark-circle-outline"
                         }
-                      });
-                    }}
-                    onLongPress={(trip) => {
-                      // console.log("onLongPress: trip: ", itemData.item);
-                      // setEditMode(true);
-                      longPressHandler(itemData.item);
-                    }}
-                  >
-                    <View style={styles.nameContainer}>
-                      <Animatable.Text style={styles.title}>
-                        {itemData.item.name}
-                      </Animatable.Text>
-                      <View
-                        style={{
-                          borderTopColor: "grey",
-                          borderTopWidth: 1,
-
-                          // paddingHorizontal: 5,
-                          // marginHorizontal: 5,
-                          width: "90%",
-                          paddingTop: 10,
-                          paddingBottom: 10,
-                          // alignItems: "center",
-                          alignContent: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={styles.destination}>
-                          {itemData.item.ownerName}
-                        </Text>
-                      </View>
-
-                      {itemData.item.showDetails && (
+                        size={32}
+                        color={
+                          itemData.item.ifDone === true ? "#00D84D" : "grey"
+                        }
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.contentContainer}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        console.log(itemData.item);
+                        setRefresh(!refresh);
+                        tasks.forEach((task) => {
+                          if (task.id == itemData.item.id) {
+                            task.showDetails = !task.showDetails;
+                          }
+                        });
+                      }}
+                      onLongPress={(trip) => {
+                        // console.log("onLongPress: trip: ", itemData.item);
+                        // setEditMode(true);
+                        longPressHandler(itemData.item);
+                      }}
+                    >
+                      <View style={styles.nameContainer}>
+                        <Animatable.Text style={styles.title}>
+                          {itemData.item.name}
+                        </Animatable.Text>
                         <View
                           style={{
                             borderTopColor: "grey",
                             borderTopWidth: 1,
-                            width: "90%",
 
+                            // paddingHorizontal: 5,
+                            // marginHorizontal: 5,
+                            width: "90%",
                             paddingTop: 10,
+                            paddingBottom: 10,
                             // alignItems: "center",
                             alignContent: "center",
                             justifyContent: "center",
                           }}
                         >
-                          <Text style={styles.destination}>
-                            Desciption: {itemData.item.description}
+                          <Text style={styles.ownerName}>
+                            {itemData.item.ownerName}
                           </Text>
                         </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </Card>
+
+                        {itemData.item.showDetails && (
+                          <Animatable.View
+                            animation="flipInX"
+                            iterationCount={1}
+                            easing="linear"
+                            style={{
+                              borderTopColor: "grey",
+                              borderTopWidth: 1,
+                              width: "90%",
+
+                              paddingTop: 10,
+                              // alignItems: "center",
+                              alignContent: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={styles.description}>
+                              {itemData.item.description}
+                            </Text>
+                          </Animatable.View>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </Card>
+              )}
             </Animatable.View>
           </View>
         )}
@@ -259,6 +295,8 @@ const toDoListScreen = (props) => {
 };
 
 toDoListScreen.navigationOptions = (navData) => {
+  const trip = navData.navigation.getParam("trip");
+
   return {
     headerTitle: "To do list",
     headerLeft: () => (
@@ -281,7 +319,7 @@ toDoListScreen.navigationOptions = (navData) => {
           // iconName={isEditMode ? "ios-save" : "ios-add"}
           iconName="ios-add-circle-outline"
           onPress={() => {
-            navData.navigation.navigate("TripDestination", { trip: -1 });
+            navData.navigation.navigate("EditTask", { trip: trip, task: -1 });
           }}
         />
       </HeaderButtons>
@@ -358,12 +396,27 @@ const styles = StyleSheet.create({
     padding: 5,
     color: "#F2F2F7",
   },
-  destination: {
+  switchLabel: {
     fontSize: 17,
     letterSpacing: 1,
     fontWeight: "bold",
     paddingLeft: 5,
     color: "#F2F2F7",
+  },
+
+  ownerName: {
+    fontSize: 17,
+    letterSpacing: 1,
+    // fontWeight: "bold",
+    paddingLeft: 5,
+    color: "#F2F2F7",
+  },
+  description: {
+    fontSize: 15,
+    letterSpacing: 1,
+    //fontWeight: "",
+    paddingLeft: 5,
+    color: "#9e9e9e",
   },
 
   container: {
@@ -374,12 +427,6 @@ const styles = StyleSheet.create({
     height: 75,
     alignItems: "center",
     justifyContent: "center",
-  },
-  leftSwipeItem: {
-    flex: 1,
-    alignItems: "flex-end",
-    justifyContent: "center",
-    paddingRight: 20,
   },
 });
 

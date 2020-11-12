@@ -10,6 +10,7 @@ import eventsReducer from "./store/reducers/events";
 import tasksReducer from "./store/reducers/tasks";
 import toDoListReducer from "./store/reducers/toDoList";
 import tripsReducer from "./store/reducers/trips";
+import usersReducer from "./store/reducers/users";
 import NavigationContainer from "./navigation/NavigationContainer";
 
 // firebase.auth().onAuthStateChanged((user) => {
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   tasks: tasksReducer,
   toDoList: toDoListReducer,
   trips: tripsReducer,
+  users: usersReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));

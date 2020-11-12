@@ -4,7 +4,7 @@ import {
   GET_TRIP_TASKS,
   DELETE_TASK,
 } from "../actions/tasks";
-import Event from "../../models/event";
+import Task from "../../models/task";
 
 const initialState = {
   toDoListTasks: [],
@@ -12,15 +12,16 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case ADD_TASK:
-      const newEvent = new Event(
-        action.eventData.name,
-        action.eventData.desc,
-        action.eventData.date,
-        action.eventData.time,
-        action.eventData.tripParent
+      const newTask = new Task(
+        action.taskData.name,
+        action.taskData.description,
+        action.taskData.ifDone,
+        action.taskData.owner,
+        action.taskData.toDoListParent
       );
       return {
-        tripEvents: state.tripEvents.concat(newEvent),
+        ...state,
+        toDoListTasks: state.toDoListTasks.concat(newTask),
       };
     case EDIT_TASK:
       let tmpToDoListTasks = state.toDoListTasks;
@@ -46,8 +47,8 @@ export default (state = initialState, action) => {
     case DELETE_TASK:
       return {
         //...state,
-        tripEvents: state.tripEvents.filter(
-          (event) => event.id !== action.eventId
+        toDoListTasks: state.toDoListTasks.filter(
+          (task) => task.id !== action.taskId
         ),
       };
     default:

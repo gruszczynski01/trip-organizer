@@ -4,10 +4,12 @@ import {
   EDIT_TRIP,
   GET_USER_TRIP,
   DELETE_TRIP,
+  GET_TRIP_MEMBERS,
 } from "../actions/trips";
 
 const initialState = {
   userTrips: [],
+  tripMembers: [],
 };
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -21,7 +23,7 @@ export default (state = initialState, action) => {
         action.tripData.toDoList
       );
       return {
-        //...state,
+        ...state,
         userTrips: state.userTrips.concat(newTrip),
       };
     case EDIT_TRIP:
@@ -43,12 +45,19 @@ export default (state = initialState, action) => {
       };
     case GET_USER_TRIP:
       return {
+        ...state,
         userTrips: action.tripsData,
       };
     case DELETE_TRIP:
       return {
-        //...state,
+        ...state,
         userTrips: state.userTrips.filter((trip) => trip.id !== action.tripId),
+      };
+    case GET_TRIP_MEMBERS:
+      return {
+        ...state,
+        // userTrips: state.userTrips,
+        tripMembers: action.tripMembers,
       };
     default:
       return state;

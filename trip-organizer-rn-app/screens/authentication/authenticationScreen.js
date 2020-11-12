@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import LoginScreen from "react-native-login-screen";
@@ -111,89 +113,91 @@ const authenticationScreen = (props) => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      //keyboardVerticalOffset={50}
-      style={styles.screen}
-    >
-      <LinearGradient colors={["#d0f5ec", "#499feb"]} style={styles.gradient}>
-        <Image
-          style={styles.logo}
-          source={require("../../assets/trip_tmp.png")}
-        />
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        //keyboardVerticalOffset={50}
+        style={styles.screen}
+      >
+        <LinearGradient colors={["#d0f5ec", "#499feb"]} style={styles.gradient}>
+          <Image
+            style={styles.logo}
+            source={require("../../assets/trip_tmp.png")}
+          />
 
-        <Card style={styles.authContainer}>
-          <ScrollView>
-            <Input
-              id="email"
-              label="E-mail"
-              keyboardType="email-address"
-              required
-              email
-              autoCapitalize="none"
-              errorText="Please enter a valid email address."
-              onInputChange={inputChangeHandler}
-              initialValue=""
-            />
-            {!isSignup ? null : (
+          <Card style={styles.authContainer}>
+            <ScrollView>
               <Input
-                id="name"
-                label="Name"
+                id="email"
+                label="E-mail"
+                keyboardType="email-address"
                 required
+                email
                 autoCapitalize="none"
-                errorText="Please enter a valid name."
+                errorText="Please enter a valid email address."
                 onInputChange={inputChangeHandler}
                 initialValue=""
               />
-            )}
-            {!isSignup ? null : (
-              <Input
-                id="surname"
-                label="Surname"
-                required
-                autoCapitalize="none"
-                errorText="Please enter a valid name."
-                onInputChange={inputChangeHandler}
-                initialValue=""
-              />
-            )}
-            <Input
-              id="password"
-              label="Password"
-              keyboardType="default"
-              secureTextEntry
-              required
-              minLength={5}
-              autoCapitalize="none"
-              errorText="Please enter a valid password."
-              onInputChange={inputChangeHandler}
-              initialValue=""
-            />
-
-            <View style={styles.buttonContainer}>
-              {isLoading ? (
-                <ActivityIndicator size="small" color={Colors.primary} />
-              ) : (
-                <Button
-                  title={isSignup ? "Sign Up" : "Login"}
-                  color="#007AFF"
-                  onPress={authHandler}
+              {!isSignup ? null : (
+                <Input
+                  id="name"
+                  label="Name"
+                  required
+                  autoCapitalize="none"
+                  errorText="Please enter a valid name."
+                  onInputChange={inputChangeHandler}
+                  initialValue=""
                 />
               )}
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                title={`Switch to ${isSignup ? "Login" : "Sign Up"}`}
-                color={Colors.accent}
-                onPress={() => {
-                  setIsSignup((prevState) => !prevState);
-                }}
+              {!isSignup ? null : (
+                <Input
+                  id="surname"
+                  label="Surname"
+                  required
+                  autoCapitalize="none"
+                  errorText="Please enter a valid name."
+                  onInputChange={inputChangeHandler}
+                  initialValue=""
+                />
+              )}
+              <Input
+                id="password"
+                label="Password"
+                keyboardType="default"
+                secureTextEntry
+                required
+                minLength={5}
+                autoCapitalize="none"
+                errorText="Please enter a valid password."
+                onInputChange={inputChangeHandler}
+                initialValue=""
               />
-            </View>
-          </ScrollView>
-        </Card>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+
+              <View style={styles.buttonContainer}>
+                {isLoading ? (
+                  <ActivityIndicator size="small" color={Colors.primary} />
+                ) : (
+                  <Button
+                    title={isSignup ? "Sign Up" : "Login"}
+                    color="#007AFF"
+                    onPress={authHandler}
+                  />
+                )}
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  title={`Switch to ${isSignup ? "Login" : "Sign Up"}`}
+                  color={Colors.accent}
+                  onPress={() => {
+                    setIsSignup((prevState) => !prevState);
+                  }}
+                />
+              </View>
+            </ScrollView>
+          </Card>
+        </LinearGradient>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

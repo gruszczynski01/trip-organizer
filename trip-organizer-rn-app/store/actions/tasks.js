@@ -6,29 +6,37 @@ export const DELETE_TASK = "DELETE_TASK";
 import { auth, database } from "../../firebase";
 // import trips from "../reducers/trips";
 
-export const addTask = (taskName, taskDescription, toDoList) => {
+export const addTask = (
+  taskName,
+  taskDescription,
+  taskIfDone,
+  taskOwnerId,
+  taskToDoListParent
+) => {
   return async (dispatch, getState) => {
-    const newEventKey = database.ref().child("events").push().key;
+    const newTaskKey = database.ref().child("tasks").push().key;
 
     var updates = {};
-    updates["events/" + newEventKey] = {
-      title: eventName,
-      description: eventDesc,
-      date: eventDate,
-      time: eventTime,
+    updates["tasks/" + newTaskKey] = {
+      name: taskName,
+      description: taskDescription,
+      ifDone: taskIfDone,
+      owner: taskOwnerId,
+      toDoListParent: taskToDoListParent,
     };
-    updates["trips/" + tripParent + "/events/" + newEventKey] = 1;
+    updates["toDoLists/" + taskToDoListParent + "/tasks/" + newTaskKey] = 1;
     database.ref().update(updates);
 
     //te dwa pushe mozna przerobic do tablicy updates
 
     dispatch({
-      type: ADD_EVENT,
-      eventData: {
-        title: eventName,
-        description: eventDesc,
-        date: eventDate,
-        time: eventTime,
+      type: ADD_TASK,
+      taskData: {
+        name: taskName,
+        description: taskDescription,
+        ifDone: taskIfDone,
+        owner: taskOwnerId,
+        toDoListParent: taskToDoListParent,
       },
     });
   };
@@ -68,7 +76,7 @@ export const getTasks = (toDoListId) => {
     let toDoListTasks = [];
 
     const response = await database
-      .ref("toDoLists/" + toDoListId + "/events")
+      .ref("toDoLists/" + toDoListId + "/tasks")
       .once("value")
       .then(async function (dataSnapshot) {
         const data = JSON.parse(JSON.stringify(dataSnapshot));
@@ -104,10 +112,10 @@ export const getTasks = (toDoListId) => {
   };
 };
 
-export const deleteEvent = (eventId, tripId) => {
+export const deleteTask = (taskId, taskToDoListId) => {
   return async (dispatch, getState) => {
     var tripToDeleteRef = await database
-      .ref("events/" + eventId)
+      .ref("tasks/" + taskId)
       .remove()
       .then(function () {
         console.log("Remove succeeded.");
@@ -116,8 +124,8 @@ export const deleteEvent = (eventId, tripId) => {
         console.log("Remove failed: " + error.message);
       });
 
-    eventToDeleteRef = await database
-      .ref("trips/" + tripId + "/events/" + eventId)
+    tripToDeleteRef = await database
+      .ref("toDoLists/" + taskToDoListId + "/tasks/" + taskId)
       .remove()
       .then(function () {
         console.log("Remove succeeded.");
@@ -127,8 +135,8 @@ export const deleteEvent = (eventId, tripId) => {
       });
 
     dispatch({
-      type: DELETE_EVENT,
-      eventId: eventId,
+      type: DELETE_TASK,
+      taskId: taskId,
     });
   };
 };
