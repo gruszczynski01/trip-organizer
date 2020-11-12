@@ -1,14 +1,16 @@
 import { GET_SEARCHED_USERS } from "../actions/users";
 
 const initialState = {
-  searchedUser: [],
+  searchedUsers: [],
 };
 export default (state = initialState, action) => {
   switch (action.type) {
     case GET_SEARCHED_USERS:
+      console.log("REDUCER:");
+      console.log(action);
       return {
         ...state,
-        searchedUser: action.searchedUser,
+        searchedUsers: action.searchedUsers,
       };
     default:
       return state;

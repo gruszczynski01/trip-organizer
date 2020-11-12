@@ -16,50 +16,67 @@ export const getSearchedUsers = (statement) => {
     console.log(wordsArray);
     // uzyc mapy, gdzie key bylby id i a w val object tak by nie dodwac dwa razy tego samoego
     // srpawdzic dlaczego zwraca więcej niz te co sie zaczynaja od
-    var searchedUsers = new Set();
+    //if(!p.has(sm.p)) p.add(sm.p)
+    let searchedUsersArray = new Map();
     // let searchedUsers = [];
-    wordsArray.forEach(async (word) => {
+    for (var i = 0; i < wordsArray.length; i++) {
+      // wordsArray.forEach((word) => {
       console.log("SLOWO:");
-      console.log(word);
-      const responseEmail = await database
+      console.log(wordsArray[i]);
+      console.log(wordsArray[i] + "\uf8ff");
+      const responsEmail = await database
         .ref("users")
         .orderByChild("email")
-        .startAt(word)
-        .endAt(word + "\uf8ff")
+        .startAt(wordsArray[i].toUpperCase())
+        .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
-            searchedUsers.add(user);
+            var tmpUser = user.toJSON();
+            tmpUser["id"] = user.key;
+            console.log(tmpUser);
+            searchedUsersArray.set(tmpUser.id, tmpUser);
+            // searchedUsersArray.push(tmpUser);
           });
         });
-      const responseName = await database
+      const responsName = await database
         .ref("users")
         .orderByChild("name")
-        .startAt(word)
-        .endAt(word + "\uf8ff")
+        .startAt(wordsArray[i].toUpperCase())
+        .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
-            searchedUsers.add(user);
+            var tmpUser = user.toJSON();
+            tmpUser["id"] = user.key;
+            console.log(tmpUser);
+            searchedUsersArray.set(tmpUser.id, tmpUser);
+
+            // searchedUsersArray.push(tmpUser);
           });
         });
-      const responseSurname = await database
+      const responsSurname = await database
         .ref("users")
         .orderByChild("surname")
-        .startAt(word)
-        .endAt(word + "\uf8ff")
+        .startAt(wordsArray[i].toUpperCase())
+        .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
-            searchedUsers.add(user);
+            var tmpUser = user.toJSON();
+            tmpUser["id"] = user.key;
+            console.log(tmpUser);
+            searchedUsersArray.set(tmpUser.id, tmpUser);
+
+            // searchedUsersArray.push(tmpUser);
           });
         });
-    });
-    console.log("SZUKANI");
-    console.log(Array.from(searchedUsers));
+    }
+
+    console.log(searchedUsersArray);
     dispatch({
       type: GET_SEARCHED_USERS,
-      searchedUser: Array.from(searchedUsers),
+      searchedUsers: Array.from(searchedUsersArray.values()),
     });
   };
 };
