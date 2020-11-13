@@ -41,10 +41,11 @@ const inviteMembersScreen = (props) => {
   const [data, setData] = useState([]);
   const [searchedPhrase, setSearchedPhrase] = useState("");
 
-  const members = useSelector((state) => state.users.searchedUsers);
+  const searchedUsers = useSelector((state) => state.users.searchedUsers);
+  // const tripMembers = useSelector((state) => state.trips.);
   const loggedUserId = useSelector((state) => state.auth.userId);
   // const [selectedMember, setSelectedMember] = useState(loggedUserId);
-  const trip = props.navigation.getParam("trip");
+  const members = props.navigation.getParam("members");
 
   // const latitudeDelta = 0.025;
   // const longitudeDelta = 0.025;
@@ -52,17 +53,16 @@ const inviteMembersScreen = (props) => {
 
   // trip members
 
-  const loadTripMembers = useCallback(async () => {
+  const loadSearchedUsers = useCallback(async () => {
     setError(null);
     setIsRefreshing(true);
     try {
-      await dispatch(userActions.getSearchedUsers(searchedPhrase));
+      await dispatch(userActions.getSearchedUsers(searchedPhrase, members));
       // await dispatch(userActions.getSearchedUsers("jacek"));
     } catch (err) {
       console.log(err);
       setError(err.message);
     }
-    console.log(members);
 
     setData();
     setIsRefreshing(false);
@@ -71,20 +71,20 @@ const inviteMembersScreen = (props) => {
   useEffect(() => {
     const willFocusSub = props.navigation.addListener(
       "willFocus",
-      loadTripMembers
+      loadSearchedUsers
     );
 
     return () => {
       willFocusSub.remove();
     };
-  }, [loadTripMembers]);
+  }, [loadSearchedUsers]);
 
   useEffect(() => {
     setIsLoading(true);
-    loadTripMembers().then(() => {
+    loadSearchedUsers().then(() => {
       setIsLoading(false);
     });
-  }, [dispatch, loadTripMembers]);
+  }, [dispatch, loadSearchedUsers, members]);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -120,16 +120,16 @@ const inviteMembersScreen = (props) => {
           </View>
           <View style={styles.flatListContainer}>
             <FlatList
-              onRefresh={loadTripMembers}
+              onRefresh={loadSearchedUsers}
               refreshControl={
                 <RefreshControl
                   refreshing={isRefreshing}
-                  onRefresh={loadTripMembers}
+                  onRefresh={loadSearchedUsers}
                   tintColor="#F2F2F7"
                 />
               }
               refreshing={isRefreshing}
-              data={members}
+              data={searchedUsers}
               bounces={true}
               keyExtractor={(item) => item.id}
               renderItem={(itemData) => (
@@ -187,7 +187,15 @@ const inviteMembersScreen = (props) => {
                               justifyContent: "center",
                             }}
                           >
-                            <Text style={styles.ownerName}>
+                            <Text
+                              style={{
+                                // styles.fullName
+                                ...styles.email,
+                                color: itemData.item.ifAlreadyInTrip
+                                  ? "grey"
+                                  : "white",
+                              }}
+                            >
                               {itemData.item.email}
                             </Text>
                           </View>
@@ -232,13 +240,13 @@ const inviteMembersScreen = (props) => {
                         >
                           <Ionicons
                             name={
-                              !itemData.item.ifAlreadyInTrip
+                              itemData.item.ifAlreadyInTrip
                                 ? "ios-mail"
                                 : "ios-send"
                             }
                             size={32}
                             color={
-                              !itemData.item.ifAlreadyInTrip
+                              itemData.item.ifAlreadyInTrip
                                 ? "#ff9500"
                                 : "#007aff"
                             }
@@ -354,7 +362,7 @@ const styles = StyleSheet.create({
     color: "white",
     paddingLeft: 5,
   },
-  ownerName: {
+  email: {
     fontSize: 17,
     letterSpacing: 1,
     // fontWeight: "bold",

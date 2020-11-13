@@ -6,55 +6,50 @@
 export const GET_SEARCHED_USERS = "GET_SEARCHED_USERS";
 
 import { auth, database } from "../../firebase";
+import { useDispatch, useSelector } from "react-redux";
+
 // import trips from "../reducers/trips";
 
-export const getSearchedUsers = (statement) => {
+export const getSearchedUsers = (statement, members = []) => {
   return async (dispatch, getState) => {
-    const userId = getState().auth.userId;
+    console.log("ACTION:");
+    console.log(members);
+    // const members = useSelector((state) => state.trips.tripMembers);
+
     let wordsArray = statement.split(" ");
     wordsArray = wordsArray.filter((word) => {
       return word.length >= 3;
     });
-    console.log("ILE");
-    console.log(wordsArray.length);
-    // console.log("wordsArray");
-    // console.log(wordsArray);
-    // uzyc mapy, gdzie key bylby id i a w val object tak by nie dodwac dwa razy tego samoego
-    // srpawdzic dlaczego zwraca więcej niz te co sie zaczynaja od
-    //if(!p.has(sm.p)) p.add(sm.p)
+
     let searchedUsersArray = new Map();
-    // let searchedUsers = [];
+
     for (var i = 0; i < wordsArray.length; i++) {
-      // wordsArray.forEach((word) => {
-      console.log("SLOWO:");
-      console.log(wordsArray[i].toUpperCase());
-      console.log(wordsArray[i].toLowerCase() + "\uf8ff");
       const responsEmail = await database
         .ref("users")
         .orderByChild("email")
-        // .startAt(wordsArray[i].toUpperCase())
-        // .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
         .startAt(wordsArray[i])
         .endAt(wordsArray[i] + "\uf8ff")
         .limitToFirst(15)
-
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
             var tmpUser = user.toJSON();
             tmpUser["id"] = user.key;
-            // console.log(tmpUser);
             tmpUser["addedByWord"] = wordsArray[i];
             tmpUser["addedFromProp"] = "email";
+            tmpUser["ifAlreadyInTrip"] = false;
+
+            members.forEach((member) => {
+              if (member.id == tmpUser.id) {
+                tmpUser["ifAlreadyInTrip"] = true;
+              }
+            });
             searchedUsersArray.set(tmpUser.id, tmpUser);
-            // searchedUsersArray.push(tmpUser);
           });
         });
       const responsName = await database
         .ref("users")
         .orderByChild("name")
-        // .startAt(wordsArray[i].toUpperCase())
-        // .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
         .startAt(wordsArray[i])
         .endAt(wordsArray[i] + "\uf8ff")
         .limitToFirst(15)
@@ -65,10 +60,14 @@ export const getSearchedUsers = (statement) => {
             tmpUser["id"] = user.key;
             tmpUser["addedByWord"] = wordsArray[i];
             tmpUser["addedFromProp"] = "name";
-            // console.log(tmpUser);
-            searchedUsersArray.set(tmpUser.id, tmpUser);
+            tmpUser["ifAlreadyInTrip"] = false;
 
-            // searchedUsersArray.push(tmpUser);
+            members.forEach((member) => {
+              if (member.id == tmpUser.id) {
+                tmpUser["ifAlreadyInTrip"] = true;
+              }
+            });
+            searchedUsersArray.set(tmpUser.id, tmpUser);
           });
         });
       const responsSurname = await database
@@ -77,7 +76,6 @@ export const getSearchedUsers = (statement) => {
         .startAt(wordsArray[i])
         .endAt(wordsArray[i] + "\uf8ff")
         .limitToFirst(15)
-
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
@@ -85,10 +83,14 @@ export const getSearchedUsers = (statement) => {
             tmpUser["id"] = user.key;
             tmpUser["addedByWord"] = wordsArray[i];
             tmpUser["addedFromProp"] = "surname";
-            // console.log(tmpUser);
-            searchedUsersArray.set(tmpUser.id, tmpUser);
+            tmpUser["ifAlreadyInTrip"] = false;
 
-            // searchedUsersArray.push(tmpUser);
+            members.forEach((member) => {
+              if (member.id == tmpUser.id) {
+                tmpUser["ifAlreadyInTrip"] = true;
+              }
+            });
+            searchedUsersArray.set(tmpUser.id, tmpUser);
           });
         });
     }
