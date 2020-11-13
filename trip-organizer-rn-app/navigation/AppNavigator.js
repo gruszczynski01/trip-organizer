@@ -1,8 +1,10 @@
 import React from "react";
 import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
-import { createBottomTabNavigator } from "react-navigation-tabs";
+import { createBottomTabNavigator, BottomTabBar } from "react-navigation-tabs";
 import { createDrawerNavigator, DrawerItems } from "react-navigation-drawer";
+import { BlurView } from "expo-blur";
+
 // import  from "react-navigation-switch";
 
 import {
@@ -43,7 +45,7 @@ import eventTimeScreen from "../screens/features/trip_timeline/eventTimeScreen";
 
 const defaultNavOptions = {
   headerStyle: {
-    backgroundColor: "black",
+    backgroundColor: "#2C2C2E",
     // borderBottomWidth: "0",
     shadowRadius: 0,
     shadowOffset: {
@@ -103,7 +105,7 @@ const MainTabsNavigator = createBottomTabNavigator(
         tabBarIcon: ({ tintColor }) => (
           <Image
             source={require("../assets/icons/trip.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
-            style={{ width: 26, height: 26, tintColor: tintColor }}
+            style={{ width: 23, height: 23, tintColor: tintColor }}
           />
         ),
       },
@@ -116,19 +118,42 @@ const MainTabsNavigator = createBottomTabNavigator(
         tabBarIcon: ({ tintColor }) => (
           <Image
             source={require("../assets/icons/user-profile.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
-            style={{ width: 26, height: 26, tintColor: tintColor }}
+            style={{ width: 23, height: 23, tintColor: tintColor }}
           />
         ),
       },
     },
   },
   {
+    // tabBarOptions: {
+    //   style: {
+    //     backgroundColor: "black",
+    //     borderTopColor: "transparent",
+    //     height: 60,
+    //     opacity: 0.5,
+    //   },
+    // },
     tabBarOptions: {
       style: {
-        backgroundColor: "black",
+        borderTopColor: "#666666",
+        backgroundColor: "transparent",
         borderTopColor: "transparent",
       },
     },
+    tabBarComponent: (props) => (
+      <BlurView
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+        tint="dark"
+        intensity={100}
+      >
+        <BottomTabBar {...props} />
+      </BlurView>
+    ),
   }
   //   {
   //     contentOptions: {
@@ -171,11 +196,12 @@ const DrawerNavigator = createDrawerNavigator(
   {
     contentOptions: {
       activeTintColor: Colors.primary,
+      backgroundColor: "grey",
     },
     contentComponent: (props) => {
       const dispatch = useDispatch();
       return (
-        <View style={{ flex: 1, paddingTop: 20 }}>
+        <View style={{ flex: 1, paddingTop: 20, backgroundColor: "#2C2C2E" }}>
           <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
             <DrawerItems {...props} />
             <Image

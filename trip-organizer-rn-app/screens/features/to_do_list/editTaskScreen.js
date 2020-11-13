@@ -15,12 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Card from "../../../components/technical/Card";
 import Input from "../../../components/technical/Input";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../../components/technical/HeaderButton";
 import * as taskActions from "../../../store/actions/tasks";
 import * as tripActions from "../../../store/actions/trips";
-import Moment from "moment";
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
