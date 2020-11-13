@@ -12,8 +12,13 @@ export const getSearchedUsers = (statement) => {
   return async (dispatch, getState) => {
     const userId = getState().auth.userId;
     let wordsArray = statement.split(" ");
-    console.log("wordsArray");
-    console.log(wordsArray);
+    wordsArray = wordsArray.filter((word) => {
+      return word.length >= 3;
+    });
+    console.log("ILE");
+    console.log(wordsArray.length);
+    // console.log("wordsArray");
+    // console.log(wordsArray);
     // uzyc mapy, gdzie key bylby id i a w val object tak by nie dodwac dwa razy tego samoego
     // srpawdzic dlaczego zwraca więcej niz te co sie zaczynaja od
     //if(!p.has(sm.p)) p.add(sm.p)
@@ -22,19 +27,25 @@ export const getSearchedUsers = (statement) => {
     for (var i = 0; i < wordsArray.length; i++) {
       // wordsArray.forEach((word) => {
       console.log("SLOWO:");
-      console.log(wordsArray[i]);
-      console.log(wordsArray[i] + "\uf8ff");
+      console.log(wordsArray[i].toUpperCase());
+      console.log(wordsArray[i].toLowerCase() + "\uf8ff");
       const responsEmail = await database
         .ref("users")
         .orderByChild("email")
-        .startAt(wordsArray[i].toUpperCase())
-        .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
+        // .startAt(wordsArray[i].toUpperCase())
+        // .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
+        .startAt(wordsArray[i])
+        .endAt(wordsArray[i] + "\uf8ff")
+        .limitToFirst(15)
+
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
             var tmpUser = user.toJSON();
             tmpUser["id"] = user.key;
-            console.log(tmpUser);
+            // console.log(tmpUser);
+            tmpUser["addedByWord"] = wordsArray[i];
+            tmpUser["addedFromProp"] = "email";
             searchedUsersArray.set(tmpUser.id, tmpUser);
             // searchedUsersArray.push(tmpUser);
           });
@@ -42,14 +53,19 @@ export const getSearchedUsers = (statement) => {
       const responsName = await database
         .ref("users")
         .orderByChild("name")
-        .startAt(wordsArray[i].toUpperCase())
-        .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
+        // .startAt(wordsArray[i].toUpperCase())
+        // .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
+        .startAt(wordsArray[i])
+        .endAt(wordsArray[i] + "\uf8ff")
+        .limitToFirst(15)
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
             var tmpUser = user.toJSON();
             tmpUser["id"] = user.key;
-            console.log(tmpUser);
+            tmpUser["addedByWord"] = wordsArray[i];
+            tmpUser["addedFromProp"] = "name";
+            // console.log(tmpUser);
             searchedUsersArray.set(tmpUser.id, tmpUser);
 
             // searchedUsersArray.push(tmpUser);
@@ -58,14 +74,18 @@ export const getSearchedUsers = (statement) => {
       const responsSurname = await database
         .ref("users")
         .orderByChild("surname")
-        .startAt(wordsArray[i].toUpperCase())
-        .endAt(wordsArray[i].toLowerCase() + "\uf8ff")
+        .startAt(wordsArray[i])
+        .endAt(wordsArray[i] + "\uf8ff")
+        .limitToFirst(15)
+
         .once("value")
         .then(async function (users) {
           users.forEach((user) => {
             var tmpUser = user.toJSON();
             tmpUser["id"] = user.key;
-            console.log(tmpUser);
+            tmpUser["addedByWord"] = wordsArray[i];
+            tmpUser["addedFromProp"] = "surname";
+            // console.log(tmpUser);
             searchedUsersArray.set(tmpUser.id, tmpUser);
 
             // searchedUsersArray.push(tmpUser);
@@ -73,7 +93,7 @@ export const getSearchedUsers = (statement) => {
         });
     }
 
-    console.log(searchedUsersArray);
+    console.log(Array.from(searchedUsersArray.values()));
     dispatch({
       type: GET_SEARCHED_USERS,
       searchedUsers: Array.from(searchedUsersArray.values()),

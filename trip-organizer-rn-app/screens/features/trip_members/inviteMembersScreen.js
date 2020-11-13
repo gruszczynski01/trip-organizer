@@ -39,6 +39,7 @@ const inviteMembersScreen = (props) => {
   const [error, setError] = useState();
 
   const [data, setData] = useState([]);
+  const [searchedPhrase, setSearchedPhrase] = useState("");
 
   const members = useSelector((state) => state.users.searchedUsers);
   const loggedUserId = useSelector((state) => state.auth.userId);
@@ -55,7 +56,8 @@ const inviteMembersScreen = (props) => {
     setError(null);
     setIsRefreshing(true);
     try {
-      await dispatch(userActions.getSearchedUsers("GRUSZCZYN"));
+      await dispatch(userActions.getSearchedUsers(searchedPhrase));
+      // await dispatch(userActions.getSearchedUsers("jacek"));
     } catch (err) {
       console.log(err);
       setError(err.message);
@@ -64,7 +66,7 @@ const inviteMembersScreen = (props) => {
 
     setData();
     setIsRefreshing(false);
-  }, [dispatch, setIsLoading, setError]);
+  }, [dispatch, setIsLoading, setError, searchedPhrase]);
 
   useEffect(() => {
     const willFocusSub = props.navigation.addListener(
@@ -89,13 +91,32 @@ const inviteMembersScreen = (props) => {
       <KeyboardAvoidingView behavior="padding" style={styles.screen}>
         <View style={styles.mainContainer}>
           <View style={styles.titleContainer}>
-            <View style={styles.titleContainerItem}>
-              <Ionicons name="ios-people" size={42} color="white" />
-            </View>
-
-            <View style={styles.titleContainerItem}>
-              <Text style={styles.title}>Trip members</Text>
-            </View>
+            <Card style={styles.card}>
+              <ScrollView>
+                <Input
+                  labelStyle={styles.input}
+                  inputStyle={styles.inputStyle}
+                  id="name"
+                  label="Search for user"
+                  keyboardType="default"
+                  // errorText="Please enter a valid name."
+                  onChangeText={(val) => {
+                    setSearchedPhrase(val);
+                    console.log(searchedPhrase);
+                  }}
+                  value={searchedPhrase}
+                  // onInputChange={(val) => {
+                  //   console.log("Typed: " + val);
+                  // }}
+                  onInputChange={() => {
+                    setSearchedPhrase(searchedPhrase);
+                  }}
+                  placeholder="Type name, surname or email..."
+                  // initialValue={editedTask ? editedTask.name : ""}
+                  // initiallyValid={!!editedTask}
+                />
+              </ScrollView>
+            </Card>
           </View>
           <View style={styles.flatListContainer}>
             <FlatList
@@ -130,7 +151,9 @@ const inviteMembersScreen = (props) => {
                     <Card
                       style={{
                         ...styles.cartItem,
-                        borderColor: itemData.item.ifActive ? "black" : "grey",
+                        borderColor: itemData.item.ifAlreadyInTrip
+                          ? "grey"
+                          : "black",
                         borderWidth: 2,
                       }}
                     >
@@ -139,16 +162,36 @@ const inviteMembersScreen = (props) => {
                           <View style={styles.nameContainer}>
                             <Text
                               style={{
+                                // styles.fullName
                                 ...styles.fullName,
-                                color: itemData.item.ifActive
-                                  ? "white"
-                                  : "grey",
+                                color: itemData.item.ifAlreadyInTrip
+                                  ? "grey"
+                                  : "white",
                               }}
                             >
                               {itemData.item.name} {itemData.item.surname}
                             </Text>
                           </View>
-                          {!itemData.item.ifActive && (
+                          <View
+                            style={{
+                              borderTopColor: "grey",
+                              borderTopWidth: 1,
+
+                              // paddingHorizontal: 5,
+                              // marginHorizontal: 5,
+                              width: "95%",
+                              paddingTop: 10,
+                              paddingBottom: 10,
+                              // alignItems: "center",
+                              alignContent: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={styles.ownerName}>
+                              {itemData.item.email}
+                            </Text>
+                          </View>
+                          {itemData.item.ifAlreadyInTrip && (
                             <View
                               animation="flipInX"
                               iterationCount={1}
@@ -163,11 +206,44 @@ const inviteMembersScreen = (props) => {
                               }}
                             >
                               <Text style={styles.description}>
-                                Request sent
+                                Already in trip
                               </Text>
                             </View>
                           )}
                         </View>
+                      </View>
+                      <View style={styles.checkmarkContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            // itemData.item.ifDone = !itemData.item.ifDone;
+
+                            dispatch(
+                              taskActions.editTask(
+                                itemData.item.id,
+                                itemData.item.name,
+                                itemData.item.description,
+                                !itemData.item.ifDone,
+                                itemData.item.owner
+                              )
+                            );
+                            tasks.sort(compareTasks);
+                            loadTasks();
+                          }}
+                        >
+                          <Ionicons
+                            name={
+                              !itemData.item.ifAlreadyInTrip
+                                ? "ios-mail"
+                                : "ios-send"
+                            }
+                            size={32}
+                            color={
+                              !itemData.item.ifAlreadyInTrip
+                                ? "#ff9500"
+                                : "#007aff"
+                            }
+                          />
+                        </TouchableOpacity>
                       </View>
                     </Card>
                   </TouchableOpacity>
@@ -198,7 +274,7 @@ inviteMembersScreen.navigationOptions = (navData) => {
   const submitFn = navData.navigation.getParam("submit");
 
   return {
-    headerTitle: "Trip members",
+    headerTitle: "Invite someone",
     // headerRight: () => (
     //   <HeaderButtons HeaderButtonComponent={HeaderButton}>
     //     <Item
@@ -243,6 +319,7 @@ const styles = StyleSheet.create({
     width: "100%",
 
     justifyContent: "center",
+    marginTop: 15,
     // borderColor: "blue",
     // borderWidth: 1,
     // alignContent
@@ -269,13 +346,20 @@ const styles = StyleSheet.create({
   },
   fullName: {
     textTransform: "uppercase",
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: "bold",
     letterSpacing: 1,
     // margin: 30,
 
     color: "white",
     paddingLeft: 5,
+  },
+  ownerName: {
+    fontSize: 17,
+    letterSpacing: 1,
+    // fontWeight: "bold",
+    paddingLeft: 5,
+    color: "#F2F2F7",
   },
   input: { color: "#F2F2F7" },
   inputStyle: { color: "#F2F2F7" },
@@ -285,6 +369,7 @@ const styles = StyleSheet.create({
     // maxWidth: 400,
     maxHeight: 400,
     padding: 20,
+    paddingTop: 10,
     // backgroundColor: "#202022",
     backgroundColor: "black",
   },
@@ -303,7 +388,7 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    width: "95%",
+    width: "90%",
     justifyContent: "center",
     alignContent: "center",
   },
@@ -312,9 +397,16 @@ const styles = StyleSheet.create({
 
     justifyContent: "center",
     alignContent: "center",
+    paddingBottom: 6,
   },
   flatListContainer: {
     flex: 1,
+  },
+  checkmarkContainer: {
+    width: "10%",
+    justifyContent: "center",
+    alignContent: "center",
+    paddingLeft: 3,
   },
 });
 

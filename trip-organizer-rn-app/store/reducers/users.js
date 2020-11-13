@@ -6,10 +6,10 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case GET_SEARCHED_USERS:
-      console.log("REDUCER:");
-      console.log(action);
+      // console.log("REDUCER:");
+      // console.log(action);
       return {
-        ...state,
+        //...state,
         searchedUsers: action.searchedUsers,
       };
     default:
