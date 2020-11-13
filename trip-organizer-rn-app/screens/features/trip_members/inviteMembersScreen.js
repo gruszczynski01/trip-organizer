@@ -17,20 +17,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Card from "../../../components/technical/Card";
 import Input from "../../../components/technical/Input";
-import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButton from "../../../components/technical/HeaderButton";
-import * as taskActions from "../../../store/actions/tasks";
-import * as tripActions from "../../../store/actions/trips";
+import * as invitationActions from "../../../store/actions/invitations";
 import * as userActions from "../../../store/actions/users";
-import Moment from "moment";
-const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-
-//aaaaaaa
-
-// import React from "react";
-// import { View, StyleSheet } from "react-native";
-// import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
-// import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import * as tripActions from "../../../store/actions/trips";
 
 const inviteMembersScreen = (props) => {
   const dispatch = useDispatch();
@@ -42,16 +31,11 @@ const inviteMembersScreen = (props) => {
   const [searchedPhrase, setSearchedPhrase] = useState("");
 
   const searchedUsers = useSelector((state) => state.users.searchedUsers);
-  // const tripMembers = useSelector((state) => state.trips.);
-  const loggedUserId = useSelector((state) => state.auth.userId);
-  // const [selectedMember, setSelectedMember] = useState(loggedUserId);
-  const members = props.navigation.getParam("members");
 
-  // const latitudeDelta = 0.025;
-  // const longitudeDelta = 0.025;
-  //night google maps style
+  const loggedUser = useSelector((state) => state.auth.loggedUser);
+  const members = useSelector((state) => state.trips.tripMembers);
 
-  // trip members
+  const trip = props.navigation.getParam("trip");
 
   const loadSearchedUsers = useCallback(async () => {
     setError(null);
@@ -66,7 +50,7 @@ const inviteMembersScreen = (props) => {
 
     setData();
     setIsRefreshing(false);
-  }, [dispatch, setIsLoading, setError, searchedPhrase]);
+  }, [dispatch, setIsLoading, setError, searchedPhrase, members]);
 
   useEffect(() => {
     const willFocusSub = props.navigation.addListener(
@@ -134,20 +118,7 @@ const inviteMembersScreen = (props) => {
               keyExtractor={(item) => item.id}
               renderItem={(itemData) => (
                 <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log(itemData.item);
-                      // setSelectedMember(itemData.item.id);
-                    }}
-                    onLongPress={(trip) => {
-                      // console.log("onLongPress: trip: ", itemData.item);
-                      // setEditMode(true);
-                      // longPressHandler(itemData.item);
-                    }}
-                    // animation="bounceInLeft"
-                    // iterationCount={1}
-                    // easing="linear"
-                  >
+                  <TouchableOpacity onPress={() => {}}>
                     <Card
                       style={{
                         ...styles.cartItem,
@@ -223,19 +194,26 @@ const inviteMembersScreen = (props) => {
                       <View style={styles.checkmarkContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            // itemData.item.ifDone = !itemData.item.ifDone;
-
+                            console.log(itemData.item);
+                            // itemData.item.ifAlreadyInTrip = !itemData.item
+                            //   .ifAlreadyInTrip;
                             dispatch(
-                              taskActions.editTask(
+                              invitationActions.addInvitation(
+                                trip.id,
+                                trip.name,
+                                loggedUser.id,
+                                loggedUser.name + " " + loggedUser.surname,
                                 itemData.item.id,
-                                itemData.item.name,
-                                itemData.item.description,
-                                !itemData.item.ifDone,
-                                itemData.item.owner
+                                Date.now()
                               )
                             );
-                            tasks.sort(compareTasks);
-                            loadTasks();
+                            dispatch(tripActions.getTripMembers(trip.id));
+                            dispatch(
+                              userActions.getSearchedUsers(
+                                searchedPhrase,
+                                members
+                              )
+                            );
                           }}
                         >
                           <Ionicons

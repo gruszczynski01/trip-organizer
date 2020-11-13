@@ -49,6 +49,8 @@ const StartupScreen = (props) => {
       const expirationTime = expirationDate.getTime() - new Date().getTime();
 
       dispatch(authActions.authenticate(userId, token, expirationTime));
+      dispatch(authActions.getLoggedUser());
+
       props.navigation.navigate("Drawer");
     };
 

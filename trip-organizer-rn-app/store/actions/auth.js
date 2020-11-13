@@ -3,6 +3,7 @@ import { AsyncStorage } from "react-native";
 // export const SIGNUP = 'SIGNUP';
 // export const LOGIN = 'LOGIN';
 export const AUTHENTICATE = "AUTHENTICATE";
+export const SAVE_USER = "SAVE_USER";
 export const LOGOUT = "LOGOUT";
 import { auth, database } from "../../firebase";
 
@@ -122,6 +123,16 @@ export const login = (email, password) => {
       resData.user.uid,
       expirationDate
     );
+    dispatch(getLoggedUser());
+    // dispatch({
+    //   type: SAVE_USER,
+    //   loggedUser: {
+    //     id: resData.user.uid,
+    //     email: email,
+    //     name: name,
+    //     surname: surname,
+    //   },
+    // });
   };
 };
 
@@ -148,5 +159,38 @@ const addUserToDatabase = (id, email, name, surname) => {
         }
       }
     );
+    dispatch({
+      type: SAVE_USER,
+      loggedUser: {
+        id: userId,
+        email: email,
+        name: name,
+        surname: surname,
+      },
+    });
+  };
+};
+export const getLoggedUser = () => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const userId = getState().auth.userId;
+    let loggedUser = null;
+    const response = await database
+      .ref("users/" + userId)
+      .once("value")
+      .then(async function (user) {
+        loggedUser = user.toJSON();
+        loggedUser["id"] = user.key;
+      });
+
+    dispatch({
+      type: SAVE_USER,
+      loggedUser: {
+        id: loggedUser.id,
+        email: loggedUser.email,
+        name: loggedUser.name,
+        surname: loggedUser.surname,
+      },
+    });
   };
 };

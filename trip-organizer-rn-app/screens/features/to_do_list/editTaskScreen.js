@@ -235,41 +235,43 @@ const editTaskScreen = (props) => {
               keyExtractor={(item) => item.id}
               renderItem={(itemData) => (
                 <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log(itemData);
-                      setSelectedMember(itemData.item.id);
-                    }}
-                    onLongPress={(trip) => {
-                      // console.log("onLongPress: trip: ", itemData.item);
-                      // setEditMode(true);
-                      // longPressHandler(itemData.item);
-                    }}
-                    // animation="bounceInLeft"
-                    // iterationCount={1}
-                    // easing="linear"
-                  >
-                    <Card
-                      style={{
-                        ...styles.cartItem,
-                        borderColor:
-                          itemData.item.id == selectedMember
-                            ? "#00D84D"
-                            : "black",
-                        borderWidth: 2,
+                  {itemData.item.ifActive == 1 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        console.log(itemData);
+                        setSelectedMember(itemData.item.id);
                       }}
+                      onLongPress={(trip) => {
+                        // console.log("onLongPress: trip: ", itemData.item);
+                        // setEditMode(true);
+                        // longPressHandler(itemData.item);
+                      }}
+                      // animation="bounceInLeft"
+                      // iterationCount={1}
+                      // easing="linear"
                     >
-                      <View style={styles.contentContainer}>
-                        <View>
-                          <View style={styles.nameContainer}>
-                            <Text style={styles.fullName}>
-                              {itemData.item.name} {itemData.item.surname}
-                            </Text>
+                      <Card
+                        style={{
+                          ...styles.cartItem,
+                          borderColor:
+                            itemData.item.id == selectedMember
+                              ? "#00D84D"
+                              : "black",
+                          borderWidth: 2,
+                        }}
+                      >
+                        <View style={styles.contentContainer}>
+                          <View>
+                            <View style={styles.nameContainer}>
+                              <Text style={styles.fullName}>
+                                {itemData.item.name} {itemData.item.surname}
+                              </Text>
+                            </View>
                           </View>
                         </View>
-                      </View>
-                    </Card>
-                  </TouchableOpacity>
+                      </Card>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             />

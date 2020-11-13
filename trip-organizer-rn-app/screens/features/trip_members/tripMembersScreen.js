@@ -84,46 +84,9 @@ const tripMembersScreen = (props) => {
   }, [dispatch, loadTripMembers]);
 
   const submitHandler = useCallback(async () => {
-    // var body = {
-    //   ...props.navigation.state.params,
-    //   name: formState.inputValues.name,
-    //   description: formState.inputValues.desc,
-    //   owner: selectedMember,
-    // };
-
-    // console.log("DEBUG: SUBMIT HANDLER");
-    // console.log(body);
-
-    // // console.log(formState.inputValues.name);
-    // console.log(formState.inputValues.desc);
-    // console.log(Moment(props.navigation.state.params.).format("DD-MM-YYYY"));
-    // console.log(Moment(date).format("HH:mm"));
-
-    // const dispatch = useDispatch();
-
-    // if (!!editedTask) {
-    //   await dispatch(
-    //     taskActions.editTask(
-    //       editedTask.id,
-    //       formState.inputValues.name,
-    //       formState.inputValues.desc,
-    //       editedTask.ifDone,
-    //       selectedMember
-    //     )
-    //   );
-    // } else {
-    //   await dispatch(
-    //     taskActions.addTask(
-    //       formState.inputValues.name,
-    //       formState.inputValues.desc,
-    //       false,
-    //       selectedMember,
-    //       trip.to_do_list
-    //     )
-    //   );
-    // }
     props.navigation.navigate("InviteMembers", {
       members: members,
+      trip: { id: trip.id, name: trip.name },
     });
   }, [dispatch]);
 
@@ -131,6 +94,19 @@ const tripMembersScreen = (props) => {
     props.navigation.setParams({ submit: submitHandler });
   }, [submitHandler]);
 
+  useEffect(() => {
+    members.sort(compareUsers);
+  }, [members]);
+
+  function compareUsers(a, b) {
+    if (a.ifActive == false && b.ifActive == true) {
+      return 1;
+    }
+    if (a.ifActive == true && b.ifActive == false) {
+      return -1;
+    }
+    return 0;
+  }
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView behavior="padding" style={styles.screen}>
