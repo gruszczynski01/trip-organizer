@@ -147,6 +147,7 @@ const tripTimelineScreen = (props) => {
         </View>
       ) : (
         <Timeline
+          listViewContainerStyle={{ paddingBottom: 85 }}
           style={styles.list}
           data={data}
           separator={true}
@@ -205,8 +206,9 @@ tripTimelineScreen.navigationOptions = (navData) => {
 const styles = StyleSheet.create({
   datePickerContainer: {
     paddingBottom: 10,
-    borderBottomColor: "grey",
-    borderBottomWidth: 2,
+    // paddingBottom: 10,
+    borderBottomColor: "#999999",
+    borderBottomWidth: 0.5,
   },
   container: {
     flex: 1,

@@ -246,6 +246,7 @@ const userProfileScreen = (props) => {
             </View> */}
             <View style={styles.flatListContainer}>
               <FlatList
+                contentContainerStyle={{ paddingBottom: 85 }}
                 onRefresh={loadTripMembers}
                 refreshControl={
                   <RefreshControl
@@ -391,15 +392,22 @@ const styles = StyleSheet.create({
   titleContainer: {
     // flex: 1,
     flexDirection: "row",
-    width: "100%",
+    width: "92.5%",
 
     justifyContent: "center",
+    paddingBottom: 10,
+    borderBottomColor: "#999999",
+    borderBottomWidth: 0.5,
+
     // borderColor: "blue",
     // borderWidth: 1,
     // alignContent
   },
   titleContainerItem: {
+    // flex: 1,
     justifyContent: "center",
+    // borderColor: "blue",
+    // borderWidth: 1,
   },
   title: {
     // textTransform: "uppercase",
@@ -409,7 +417,7 @@ const styles = StyleSheet.create({
     // margin: 30,
     color: "white",
     paddingLeft: 10,
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   label: {
     // textTransform: "uppercase",
@@ -507,7 +515,7 @@ const styles = StyleSheet.create({
   flatListContainer: {
     width: "100%",
     flex: 1,
-    paddingBottom: 85,
+    // paddingBottom: 85,
   },
   countersContiner: {
     flex: 1,
@@ -515,7 +523,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     // alignContent: "space-between",
     justifyContent: "space-between",
-    maxHeight: 120,
+    maxHeight: 100,
     paddingTop: 5,
     // borderColor: "red",
     // borderWidth: 2,

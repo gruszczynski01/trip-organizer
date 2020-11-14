@@ -105,6 +105,7 @@ const tripListScreen = (props) => {
   return (
     <View style={styles.screen}>
       <FlatList
+        contentContainerStyle={{ paddingBottom: 85 }}
         onRefresh={loadTrips}
         refreshControl={
           <RefreshControl
@@ -194,6 +195,7 @@ tripListScreen.navigationOptions = (navData) => {
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: "#2C2C2E",
+    // paddingBottom: 85,
   },
   cartItem: {
     padding: 10,
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
   title: {
     textTransform: "uppercase",
     fontSize: 27,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     letterSpacing: 1,
     padding: 5,
     color: "white",

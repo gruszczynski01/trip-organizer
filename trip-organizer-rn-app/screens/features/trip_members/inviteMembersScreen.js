@@ -104,6 +104,7 @@ const inviteMembersScreen = (props) => {
           </View>
           <View style={styles.flatListContainer}>
             <FlatList
+              contentContainerStyle={{ paddingBottom: 85 }}
               onRefresh={loadSearchedUsers}
               refreshControl={
                 <RefreshControl

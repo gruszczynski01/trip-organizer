@@ -165,6 +165,7 @@ const toDoListScreen = (props) => {
         </View>
       </View>
       <FlatList
+        contentContainerStyle={{ paddingBottom: 85 }}
         onRefresh={loadTasks}
         refreshControl={
           <RefreshControl

@@ -94,6 +94,7 @@ const mainMenuScreen = (props) => {
           animation="bounceInLeft"
           easing="ease-out"
           iterationCount={1}
+          style={{ paddingBottom: 85 }}
         >
           <TouchableOpacity style={styles.tileOpacity}>
             <Card style={styles.tile}>
