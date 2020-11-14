@@ -21,6 +21,8 @@ import HeaderButton from "../../components/technical/HeaderButton";
 import * as taskActions from "../../store/actions/tasks";
 import * as tripActions from "../../store/actions/trips";
 import Moment from "moment";
+import { Ionicons } from "@expo/vector-icons";
+
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
@@ -182,8 +184,9 @@ const userProfileScreen = (props) => {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView behavior="padding" style={styles.screen}>
+        {/* <ScrollView> */}
         <View style={styles.mainContainer}>
-          <View style={{ alignSelf: "center", paddingVertical: 30 }}>
+          <View style={{ alignSelf: "center", paddingVertical: 20 }}>
             <Avatar
               source={{
                 uri:
@@ -201,60 +204,62 @@ const userProfileScreen = (props) => {
           <View style={styles.cardContainer}>
             <Text style={styles.label}>Szymon Gruszczyński</Text>
             <Text style={styles.subLabel}>gruszczynski01@gmail.com</Text>
+            <View style={styles.countersContiner}>
+              <View style={styles.subCounterContainer}>
+                <View style={styles.subCounterTop}>
+                  <Text style={styles.subTripCounter}>28</Text>
+                </View>
+                <View style={styles.subCounterBottom}>
+                  <Text style={styles.subTripLabel}>PAST TRIP</Text>
+                </View>
+              </View>
 
-            {/* <Card style={styles.card}>
-              <ScrollView>
-                
-                <Input
-                  labelStyle={styles.input}
-                  inputStyle={styles.inputStyle}
-                  id="name"
-                  label="Name"
-                  keyboardType="default"
-                  required
-                  errorText="Please enter a valid name."
-                  onInputChange={inputChangeHandler}
-                  initialValue={editedTask ? editedTask.name : ""}
-                  initiallyValid={!!editedTask}
-                />
+              <View style={styles.subCounterContainer}>
+                <View style={styles.mainCounterTop}>
+                  <Text style={styles.activeTripsCounter}>31</Text>
+                </View>
+                <View style={styles.mainCounterBottom}>
+                  <Text style={styles.activeTripsLabel}>TOTAL TRIPS</Text>
+                </View>
+              </View>
 
-                <Input
-                  labelStyle={styles.input}
-                  inputStyle={styles.inputStyle}
-                  style={styles.input}
-                  id="desc"
-                  label="Description"
-                  keyboardType="default"
-                  errorText="Please enter a valid description."
-                  multiline={true}
-                  umberOfLines={4}
-                  onInputChange={inputChangeHandler}
-                  initialValue={editedTask ? editedTask.description : ""}
-                  initiallyValid={!!editedTask}
-                />
-              </ScrollView>
-            </Card> */}
-          </View>
-          <View>
-            <Text style={styles.title}>Yours invitations:</Text>
-          </View>
-          <View style={styles.flatListContainer}>
-            <FlatList
-              onRefresh={loadTripMembers}
-              refreshControl={
-                <RefreshControl
-                  refreshing={isRefreshing}
-                  onRefresh={loadTripMembers}
-                  tintColor="#F2F2F7"
-                />
-              }
-              refreshing={isRefreshing}
-              data={members}
-              bounces={true}
-              keyExtractor={(item) => item.id}
-              renderItem={(itemData) => (
-                <View>
-                  {itemData.item.ifActive == 1 && (
+              <View style={styles.subCounterContainer}>
+                <View style={styles.subCounterTop}>
+                  <Text style={styles.subTripCounter}>3</Text>
+                </View>
+                <View style={styles.subCounterBottom}>
+                  <Text style={styles.subTripLabel}>FEATURE TRIP</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.titleContainer}>
+              <View style={styles.titleContainerItem}>
+                <Ionicons name="ios-mail" size={26} color="white" />
+              </View>
+
+              <View style={styles.titleContainerItem}>
+                <Text style={styles.title}>Invitations</Text>
+              </View>
+            </View>
+            {/* <View style={styles.titleContainer}>
+              <Text style={styles.title}>Yours invitations:</Text>
+            </View> */}
+            <View style={styles.flatListContainer}>
+              <FlatList
+                onRefresh={loadTripMembers}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={isRefreshing}
+                    onRefresh={loadTripMembers}
+                    tintColor="#F2F2F7"
+                  />
+                }
+                refreshing={isRefreshing}
+                data={members}
+                bounces={true}
+                keyExtractor={(item) => item.id}
+                renderItem={(itemData) => (
+                  <View>
                     <TouchableOpacity
                       onPress={() => {
                         console.log(itemData);
@@ -269,33 +274,64 @@ const userProfileScreen = (props) => {
                       // iterationCount={1}
                       // easing="linear"
                     >
-                      <Card
-                        style={{
-                          ...styles.cartItem,
-                          borderColor:
-                            itemData.item.id == selectedMember
-                              ? "#00D84D"
-                              : "black",
-                          borderWidth: 2,
-                        }}
-                      >
+                      <Card style={styles.cartItem}>
                         <View style={styles.contentContainer}>
-                          <View>
-                            <View style={styles.nameContainer}>
-                              <Text style={styles.fullName}>
-                                {itemData.item.name} {itemData.item.surname}
-                              </Text>
+                          <View style={styles.LeftContentContainer}>
+                            <View
+                              style={{
+                                flex: 1,
+                                flexDirection: "column",
+                                justifyContent: "space-around",
+                              }}
+                            >
+                              <View style={styles.tripNameContainer}>
+                                <Text style={styles.tripName}>
+                                  WYJAZD PO SESJI
+                                </Text>
+                              </View>
+                              <View style={styles.tripNameContainer}>
+                                <Text style={styles.senderName}>
+                                  From: Szymon Gruszczynski
+                                </Text>
+                              </View>
+
+                              <View style={styles.receivedDateContainer}>
+                                <Text style={styles.receivedDate}>
+                                  Received: 14.11.2020
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                          <View style={styles.RightContentContainer}>
+                            <View
+                              style={{
+                                flex: 1,
+                                flexDirection: "column",
+                                justifyContent: "space-evenly",
+                              }}
+                            >
+                              <Ionicons
+                                name="ios-checkmark-circle-outline"
+                                size={40}
+                                color="#4cd964"
+                              />
+                              <Ionicons
+                                name="ios-close-circle-outline"
+                                size={40}
+                                color="#ff3b30"
+                              />
                             </View>
                           </View>
                         </View>
                       </Card>
                     </TouchableOpacity>
-                  )}
-                </View>
-              )}
-            />
+                  </View>
+                )}
+              />
+            </View>
           </View>
         </View>
+        {/* </ScrollView> */}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -338,8 +374,10 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     width: "100%",
-    marginTop: 30,
+    // marginTop: 30,
     justifyContent: "center",
+    // borderColor: "red",
+    // borderWidth: 1,
     // alignItems: "center",
   },
 
@@ -350,13 +388,28 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     backgroundColor: "#2C2C2E",
   },
+  titleContainer: {
+    // flex: 1,
+    flexDirection: "row",
+    width: "100%",
+
+    justifyContent: "center",
+    // borderColor: "blue",
+    // borderWidth: 1,
+    // alignContent
+  },
+  titleContainerItem: {
+    justifyContent: "center",
+  },
   title: {
     // textTransform: "uppercase",
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "bold",
     letterSpacing: 1,
-    margin: 30,
+    // margin: 30,
     color: "white",
+    paddingLeft: 10,
+    marginBottom: 10,
   },
   label: {
     // textTransform: "uppercase",
@@ -384,7 +437,13 @@ const styles = StyleSheet.create({
   },
   input: { color: "#F2F2F7" },
   inputStyle: { color: "#F2F2F7" },
-  cardContainer: { alignItems: "center" },
+  cardContainer: {
+    flex: 1,
+    alignItems: "center",
+    // paddingTop: 10,
+    // borderColor: "green",
+    // borderWidth: 2,
+  },
   card: {
     width: "90%",
     // maxWidth: 400,
@@ -397,20 +456,47 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "black",
     // flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "stretch",
-    alignContent: "stretch",
+    // justifyContent: "flex-start",
+    // alignItems: "stretch",
+    // alignContent: "stretch",
     marginHorizontal: 20,
     marginTop: 20,
     minHeight: 55,
-    flex: 1,
-    flexDirection: "row",
+    width: "90%",
+    // flex: 1,
+    // flexDirection: "row",
   },
 
   contentContainer: {
-    width: "95%",
+    width: "100%",
     justifyContent: "center",
     alignContent: "center",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    minHeight: 130,
+  },
+  LeftContentContainer: {
+    width: "80%",
+  },
+  senderName: {
+    // color: "white",
+    fontSize: 16,
+    color: "#999999",
+  },
+  tripName: {
+    fontSize: 24,
+    color: "white",
+  },
+  receivedDate: {
+    fontSize: 16,
+    color: "#999999",
+    // color: "white",
+  },
+  RightContentContainer: {
+    width: "20%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   nameContainer: {
     flex: 1,
@@ -419,7 +505,78 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   flatListContainer: {
+    width: "100%",
     flex: 1,
+    paddingBottom: 85,
+  },
+  countersContiner: {
+    flex: 1,
+    width: "90%",
+    flexDirection: "row",
+    // alignContent: "space-between",
+    justifyContent: "space-between",
+    maxHeight: 120,
+    paddingTop: 5,
+    // borderColor: "red",
+    // borderWidth: 2,
+  },
+  subCounterContainer: {
+    flex: 1,
+    // borderColor: "blue",
+    // borderWidth: 2,
+  },
+  subCounterTop: {
+    // borderColor: "orange",
+    // borderWidth: 2,
+    alignItems: "center",
+  },
+  subCounterBottom: {
+    // borderColor: "white",
+    // borderWidth: 2,
+    alignItems: "center",
+  },
+  mainCounterTop: {
+    // borderColor: "orange",
+    // borderWidth: 2,
+    alignItems: "center",
+    // borderLeftColor: "#999999",
+    // borderLeftWidth: 1,
+    // borderRightColor: "#999999",
+    // borderRightWidth: 1,
+  },
+  mainCounterBottom: {
+    // borderColor: "white",
+    // borderWidth: 2,
+    alignItems: "center",
+    // borderLeftColor: "#999999",
+    // borderLeftWidth: 1,
+    // borderRightColor: "#999999",
+    // borderRightWidth: 1,
+  },
+  activeTripsCounter: {
+    fontSize: 30,
+    color: "white",
+    fontWeight: "bold",
+  },
+  activeTripsLabel: {
+    fontSize: 20,
+    color: "white",
+
+    textAlign: "center",
+    // fontFamily: "poppins-regular",
+    // fontWeight: "bold",
+  },
+  subTripCounter: {
+    paddingTop: 40,
+    fontSize: 20,
+    color: "#999999",
+    // fontWeight: "bold",
+  },
+  subTripLabel: {
+    fontSize: 15,
+    color: "#999999",
+
+    textAlign: "center",
   },
 });
 
