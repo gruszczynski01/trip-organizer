@@ -194,6 +194,7 @@ tripListScreen.navigationOptions = (navData) => {
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
     backgroundColor: "#2C2C2E",
     // paddingBottom: 85,
   },

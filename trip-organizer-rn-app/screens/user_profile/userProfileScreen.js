@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -246,6 +247,7 @@ const userProfileScreen = (props) => {
             </View> */}
             <View style={styles.flatListContainer}>
               <FlatList
+                horizontal={true}
                 contentContainerStyle={{ paddingBottom: 85 }}
                 onRefresh={loadTripMembers}
                 refreshControl={
@@ -469,9 +471,9 @@ const styles = StyleSheet.create({
     // alignContent: "stretch",
     marginHorizontal: 20,
     marginTop: 20,
-    minHeight: 55,
-    width: "90%",
-    // flex: 1,
+    height: 150,
+    // maxWidth
+    width: Dimensions.get("screen").width, // flex: 1,
     // flexDirection: "row",
   },
 
