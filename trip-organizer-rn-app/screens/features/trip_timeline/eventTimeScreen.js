@@ -100,19 +100,19 @@ eventTimeScreen.navigationOptions = (navData) => {
 
   return {
     headerTitle: "Select event time",
-    headerRight: () => (
-      <HeaderButtons HeaderButtonComponent={HeaderButton}>
-        <Item
-          buttonStyle={{ color: "#147efb" }}
-          title="Add"
-          iconName="ios-save"
-          onPress={submitFn}
-          //TO DO: save or edit event
+    // headerRight: () => (
+    //   <HeaderButtons HeaderButtonComponent={HeaderButton}>
+    //     <Item
+    //       buttonStyle={{ color: "#147efb" }}
+    //       title="Add"
+    //       iconName="ios-save"
+    //       onPress={submitFn}
+    //       //TO DO: save or edit event
 
-          // navData.navigation.goBack();
-        />
-      </HeaderButtons>
-    ),
+    //       // navData.navigation.goBack();
+    //     />
+    //   </HeaderButtons>
+    // ),
   };
 };
 

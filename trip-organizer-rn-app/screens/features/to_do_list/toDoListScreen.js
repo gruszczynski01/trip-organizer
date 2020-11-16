@@ -367,9 +367,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    textTransform: "uppercase",
-    fontSize: 18,
-    fontWeight: "bold",
+    // textTransform: "uppercase",
+    fontSize: 16,
+    // fontWeight: "bold",
     letterSpacing: 1,
     padding: 5,
     color: "white",
@@ -380,12 +380,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     // width: "90%",
   },
-  dateText: {
-    fontSize: 17,
-    letterSpacing: 1,
-    padding: 5,
-    color: "#F2F2F7",
-  },
   switchLabel: {
     fontSize: 17,
     letterSpacing: 1,
@@ -395,14 +389,14 @@ const styles = StyleSheet.create({
   },
 
   ownerName: {
-    fontSize: 17,
+    fontSize: 13,
     letterSpacing: 1,
     // fontWeight: "bold",
     paddingLeft: 5,
     color: "#F2F2F7",
   },
   description: {
-    fontSize: 15,
+    fontSize: 13,
     letterSpacing: 1,
     //fontWeight: "",
     paddingLeft: 5,

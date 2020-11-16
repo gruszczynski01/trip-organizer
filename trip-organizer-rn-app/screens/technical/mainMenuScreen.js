@@ -15,7 +15,10 @@ const mainMenuScreen = (props) => {
   return (
     <ScrollView style={styles.scrollScreen}>
       <View style={styles.screen}>
-        <Text style={styles.title}>{trip.name}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{trip.name}</Text>
+        </View>
+
         <Animatable.View
           animation="bounceInLeft"
           easing="ease-out"
@@ -121,6 +124,7 @@ mainMenuScreen.navigationOptions = (navData) => {
 const styles = StyleSheet.create({
   scrollScreen: {
     backgroundColor: "#2C2C2E",
+    flex: 1,
   },
   screen: {
     flex: 1,
@@ -129,12 +133,20 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     // alignItems: "center",
   },
+  titleContainer: {
+    alignSelf: "center",
+    width: "90%",
+    borderBottomColor: "grey",
+    borderBottomWidth: 1,
+    marginBottom: 20,
+  },
   title: {
     textTransform: "uppercase",
-    fontSize: 40,
+    fontSize: 27,
     fontWeight: "bold",
     letterSpacing: 1,
-    margin: 30,
+    margin: 15,
+    paddingLeft: 20,
     // alignSelf: "center",
     color: "#F2F2F7",
 
@@ -168,7 +180,7 @@ const styles = StyleSheet.create({
     // backgroundColor: "red",
   },
   innerText: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     color: "white",
     textShadowColor: "rgba(0, 0, 0, 0.75)",

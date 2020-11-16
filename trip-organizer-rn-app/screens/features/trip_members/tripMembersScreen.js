@@ -292,9 +292,9 @@ const styles = StyleSheet.create({
     color: "white",
   },
   fullName: {
-    textTransform: "uppercase",
+    // textTransform: "uppercase",
     fontSize: 15,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     letterSpacing: 1,
     // margin: 30,
 
