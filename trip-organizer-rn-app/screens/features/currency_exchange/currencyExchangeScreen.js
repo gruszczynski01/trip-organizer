@@ -151,8 +151,9 @@ const currencyExchangeScreen = (props) => {
           <View style={styles.currencyInfoContainer}>
             <View style={styles.currencyInfoTile}>
               <Text style={styles.currencyInfoText}>
-                1 {fromPicker} = {rates[toPicker].toFixed(2)} {toPicker}
-                {/* 1 {fromPicker} = {toPicker} */}
+                {/* 1 {fromPicker} = {rates[toPicker].toFixed(2)} {toPicker} */}
+                1 {fromPicker} = {toPicker}
+                {/* FIX IT!!! */}
               </Text>
             </View>
           </View>

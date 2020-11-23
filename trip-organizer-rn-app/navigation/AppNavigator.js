@@ -42,6 +42,7 @@ import inviteMembersScreen from "../screens/features/trip_members/inviteMembersS
 import tripTimelineScreen from "../screens/features/trip_timeline/tripTimelineScreen";
 import eventDataScreen from "../screens/features/trip_timeline/eventDataScreen";
 import eventTimeScreen from "../screens/features/trip_timeline/eventTimeScreen";
+import mapTabScreen from "../screens/features/map_tab/mapTabScreen";
 
 const defaultNavOptions = {
   headerStyle: {
@@ -110,7 +111,18 @@ const MainTabsNavigator = createBottomTabNavigator(
         ),
       },
     },
-
+    Map: {
+      screen: mapTabScreen,
+      navigationOptions: {
+        tabBarLabel: "Map",
+        tabBarIcon: ({ tintColor }) => (
+          <Image
+            source={require("../assets/icons/maps.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
+            style={{ width: 23, height: 23, tintColor: tintColor }}
+          />
+        ),
+      },
+    },
     Settings: {
       screen: SettingsNavigator,
       navigationOptions: {
