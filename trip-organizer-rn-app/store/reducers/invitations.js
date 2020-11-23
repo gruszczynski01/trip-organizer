@@ -1,6 +1,6 @@
 import {
   ADD_INVITATION,
-  EDIT_INVITATION,
+  ACCEPT_INVITATION,
   GET_USER_INVITATIONS,
   DELETE_INVITATION,
 } from "../actions/invitations";
@@ -24,32 +24,23 @@ export default (state = initialState, action) => {
         ...state,
         userInvitations: state.userInvitations.concat(newInvitation),
       };
-    case EDIT_INVITATION:
-      let tmpToDoListTasks = state.toDoListTasks;
-      tmpToDoListTasks.forEach(function (task, index, array) {
-        if (task.id == action.taskData.id) {
-          array[index] = {
-            ...task,
-            name: action.taskData.name,
-            description: action.taskData.description,
-            owner: action.taskData.owner,
-            ifDone: action.taskData.ifDone,
-          };
-        }
-      });
-      return {
-        ...state,
-        toDoListTasks: tmpToDoListTasks,
-      };
     case GET_USER_INVITATIONS:
       return {
-        toDoListTasks: action.toDoListTasks,
+        ...state,
+        userInvitations: action.userInvitations,
       };
     case DELETE_INVITATION:
       return {
         ...state,
-        toDoListTasks: state.toDoListTasks.filter(
-          (task) => task.id !== action.taskId
+        userInvitations: state.userInvitations.filter(
+          (invitation) => invitation.id !== action.invitationId
+        ),
+      };
+    case ACCEPT_INVITATION:
+      return {
+        ...state,
+        userInvitations: state.userInvitations.filter(
+          (invitation) => invitation.id !== action.invitationId
         ),
       };
     default:

@@ -99,14 +99,21 @@ const mainMenuScreen = (props) => {
           iterationCount={1}
           style={{ paddingBottom: 85 }}
         >
-          <TouchableOpacity style={styles.tileOpacity}>
+          <TouchableOpacity
+            style={styles.tileOpacity}
+            onPress={() => {
+              props.navigation.navigate("CurrencyExchange", {
+                // trip: trip,
+              });
+            }}
+          >
             <Card style={styles.tile}>
               <ImageBackground
                 style={styles.container}
                 source={require("../../assets/images/exchange.jpg")}
                 imageStyle={{ borderRadius: 10 }}
               >
-                <Text style={styles.innerText}>EXCHANGE MONEY</Text>
+                <Text style={styles.innerText}>CURRANCY EXCHANGE</Text>
               </ImageBackground>
             </Card>
           </TouchableOpacity>

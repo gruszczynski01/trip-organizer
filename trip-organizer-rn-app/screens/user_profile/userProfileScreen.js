@@ -11,130 +11,73 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Dimensions,
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import Card from "../../components/technical/Card";
-import Input from "../../components/technical/Input";
 import { Avatar, Accessory } from "react-native-elements";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/technical/HeaderButton";
-import * as taskActions from "../../store/actions/tasks";
-import * as tripActions from "../../store/actions/trips";
+
+import * as invitationActions from "../../store/actions/invitations";
 import Moment from "moment";
 import { Ionicons } from "@expo/vector-icons";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
-    let updatedFormIsValid = true;
-    for (const key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValidities: updatedValidities,
-      inputValues: updatedValues,
-    };
-  }
-  return state;
-};
 
 const userProfileScreen = (props) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
-
-  const [data, setData] = useState([]);
-
-  const members = useSelector((state) => state.trips.tripMembers);
-  const loggedUserId = useSelector((state) => state.auth.userId);
-  const [selectedMember, setSelectedMember] = useState(loggedUserId);
-  const trip = props.navigation.getParam("trip");
-  const task = props.navigation.getParam("task");
-
-  var editedTask = null;
-  // if (task != -1) {
-  //   editedTask = useSelector((state) =>
-  //     state.tasks.toDoListTasks.find((taskElem) => taskElem.id === task.id)
-  //   );
-  // }
-
-  const [formState, dispatchFormState] = useReducer(formReducer, {
-    inputValues: {
-      name: editedTask ? editedTask.name : "",
-      desc: editedTask ? editedTask.description : "",
-    },
-    inputValidities: {
-      name: editedTask ? true : false,
-      desc: editedTask ? true : false,
-    },
-    formIsValid: editedTask ? true : false,
-  });
-
-  const inputChangeHandler = useCallback(
-    (inputIdentifier, inputValue, inputValidity) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        isValid: inputValidity,
-        input: inputIdentifier,
-      });
-    },
-    [dispatchFormState]
+  const userInvitations = useSelector(
+    (state) => state.invitations.userInvitations
   );
-
+  const userTrips = useSelector((state) => state.trips.userTrips);
+  const loggedUser = useSelector((state) => state.auth.loggedUser);
+  console.log(loggedUser);
   const submitHandler = useCallback(async () => {
-    var body = {
-      ...props.navigation.state.params,
-      name: formState.inputValues.name,
-      description: formState.inputValues.desc,
-      owner: selectedMember,
-    };
+    // var body = {
+    //   ...props.navigation.state.params,
+    //   name: formState.inputValues.name,
+    //   description: formState.inputValues.desc,
+    //   owner: selectedMember,
+    // };
 
-    console.log("DEBUG: SUBMIT HANDLER");
-    console.log(body);
+    // console.log("DEBUG: SUBMIT HANDLER");
+    // console.log(body);
 
-    // // console.log(formState.inputValues.name);
-    // console.log(formState.inputValues.desc);
-    // console.log(Moment(props.navigation.state.params.).format("DD-MM-YYYY"));
-    // console.log(Moment(date).format("HH:mm"));
+    // // // console.log(formState.inputValues.name);
+    // // console.log(formState.inputValues.desc);
+    // // console.log(Moment(props.navigation.state.params.).format("DD-MM-YYYY"));
+    // // console.log(Moment(date).format("HH:mm"));
 
-    // const dispatch = useDispatch();
+    // // const dispatch = useDispatch();
 
-    if (!!editedTask) {
-      await dispatch(
-        taskActions.editTask(
-          editedTask.id,
-          formState.inputValues.name,
-          formState.inputValues.desc,
-          editedTask.ifDone,
-          selectedMember
-        )
-      );
-    } else {
-      await dispatch(
-        taskActions.addTask(
-          formState.inputValues.name,
-          formState.inputValues.desc,
-          false,
-          selectedMember,
-          trip.to_do_list
-        )
-      );
-    }
+    // if (!!editedTask) {
+    //   await dispatch(
+    //     taskActions.editTask(
+    //       editedTask.id,
+    //       formState.inputValues.name,
+    //       formState.inputValues.desc,
+    //       editedTask.ifDone,
+    //       selectedMember
+    //     )
+    //   );
+    // } else {
+    //   await dispatch(
+    //     taskActions.addTask(
+    //       formState.inputValues.name,
+    //       formState.inputValues.desc,
+    //       false,
+    //       selectedMember,
+    //       trip.to_do_list
+    //     )
+    //   );
+    // }
     props.navigation.goBack();
-  }, [dispatch, editedTask, formState, selectedMember]);
+  }, [dispatch]);
 
   useEffect(() => {
     props.navigation.setParams({ submit: submitHandler });
@@ -142,46 +85,64 @@ const userProfileScreen = (props) => {
 
   // trip members
 
-  const loadTripMembers = useCallback(async () => {
+  const loadUserInvitations = useCallback(async () => {
     setError(null);
     setIsRefreshing(true);
     try {
-      console.log("BEDE BRAL MEMBERSOW");
-      await dispatch(tripActions.getTripMembers(trip.id));
+      await dispatch(invitationActions.getUserInvitations());
     } catch (err) {
       console.log(err);
       setError(err.message);
     }
-    console.log("wzialem membersow");
-    console.log(members);
+    console.log(userInvitations);
 
-    setData();
     setIsRefreshing(false);
   }, [dispatch, setIsLoading, setError]);
 
   useEffect(() => {
     const willFocusSub = props.navigation.addListener(
       "willFocus",
-      loadTripMembers
+      loadUserInvitations
     );
 
     return () => {
       willFocusSub.remove();
     };
-  }, [loadTripMembers]);
+  }, [loadUserInvitations]);
 
   useEffect(() => {
     setIsLoading(true);
-    loadTripMembers().then(() => {
+    loadUserInvitations().then(() => {
       setIsLoading(false);
     });
-  }, [dispatch, loadTripMembers]);
+  }, [dispatch, loadUserInvitations]);
 
-  useEffect(() => {
-    if (!!editedTask) {
-      setSelectedMember(editedTask.owner);
-    }
-  }, []);
+  const acceptInvitation = () => {
+    Alert.alert("", "You've been successfully added to the trip 🎉", [
+      {
+        text: "Okay",
+        style: "default",
+      },
+    ]);
+  };
+  const declineInvitation = (invitation) => {
+    Alert.alert("", "Are you shure?", [
+      {
+        text: "No",
+        style: "default",
+      },
+      {
+        text: "Yes",
+        style: "cancel",
+        onPress: () => {
+          console.log(invitation);
+
+          dispatch(invitationActions.deleteInvitation(invitation));
+        },
+      },
+    ]);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView behavior="padding" style={styles.screen}>
@@ -203,12 +164,21 @@ const userProfileScreen = (props) => {
           </View>
 
           <View style={styles.cardContainer}>
-            <Text style={styles.label}>Szymon Gruszczyński</Text>
-            <Text style={styles.subLabel}>gruszczynski01@gmail.com</Text>
+            <Text style={styles.label}>
+              {loggedUser.name} {loggedUser.surname}
+            </Text>
+            <Text style={styles.subLabel}>{loggedUser.email}</Text>
             <View style={styles.countersContiner}>
               <View style={styles.subCounterContainer}>
                 <View style={styles.subCounterTop}>
-                  <Text style={styles.subTripCounter}>28</Text>
+                  <Text style={styles.subTripCounter}>
+                    {
+                      userTrips.filter(
+                        (trip) =>
+                          Date.now() >= new Date(trip.tripEnding).getTime()
+                      ).length
+                    }
+                  </Text>
                 </View>
                 <View style={styles.subCounterBottom}>
                   <Text style={styles.subTripLabel}>PAST TRIP</Text>
@@ -217,16 +187,25 @@ const userProfileScreen = (props) => {
 
               <View style={styles.subCounterContainer}>
                 <View style={styles.mainCounterTop}>
-                  <Text style={styles.activeTripsCounter}>31</Text>
+                  <Text style={styles.activeTripsCounter}>
+                    {userTrips.length}
+                  </Text>
                 </View>
                 <View style={styles.mainCounterBottom}>
-                  <Text style={styles.activeTripsLabel}>TOTAL TRIPS</Text>
+                  <Text style={styles.activeTripsLabel}>TRIPS TOTAL</Text>
                 </View>
               </View>
 
               <View style={styles.subCounterContainer}>
                 <View style={styles.subCounterTop}>
-                  <Text style={styles.subTripCounter}>3</Text>
+                  <Text style={styles.subTripCounter}>
+                    {
+                      userTrips.filter(
+                        (trip) =>
+                          Date.now() < new Date(trip.tripEnding).getTime()
+                      ).length
+                    }
+                  </Text>
                 </View>
                 <View style={styles.subCounterBottom}>
                   <Text style={styles.subTripLabel}>FEATURE TRIP</Text>
@@ -245,41 +224,31 @@ const userProfileScreen = (props) => {
             {/* <View style={styles.titleContainer}>
               <Text style={styles.title}>Yours invitations:</Text>
             </View> */}
+
             <View style={styles.flatListContainer}>
               <FlatList
                 horizontal={true}
                 contentContainerStyle={{ paddingBottom: 85 }}
-                onRefresh={loadTripMembers}
+                onRefresh={loadUserInvitations}
                 refreshControl={
                   <RefreshControl
                     refreshing={isRefreshing}
-                    onRefresh={loadTripMembers}
+                    onRefresh={loadUserInvitations}
                     tintColor="#F2F2F7"
                   />
                 }
                 refreshing={isRefreshing}
-                data={members}
+                data={userInvitations}
                 bounces={true}
                 keyExtractor={(item) => item.id}
                 renderItem={(itemData) => (
                   <View>
-                    <TouchableOpacity
-                      onPress={() => {
-                        console.log(itemData);
-                        setSelectedMember(itemData.item.id);
-                      }}
-                      onLongPress={(trip) => {
-                        // console.log("onLongPress: trip: ", itemData.item);
-                        // setEditMode(true);
-                        // longPressHandler(itemData.item);
-                      }}
-                      // animation="bounceInLeft"
-                      // iterationCount={1}
-                      // easing="linear"
-                    >
+                    <View>
                       <Card style={styles.cartItem}>
                         <View style={styles.contentContainer}>
-                          <View style={styles.LeftContentContainer}>
+                          <TouchableWithoutFeedback
+                            style={styles.LeftContentContainer}
+                          >
                             <View
                               style={{
                                 flex: 1,
@@ -289,22 +258,24 @@ const userProfileScreen = (props) => {
                             >
                               <View style={styles.tripNameContainer}>
                                 <Text style={styles.tripName}>
-                                  WYJAZD PO SESJI
+                                  {itemData.item.tripName}
+                                </Text>
+                              </View>
+                              <View style={styles.receivedDateContainer}>
+                                <Text style={styles.receivedDate}>
+                                  Received:{" "}
+                                  {Moment(
+                                    Date(itemData.item.sendTimestamp)
+                                  ).format("DD.MM.YYYY")}
                                 </Text>
                               </View>
                               <View style={styles.tripNameContainer}>
                                 <Text style={styles.senderName}>
-                                  From: Szymon Gruszczynski
-                                </Text>
-                              </View>
-
-                              <View style={styles.receivedDateContainer}>
-                                <Text style={styles.receivedDate}>
-                                  Received: 14.11.2020
+                                  From: {itemData.item.senderName}
                                 </Text>
                               </View>
                             </View>
-                          </View>
+                          </TouchableWithoutFeedback>
                           <View style={styles.RightContentContainer}>
                             <View
                               style={{
@@ -313,21 +284,39 @@ const userProfileScreen = (props) => {
                                 justifyContent: "space-evenly",
                               }}
                             >
-                              <Ionicons
-                                name="ios-checkmark-circle-outline"
-                                size={40}
-                                color="#4cd964"
-                              />
-                              <Ionicons
-                                name="ios-close-circle-outline"
-                                size={40}
-                                color="#ff3b30"
-                              />
+                              <TouchableOpacity
+                                onPress={() => {
+                                  acceptInvitation();
+                                  dispatch(
+                                    invitationActions.acceptInvitation(
+                                      itemData.item
+                                    )
+                                  );
+                                  //dorobic tutaj odsiwerzanie state o tripach
+                                }}
+                              >
+                                <Ionicons
+                                  name="ios-checkmark-circle-outline"
+                                  size={40}
+                                  color="#4cd964"
+                                />
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => {
+                                  declineInvitation(itemData.item);
+                                }}
+                              >
+                                <Ionicons
+                                  name="ios-close-circle-outline"
+                                  size={40}
+                                  color="#ff3b30"
+                                />
+                              </TouchableOpacity>
                             </View>
                           </View>
                         </View>
                       </Card>
-                    </TouchableOpacity>
+                    </View>
                   </View>
                 )}
               />
@@ -408,13 +397,15 @@ const styles = StyleSheet.create({
   titleContainerItem: {
     // flex: 1,
     justifyContent: "center",
+    paddingTop: 20,
+    paddingBottom: 10,
     // borderColor: "blue",
     // borderWidth: 1,
   },
   title: {
     // textTransform: "uppercase",
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 19,
+    // fontWeight: "bold",
     letterSpacing: 1,
     // margin: 30,
     color: "white",
@@ -470,10 +461,12 @@ const styles = StyleSheet.create({
     // alignItems: "stretch",
     // alignContent: "stretch",
     marginHorizontal: 20,
-    marginTop: 20,
+    marginTop: 30,
     height: 150,
     // maxWidth
-    width: Dimensions.get("screen").width, // flex: 1,
+    width: Dimensions.get("screen").width * 0.75, // flex: 1,
+    // borderColor: 'orange',
+    // borderWidth: 0.9,
     // flexDirection: "row",
   },
 
@@ -487,26 +480,31 @@ const styles = StyleSheet.create({
     minHeight: 130,
   },
   LeftContentContainer: {
-    width: "80%",
+    width: "75%",
+    paddingLeft: 5,
   },
   senderName: {
     // color: "white",
-    fontSize: 16,
+    fontSize: 13,
     color: "#999999",
   },
   tripName: {
-    fontSize: 24,
+    fontSize: 19,
     color: "white",
+    // paddingTop: 5,
+    // paddingBottom: 20,
   },
   receivedDate: {
-    fontSize: 16,
+    fontSize: 13,
     color: "#999999",
     // color: "white",
   },
   RightContentContainer: {
-    width: "20%",
+    width: "25%",
     justifyContent: "center",
     alignItems: "center",
+    borderLeftColor: "#999999",
+    borderLeftWidth: 0.5,
   },
   nameContainer: {
     flex: 1,
@@ -532,6 +530,7 @@ const styles = StyleSheet.create({
   },
   subCounterContainer: {
     flex: 1,
+    justifyContent: "center",
     // borderColor: "blue",
     // borderWidth: 2,
   },
@@ -549,6 +548,7 @@ const styles = StyleSheet.create({
     // borderColor: "orange",
     // borderWidth: 2,
     alignItems: "center",
+    justifyContent: "center",
     // borderLeftColor: "#999999",
     // borderLeftWidth: 1,
     // borderRightColor: "#999999",
@@ -564,12 +564,12 @@ const styles = StyleSheet.create({
     // borderRightWidth: 1,
   },
   activeTripsCounter: {
-    fontSize: 30,
+    fontSize: 25,
     color: "white",
     fontWeight: "bold",
   },
   activeTripsLabel: {
-    fontSize: 20,
+    fontSize: 15,
     color: "white",
 
     textAlign: "center",
@@ -578,12 +578,12 @@ const styles = StyleSheet.create({
   },
   subTripCounter: {
     paddingTop: 40,
-    fontSize: 20,
+    fontSize: 17,
     color: "#999999",
     // fontWeight: "bold",
   },
   subTripLabel: {
-    fontSize: 15,
+    fontSize: 12,
     color: "#999999",
 
     textAlign: "center",

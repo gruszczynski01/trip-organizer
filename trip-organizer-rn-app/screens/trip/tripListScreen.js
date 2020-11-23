@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     minHeight: 100,
     flex: 1,
     flexDirection: "column",
+    
   },
   title: {
     // textTransform: "uppercase",

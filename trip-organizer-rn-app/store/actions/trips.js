@@ -40,7 +40,7 @@ export const addTrip = (
     database
       .ref()
       .child("trips/" + newTripKey + "/members/" + userId)
-      .set(0);
+      .set(1);
 
     database
       .ref()
