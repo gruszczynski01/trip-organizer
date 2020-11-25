@@ -16,6 +16,10 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "bundleIdentifier": "com.peargrammer.tripOrganizer",
+      "config": {
+        "googleMapsApiKey": "AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw"
+      },
       "supportsTablet": true
     },
     "web": {

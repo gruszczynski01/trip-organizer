@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
@@ -167,13 +167,28 @@ const nightStyle = [
   },
 ];
 
+const test = async () => {
+  await fetch(
+    "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=52.397739118118444,20.93465173962045&radius=1000&type=transit_station&key=AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw"
+  )
+    .then((response) => response.json())
+    .then((json) => {
+      console.log(json);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
 const mapTabScreen = (props) => {
+  test();
+
   return (
     <View style={styles.screen}>
       <MapView
-        provider="google"
+        provider={PROVIDER_GOOGLE}
         customMapStyle={nightStyle}
-        style={styles.map}
+        style={styles.mapDefault}
         initialRegion={{
           latitudeDelta: 0.025,
           longitudeDelta: 0.025,
@@ -181,22 +196,85 @@ const mapTabScreen = (props) => {
           longitude: 20.93465173962045,
         }}
       >
-        <View style={styles.searchContainer}>
-          {/* <GooglePlacesAutocomplete
+        <Marker
+          coordinate={{
+            latitude: 52.397739118118444,
+            longitude: 20.93465173962045,
+          }}
+        ></Marker>
+      </MapView>
+      {/* <View style={styles.map}> */}
+      <View style={styles.searchContainer}>
+        <View styles={styles.GooglePlacesAutocompleteContainer}>
+          <GooglePlacesAutocomplete
+            styles={{
+              container: {
+                flex: 1,
+                // borderColor: "grey",
+                // borderWidth: 1,
+                // borderRadius: 5,
+              },
+              textInputContainer: {
+                flexDirection: "row",
+                color: "white",
+              },
+              textInput: {
+                backgroundColor: "#4d4d4d",
+                height: 44,
+                borderRadius: 5,
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                fontSize: 15,
+                flex: 1,
+                color: "white",
+              },
+
+              powered: {},
+              listView: {},
+              row: {
+                backgroundColor: "#2C2C2E",
+                padding: 13,
+                height: 44,
+                flexDirection: "row",
+                color: "white",
+              },
+              separator: {
+                height: 0.5,
+                backgroundColor: "grey",
+              },
+              description: {
+                color: "white",
+              },
+              loader: {
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                height: 20,
+                paddingRight: 8,
+              },
+            }}
+            currentLocation={true}
             placeholder="Search"
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
               console.log(data, details);
             }}
+            enablePoweredByContainer={false}
             query={{
-              key: "YOUR API KEY",
+              key: "AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw",
               language: "en",
             }}
-          /> */}
+          />
         </View>
+      </View>
+      <View style={styles.quickActionMainContainer}>
         <View style={styles.quickActionContainer}>
           <View style={styles.circle}>
-            <Ionicons name="ios-cafe" size={42} color="grey" />
+            <Ionicons
+              style={{ paddingLeft: 3 }}
+              name="ios-cafe"
+              size={42}
+              color="grey"
+            />
           </View>
           <View style={styles.circle}>
             <Ionicons name="ios-restaurant" size={42} color="grey" />
@@ -208,58 +286,72 @@ const mapTabScreen = (props) => {
             <Ionicons name="ios-bus" size={42} color="grey" />
           </View>
         </View>
-      </MapView>
+      </View>
+
+      {/* </View> */}
+      {/* </MapView> */}
     </View>
   );
 };
 const styles = StyleSheet.create({
+  mapDefault: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   searchContainer: {
-    width: "90%",
-    height: 60,
+    // flex: 1,
+    // flexDirection: "column",
+    position: "absolute",
+    top: 70,
+    left: 0,
+    width: "100%",
+    paddingHorizontal: 30,
+  },
+  quickActionMainContainer: {
+    position: "absolute",
+    bottom: 100,
+    left: 0,
+    flex: 1,
+    width: "100%",
+    height: 80,
+    paddingHorizontal: 20,
+  },
+  quickActionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+
+    maxHeight: 80,
+
+    // width: "100%",
+    // height: 80,
+    // paddingVertical: 30,
+
     backgroundColor: "#2C2C2E",
     borderColor: "grey",
     borderWidth: 0.5,
     borderRadius: 45,
   },
-  quickActionContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    maxHeight: 80,
-
-    width: "90%",
-    height: 80,
-
-    // backgroundColor: "#2C2C2E",
-    // borderColor: "grey",
-    // borderWidth: 0.5,
-    // borderRadius: 45,
-  },
   circle: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    width: 70,
-    height: 70,
-    maxWidth: 70,
-    maxHeight: 70,
-    borderRadius: 70 / 2,
+    width: 65,
+    height: 65,
+    maxWidth: 65,
+    maxHeight: 65,
+    borderRadius: 65 / 2,
     borderColor: "grey",
     borderWidth: 0.6,
-    margin: 10,
-    marginLeft: 4,
+    marginVertical: 10,
+    // marginLeft: 4,
+
     backgroundColor: "#2C2C2E",
-  },
-  map: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
-    // flexDirection: "column-reverse",
-    paddingBottom: 95,
-    paddingTop: 50,
   },
 
   screen: {
+    ...StyleSheet.absoluteFillObject,
     flex: 1,
     backgroundColor: "#2C2C2E",
   },

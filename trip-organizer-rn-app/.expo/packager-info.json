@@ -2,9 +2,9 @@
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 3054,
-  "expoServerNgrokUrl": "https://sz-y89.anonymous.trip-organizer-rn-app.exp.direct",
-  "packagerNgrokUrl": "https://packager.sz-y89.anonymous.trip-organizer-rn-app.exp.direct",
-  "ngrokPid": 5943,
+  "packagerPid": 35133,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
   "webpackServerPort": null
 }
