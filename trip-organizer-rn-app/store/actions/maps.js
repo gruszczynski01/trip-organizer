@@ -1,5 +1,7 @@
 export const GET_NEARBY_PLACES = "GET_NEARBY_PLACES";
 export const CLEAR_NEARBY_PLACES = "CLEAR_NEARBY_PLACES";
+export const SET_SPECIFIC_MARKER = "SET_SPECIFIC_MARKER";
+
 import { GOOGLE_MAP_API_KEY } from "../../constants/constants";
 import { auth, database } from "../../firebase";
 import { useDispatch, useSelector } from "react-redux";

@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Animatable from "react-native-animatable";
-import { CLEAR_NEARBY_PLACES } from "../../../store/actions/maps";
+import {
+  CLEAR_NEARBY_PLACES,
+  SET_SPECIFIC_MARKER,
+} from "../../../store/actions/maps";
 import {
   View,
   StyleSheet,
@@ -284,6 +287,7 @@ const mapTabScreen = (props) => {
               }}
               title={marker.name}
               description={marker.address}
+              // image={require("../../../assets/icons/location-pin.png")}
             />
           ))}
         </MapView>
@@ -294,9 +298,6 @@ const mapTabScreen = (props) => {
               styles={{
                 container: {
                   flex: 1,
-                  // borderColor: "grey",
-                  // borderWidth: 1,
-                  // borderRadius: 5,
                 },
                 textInputContainer: {
                   flexDirection: "row",
@@ -336,16 +337,32 @@ const mapTabScreen = (props) => {
                   paddingRight: 8,
                 },
               }}
-              currentLocation={true}
+              // currentLocation={true}
               placeholder="Search"
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
-                console.log(data, details);
-              }}
               enablePoweredByContainer={false}
+              fetchDetails={true}
               query={{
                 key: "AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw",
                 language: "en",
+              }}
+              onPress={(data, details) => {
+                console.log(data);
+                console.log(details);
+                dispatch({
+                  type: SET_SPECIFIC_MARKER,
+                  data: {
+                    latitude: details.geometry.location.lat,
+                    longitude: details.geometry.location.lng,
+                    name: data.description,
+                    vicinity: details.formatted_address,
+                  },
+                });
+                setRegion({
+                  latitude: details.geometry.location.lat,
+                  longitude: details.geometry.location.lng,
+                  latitudeDelta: 0.025,
+                  longitudeDelta: 0.025,
+                });
               }}
             />
           </View>
