@@ -13,6 +13,7 @@ import tripsReducer from "./store/reducers/trips";
 import usersReducer from "./store/reducers/users";
 import invitationsReducer from "./store/reducers/invitations";
 import currenciesReducer from "./store/reducers/currencies";
+import mapsReducer from "./store/reducers/maps";
 import NavigationContainer from "./navigation/NavigationContainer";
 
 // firebase.auth().onAuthStateChanged((user) => {
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   users: usersReducer,
   invitations: invitationsReducer,
   currencies: currenciesReducer,
+  maps: mapsReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));

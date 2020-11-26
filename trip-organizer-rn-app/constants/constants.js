@@ -4,3 +4,4 @@ export const FIREBASE_DATABASE_URL =
   "https://trip-organizer-2020.firebaseio.com";
 export const FIREBASE_PROJECT_ID = "trip-organizer-2020";
 export const FIREBASE_STORAGE_BUCKET = "trip-organizer-2020.appspot.com";
+export const GOOGLE_MAP_API_KEY = "AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw";

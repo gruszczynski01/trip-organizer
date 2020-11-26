@@ -1,9 +1,25 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import * as Animatable from "react-native-animatable";
+import { CLEAR_NEARBY_PLACES } from "../../../store/actions/maps";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from "react-native";
+import MapView, {
+  Marker,
+  PROVIDER_GOOGLE,
+  AnimatedRegion,
+} from "react-native-maps";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
+import * as mapsActions from "../../../store/actions/maps";
+import * as Location from "expo-location";
 
 const nightStyle = [
   {
@@ -167,129 +183,341 @@ const nightStyle = [
   },
 ];
 
-const test = async () => {
-  await fetch(
-    "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=52.397739118118444,20.93465173962045&radius=1000&type=transit_station&key=AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw"
-  )
-    .then((response) => response.json())
-    .then((json) => {
-      console.log(json);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
-
 const mapTabScreen = (props) => {
-  test();
+  const [isCafe, setIsCafe] = useState(false);
+  const [isRestaurant, setIsRestaurant] = useState(false);
+  const [isAtm, setIsAtm] = useState(false);
+  const [isTransitStation, setIsTransitStation] = useState(false);
 
-  return (
-    <View style={styles.screen}>
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        customMapStyle={nightStyle}
-        style={styles.mapDefault}
-        initialRegion={{
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [error, setError] = useState();
+  const [region, setRegion] = useState({
+    latitude: 52.25635143608742,
+    longitude: 20.898964122145777,
+    latitudeDelta: 0.025,
+    longitudeDelta: 0.025,
+  });
+  let currentRegion = region;
+  const nearbyPlaces = useSelector((state) => state.maps.nearbyPlaces);
+
+  const dispatch = useDispatch();
+  let mapRef = useRef(null);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = parseFloat(JSON.stringify(position.coords.latitude));
+        const longitude = parseFloat(JSON.stringify(position.coords.longitude));
+
+        setRegion({
+          ...region,
+          latitude: latitude,
+          longitude: longitude,
           latitudeDelta: 0.025,
           longitudeDelta: 0.025,
-          latitude: 52.397739118118444,
-          longitude: 20.93465173962045,
+        });
+        setIsLoading(false);
+        // mapRef.current.animateToRegion(region, 1000);
+      },
+      (error) => alert(error),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#2C2C2E",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <Marker
-          coordinate={{
-            latitude: 52.397739118118444,
-            longitude: 20.93465173962045,
-          }}
-        ></Marker>
-      </MapView>
-      {/* <View style={styles.map}> */}
-      <View style={styles.searchContainer}>
-        <View styles={styles.GooglePlacesAutocompleteContainer}>
-          <GooglePlacesAutocomplete
-            styles={{
-              container: {
-                flex: 1,
-                // borderColor: "grey",
-                // borderWidth: 1,
-                // borderRadius: 5,
-              },
-              textInputContainer: {
-                flexDirection: "row",
-                color: "white",
-              },
-              textInput: {
-                backgroundColor: "#4d4d4d",
-                height: 44,
-                borderRadius: 5,
-                paddingVertical: 5,
-                paddingHorizontal: 10,
-                fontSize: 15,
-                flex: 1,
-                color: "white",
-              },
-
-              powered: {},
-              listView: {},
-              row: {
-                backgroundColor: "#2C2C2E",
-                padding: 13,
-                height: 44,
-                flexDirection: "row",
-                color: "white",
-              },
-              separator: {
-                height: 0.5,
-                backgroundColor: "grey",
-              },
-              description: {
-                color: "white",
-              },
-              loader: {
-                flexDirection: "row",
-                justifyContent: "flex-end",
-                height: 20,
-                paddingRight: 8,
-              },
-            }}
-            currentLocation={true}
-            placeholder="Search"
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              console.log(data, details);
-            }}
-            enablePoweredByContainer={false}
-            query={{
-              key: "AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw",
-              language: "en",
-            }}
-          />
-        </View>
+        <ActivityIndicator size="large" />
+        <Text style={{ color: "white", marginTop: 20 }}>
+          User tracking is in progress...
+        </Text>
       </View>
-      <View style={styles.quickActionMainContainer}>
-        <View style={styles.quickActionContainer}>
-          <View style={styles.circle}>
-            <Ionicons
-              style={{ paddingLeft: 3 }}
-              name="ios-cafe"
-              size={42}
-              color="grey"
+    );
+  }
+  return (
+    <View style={styles.screen}>
+      <Animatable.View
+        style={styles.screen}
+        animation="fadeInUp"
+        easing="ease-out"
+        iterationCount={1}
+      >
+        <MapView
+          ref={(ref) => {
+            mapRef = ref;
+          }}
+          showsUserLocation={true}
+          // followUserLocation={true}
+          // zoomEnabled={true}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={nightStyle}
+          style={styles.mapDefault}
+          initialRegion={{
+            latitudeDelta: 0.025,
+            longitudeDelta: 0.025,
+            ...region,
+          }}
+          region={region}
+          // ref={(ref) => (this.mapView = ref)}
+          onRegionChange={(curr) => {
+            currentRegion = curr;
+          }}
+          onRegionChangeComplete={(curr) => {
+            currentRegion = curr;
+          }}
+        >
+          {nearbyPlaces.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.lat,
+                longitude: marker.lng,
+              }}
+              title={marker.name}
+              description={marker.address}
+            />
+          ))}
+        </MapView>
+        {/* <View style={styles.map}> */}
+        <View style={styles.searchContainer}>
+          <View styles={styles.GooglePlacesAutocompleteContainer}>
+            <GooglePlacesAutocomplete
+              styles={{
+                container: {
+                  flex: 1,
+                  // borderColor: "grey",
+                  // borderWidth: 1,
+                  // borderRadius: 5,
+                },
+                textInputContainer: {
+                  flexDirection: "row",
+                  color: "white",
+                },
+                textInput: {
+                  backgroundColor: "#4d4d4d",
+                  height: 44,
+                  borderRadius: 5,
+                  paddingVertical: 5,
+                  paddingHorizontal: 10,
+                  fontSize: 15,
+                  flex: 1,
+                  color: "white",
+                },
+
+                powered: {},
+                listView: {},
+                row: {
+                  backgroundColor: "#2C2C2E",
+                  padding: 13,
+                  height: 44,
+                  flexDirection: "row",
+                  color: "white",
+                },
+                separator: {
+                  height: 0.5,
+                  backgroundColor: "grey",
+                },
+                description: {
+                  color: "white",
+                },
+                loader: {
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  height: 20,
+                  paddingRight: 8,
+                },
+              }}
+              currentLocation={true}
+              placeholder="Search"
+              onPress={(data, details = null) => {
+                // 'details' is provided when fetchDetails = true
+                console.log(data, details);
+              }}
+              enablePoweredByContainer={false}
+              query={{
+                key: "AIzaSyCxT6eS-PINCpaufv-_qPQarL2_YOGC2sw",
+                language: "en",
+              }}
             />
           </View>
-          <View style={styles.circle}>
-            <Ionicons name="ios-restaurant" size={42} color="grey" />
-          </View>
-          <View style={styles.circle}>
-            <Ionicons name="ios-cash" size={42} color="grey" />
-          </View>
-          <View style={styles.circle}>
-            <Ionicons name="ios-bus" size={42} color="grey" />
+        </View>
+        <View style={styles.quickActionMainContainer}>
+          <View style={styles.quickActionContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                if (!isCafe) {
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  dispatch(
+                    mapsActions.getNearbyPlaces(
+                      "cafe",
+                      2000,
+                      currentRegion.latitude,
+                      currentRegion.longitude
+                    )
+                  );
+                  setIsCafe(!isCafe);
+                  setIsRestaurant(false);
+                  setIsAtm(false);
+                  setIsTransitStation(false);
+                } else {
+                  dispatch({ type: CLEAR_NEARBY_PLACES });
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  setIsCafe(false);
+                  setIsRestaurant(false);
+                  setIsAtm(false);
+                  setIsTransitStation(false);
+                }
+              }}
+            >
+              <View style={styles.circle}>
+                <Ionicons
+                  style={{ paddingLeft: 3 }}
+                  name="ios-cafe"
+                  size={42}
+                  color={isCafe ? "#147efb" : "grey"}
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                if (!isRestaurant) {
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  dispatch(
+                    mapsActions.getNearbyPlaces(
+                      "restaurant",
+                      2000,
+                      currentRegion.latitude,
+                      currentRegion.longitude
+                    )
+                  );
+                  setIsRestaurant(!isRestaurant);
+                  setIsCafe(false);
+                  setIsAtm(false);
+                  setIsTransitStation(false);
+                } else {
+                  dispatch({ type: CLEAR_NEARBY_PLACES });
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  setIsCafe(false);
+                  setIsRestaurant(false);
+                  setIsAtm(false);
+                  setIsTransitStation(false);
+                }
+              }}
+            >
+              <View style={styles.circle}>
+                <Ionicons
+                  name="ios-restaurant"
+                  size={42}
+                  color={isRestaurant ? "#147efb" : "grey"}
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                if (!isAtm) {
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  dispatch(
+                    mapsActions.getNearbyPlaces(
+                      "atm",
+                      2000,
+                      currentRegion.latitude,
+                      currentRegion.longitude
+                    )
+                  );
+                  setIsAtm(!isAtm);
+                  setIsRestaurant(false);
+                  setIsCafe(false);
+                  setIsTransitStation(false);
+                } else {
+                  dispatch({ type: CLEAR_NEARBY_PLACES });
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  setIsCafe(false);
+                  setIsRestaurant(false);
+                  setIsAtm(false);
+                  setIsTransitStation(false);
+                }
+              }}
+            >
+              <View style={styles.circle}>
+                <FontAwesome
+                  name="dollar"
+                  size={42}
+                  color={isAtm ? "#147efb" : "grey"}
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.circle}
+              onPress={() => {
+                if (!isTransitStation) {
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  dispatch(
+                    mapsActions.getNearbyPlaces(
+                      "transit_station",
+                      2000,
+                      currentRegion.latitude,
+                      currentRegion.longitude
+                    )
+                  );
+                  setIsTransitStation(!isTransitStation);
+                  setIsRestaurant(false);
+                  setIsCafe(false);
+                  setIsAtm(false);
+                } else {
+                  dispatch({ type: CLEAR_NEARBY_PLACES });
+                  setRegion({
+                    ...region,
+                    ...currentRegion,
+                  });
+                  setIsCafe(false);
+                  setIsRestaurant(false);
+                  setIsAtm(false);
+                  setIsTransitStation(false);
+                }
+              }}
+            >
+              <Ionicons
+                name="ios-bus"
+                size={42}
+                color={isTransitStation ? "#147efb" : "grey"}
+              />
+            </TouchableOpacity>
           </View>
         </View>
-      </View>
 
-      {/* </View> */}
-      {/* </MapView> */}
+        {/* </View> */}
+        {/* </MapView> */}
+      </Animatable.View>
     </View>
   );
 };
@@ -315,7 +543,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: 80,
-    paddingHorizontal: 20,
   },
   quickActionContainer: {
     flexDirection: "row",
@@ -328,10 +555,10 @@ const styles = StyleSheet.create({
     // height: 80,
     // paddingVertical: 30,
 
-    backgroundColor: "#2C2C2E",
-    borderColor: "grey",
-    borderWidth: 0.5,
-    borderRadius: 45,
+    // backgroundColor: "#2C2C2E",
+    // borderColor: "grey",
+    // borderWidth: 0.5,
+    // borderRadius: 45,
   },
   circle: {
     flex: 1,
