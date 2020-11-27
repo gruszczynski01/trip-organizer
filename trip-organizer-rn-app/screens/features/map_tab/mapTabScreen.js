@@ -5,12 +5,23 @@ import {
   CLEAR_NEARBY_PLACES,
   SET_SPECIFIC_MARKER,
 } from "../../../store/actions/maps";
+import { GOOGLE_MAP_API_KEY } from "../../../constants/constants";
+
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Text,
   ActivityIndicator,
+  TextInput,
+  ScrollView,
+  Animated,
+  Image,
+  Dimensions,
+  Platform,
+  Linking,
+  ImageBackground,
+  Alert,
 } from "react-native";
 import MapView, {
   Marker,
@@ -20,9 +31,23 @@ import MapView, {
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import { TextInput } from "react-native-gesture-handler";
+import { Foundation } from "@expo/vector-icons";
+
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Fontisto from "react-native-vector-icons/Fontisto";
+
+import StarRating from "../../../components/technical/StarRating";
+
+// import { TextInput } from "react-native-gesture-handler";
 import * as mapsActions from "../../../store/actions/maps";
 import * as Location from "expo-location";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+
+const { width, height } = Dimensions.get("window");
+const CARD_HEIGHT = 170;
+export const CARD_WIDTH = width * 0.8;
+const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const nightStyle = [
   {
@@ -208,6 +233,88 @@ const mapTabScreen = (props) => {
   const dispatch = useDispatch();
   let mapRef = useRef(null);
 
+  let mapIndex = 0;
+  let mapAnimation = new Animated.Value(0);
+
+  useEffect(() => {
+    mapAnimation.addListener(({ value }) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
+      if (index >= nearbyPlaces.length) {
+        index = nearbyPlaces.length - 1;
+      }
+      if (index <= 0) {
+        index = 0;
+      }
+
+      clearTimeout(regionTimeout);
+
+      const regionTimeout = setTimeout(() => {
+        if (mapIndex !== index) {
+          mapIndex = index;
+          const coordinate = {
+            latitude: nearbyPlaces[index].lat,
+            longitude: nearbyPlaces[index].lng,
+          };
+          _map.current.animateToRegion(
+            {
+              ...coordinate,
+              latitudeDelta: region.latitudeDelta,
+              longitudeDelta: region.longitudeDelta,
+            },
+            350
+          );
+        }
+      }, 10);
+    });
+  });
+
+  const interpolations = nearbyPlaces.map((marker, index) => {
+    const inputRange = [
+      (index - 1) * CARD_WIDTH,
+      index * CARD_WIDTH,
+      (index + 1) * CARD_WIDTH,
+    ];
+
+    const scale = mapAnimation.interpolate({
+      inputRange,
+      outputRange: [1, 1.5, 1],
+      extrapolate: "clamp",
+    });
+
+    return { scale };
+  });
+  const onMarkerPress = (mapEventData) => {
+    const markerID = mapEventData._targetInst.return.key;
+
+    let x = markerID * CARD_WIDTH + markerID * 20;
+    if (Platform.OS === "ios") {
+      x = x - SPACING_FOR_CARD_INSET;
+    }
+
+    _scrollView.current.scrollTo({ x: x, y: 0, animated: true });
+  };
+
+  const getWebsiteLink = (placeId) => {
+    return async (dispatch, getState) => {
+      await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=website&key=${GOOGLE_MAP_API_KEY}`
+      )
+        .then((response) => response.json())
+        .then((json) => {
+          console.log(json);
+          if (json.result.hasOwnProperty("website")) {
+            Linking.openURL(json.result.website);
+            // Linking.openURL("https://aboutreact.com");
+          } else {
+            Alert.alert("No website info, try to google it");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+  };
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -229,6 +336,9 @@ const mapTabScreen = (props) => {
     );
   }, []);
 
+  const _map = React.useRef(null);
+  const _scrollView = React.useRef(null);
+
   if (isLoading) {
     return (
       <View
@@ -246,6 +356,7 @@ const mapTabScreen = (props) => {
       </View>
     );
   }
+
   return (
     <View style={styles.screen}>
       <Animatable.View
@@ -255,9 +366,7 @@ const mapTabScreen = (props) => {
         iterationCount={1}
       >
         <MapView
-          ref={(ref) => {
-            mapRef = ref;
-          }}
+          ref={_map}
           showsUserLocation={true}
           // followUserLocation={true}
           // zoomEnabled={true}
@@ -278,19 +387,142 @@ const mapTabScreen = (props) => {
             currentRegion = curr;
           }}
         >
-          {nearbyPlaces.map((marker, index) => (
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: marker.lat,
-                longitude: marker.lng,
-              }}
-              title={marker.name}
-              description={marker.address}
-              // image={require("../../../assets/icons/location-pin.png")}
-            />
-          ))}
+          {nearbyPlaces.map((marker, index) => {
+            const scaleStyle = {
+              transform: [
+                {
+                  scale: interpolations[index].scale,
+                },
+              ],
+            };
+            return (
+              <MapView.Marker
+                key={index}
+                coordinate={{
+                  latitude: marker.lat,
+                  longitude: marker.lng,
+                }}
+                onPress={(e) => onMarkerPress(e)}
+              >
+                <Animated.View style={[styles.markerWrap]}>
+                  <Animated.Image
+                    source={require("../../../assets/icons/location-pin.png")}
+                    style={[styles.marker, scaleStyle]}
+                    resizeMode="cover"
+                  />
+                </Animated.View>
+              </MapView.Marker>
+            );
+            // <Marker
+            //   key={index}
+            //   coordinate={{
+            //     latitude: marker.lat,
+            //     longitude: marker.lng,
+            //   }}
+            //   title={marker.name}
+            //   description={marker.address}
+            //   // image={require("../../../assets/icons/location-pin.png")}
+            // />;
+          })}
         </MapView>
+        <Animated.ScrollView
+          ref={_scrollView}
+          horizontal
+          pagingEnabled
+          scrollEventThrottle={1}
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={CARD_WIDTH + 20}
+          snapToAlignment="center"
+          style={styles.scrollView}
+          contentInset={{
+            top: 0,
+            left: SPACING_FOR_CARD_INSET,
+            bottom: 0,
+            right: SPACING_FOR_CARD_INSET,
+          }}
+          contentContainerStyle={{
+            paddingHorizontal:
+              Platform.OS === "android" ? SPACING_FOR_CARD_INSET : 0,
+          }}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    x: mapAnimation,
+                  },
+                },
+              },
+            ],
+            { useNativeDriver: true }
+          )}
+        >
+          {nearbyPlaces.map((marker, index) => (
+            <TouchableWithoutFeedback
+              // style={{ backgroundColor: "#2C2C2E" }}
+              onPress={() => {
+                dispatch(getWebsiteLink(marker.place_id));
+              }}
+            >
+              <View style={styles.card} key={index}>
+                {marker.ifImage && (
+                  <ImageBackground
+                    source={{ uri: marker.image }} // DO ZMIANY!!!!!!!!
+                    style={styles.cardImage}
+                    resizeMode="cover"
+                  >
+                    {/* <View>
+                    {marker.ifWebsite && (
+                      <Foundation
+                        style={{ padding: 6 }}
+                        name="web"
+                        size={40}
+                        color="#147efb"
+                      />
+                    )}
+                  </View> */}
+                  </ImageBackground>
+                )}
+
+                <View style={styles.textContent}>
+                  <Text numberOfLines={1} style={styles.cardtitle}>
+                    {marker.name}
+                  </Text>
+                  <StarRating
+                    ratings={marker.rating}
+                    reviews={marker.reviews}
+                  />
+                  <Text numberOfLines={1} style={styles.cardDescription}>
+                    {marker.address}
+                  </Text>
+                  {/* <View style={styles.button}>
+                  <TouchableOpacity
+                    onPress={() => {}}
+                    style={[
+                      styles.signIn,
+                      {
+                        borderColor: "#FF6347",
+                        borderWidth: 1,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.textSign,
+                        {
+                          color: "#FF6347",
+                        },
+                      ]}
+                    >
+                      Order Now
+                    </Text>
+                  </TouchableOpacity>
+                </View> */}
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          ))}
+        </Animated.ScrollView>
         {/* <View style={styles.map}> */}
         <View style={styles.searchContainer}>
           <View styles={styles.GooglePlacesAutocompleteContainer}>
@@ -379,7 +611,7 @@ const mapTabScreen = (props) => {
                   dispatch(
                     mapsActions.getNearbyPlaces(
                       "cafe",
-                      2000,
+                      1000,
                       currentRegion.latitude,
                       currentRegion.longitude
                     )
@@ -405,7 +637,7 @@ const mapTabScreen = (props) => {
                 <Ionicons
                   style={{ paddingLeft: 3 }}
                   name="ios-cafe"
-                  size={42}
+                  size={25}
                   color={isCafe ? "#147efb" : "grey"}
                 />
               </View>
@@ -445,7 +677,7 @@ const mapTabScreen = (props) => {
               <View style={styles.circle}>
                 <Ionicons
                   name="ios-restaurant"
-                  size={42}
+                  size={25}
                   color={isRestaurant ? "#147efb" : "grey"}
                 />
               </View>
@@ -485,7 +717,7 @@ const mapTabScreen = (props) => {
               <View style={styles.circle}>
                 <FontAwesome
                   name="dollar"
-                  size={42}
+                  size={25}
                   color={isAtm ? "#147efb" : "grey"}
                 />
               </View>
@@ -525,7 +757,7 @@ const mapTabScreen = (props) => {
             >
               <Ionicons
                 name="ios-bus"
-                size={42}
+                size={25}
                 color={isTransitStation ? "#147efb" : "grey"}
               />
             </TouchableOpacity>
@@ -539,6 +771,65 @@ const mapTabScreen = (props) => {
   );
 };
 const styles = StyleSheet.create({
+  card: {
+    // padding: 10,
+    elevation: 2,
+    backgroundColor: "#4d4d4d",
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowRadius: 5,
+    shadowOpacity: 0.3,
+    shadowOffset: { x: 2, y: -2 },
+    height: CARD_HEIGHT,
+    width: CARD_WIDTH,
+    overflow: "hidden",
+    marginBottom: 145,
+  },
+  cardImage: {
+    flex: 3,
+    flexDirection: "row-reverse",
+    width: "100%",
+    height: "100%",
+    alignSelf: "center",
+  },
+  textContent: {
+    flex: 2,
+    padding: 10,
+  },
+  cardtitle: {
+    fontSize: 12,
+    // marginTop: 5,
+    fontWeight: "bold",
+    color: "white",
+  },
+  cardDescription: {
+    fontSize: 12,
+    color: "#ACACAC",
+  },
+  scrollView: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: 10,
+  },
+  markerWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+  },
+  marker: {
+    width: 30,
+    height: 30,
+  },
+  button: {
+    alignItems: "center",
+    marginTop: 5,
+  },
   mapDefault: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
@@ -555,7 +846,7 @@ const styles = StyleSheet.create({
   },
   quickActionMainContainer: {
     position: "absolute",
-    bottom: 100,
+    bottom: 80,
     left: 0,
     flex: 1,
     width: "100%",
@@ -581,11 +872,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    width: 65,
-    height: 65,
-    maxWidth: 65,
-    maxHeight: 65,
-    borderRadius: 65 / 2,
+    width: 55,
+    height: 55,
+    maxWidth: 55,
+    maxHeight: 55,
+    borderRadius: 55 / 2,
     borderColor: "grey",
     borderWidth: 0.6,
     marginVertical: 10,

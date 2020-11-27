@@ -20,8 +20,8 @@ export default (state = initialState, action) => {
         ],
       };
     case GET_NEARBY_PLACES:
-      //   console.log("REDUCER");
-      //   console.log(action.nearbyPlaces);
+      console.log("REDUCER");
+      console.log(action.nearbyPlaces);
       return {
         ...state,
         nearbyPlaces: action.nearbyPlaces,
