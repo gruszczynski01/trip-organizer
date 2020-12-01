@@ -24,6 +24,11 @@ import NavigationContainer from "./navigation/NavigationContainer";
 //   // Do other things
 // });
 
+// RN >= 0.63 - presentation mode
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["Warning: ..."]);
+
 const rootReducer = combineReducers({
   auth: authReducer,
   events: eventsReducer,

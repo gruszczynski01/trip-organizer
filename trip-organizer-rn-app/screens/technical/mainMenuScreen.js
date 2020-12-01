@@ -93,7 +93,7 @@ const mainMenuScreen = (props) => {
           </TouchableOpacity>
         </Animatable.View>
 
-        <Animatable.View
+        {/* <Animatable.View
           animation="bounceInLeft"
           easing="ease-out"
           iterationCount={1}
@@ -117,7 +117,7 @@ const mainMenuScreen = (props) => {
               </ImageBackground>
             </Card>
           </TouchableOpacity>
-        </Animatable.View>
+        </Animatable.View> */}
       </View>
     </ScrollView>
   );
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     // paddingVertical: 5,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 40,
     color: "#F2F2F7",
 
     // backgroundColor: "red",

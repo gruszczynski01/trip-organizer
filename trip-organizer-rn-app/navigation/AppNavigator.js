@@ -114,10 +114,22 @@ const MainTabsNavigator = createBottomTabNavigator(
     Map: {
       screen: mapTabScreen,
       navigationOptions: {
-        tabBarLabel: "Map",
+        tabBarLabel: "Explore",
         tabBarIcon: ({ tintColor }) => (
           <Image
             source={require("../assets/icons/maps.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
+            style={{ width: 23, height: 23, tintColor: tintColor }}
+          />
+        ),
+      },
+    },
+    Currency: {
+      screen: currencyExchangeScreen,
+      navigationOptions: {
+        tabBarLabel: "Changer",
+        tabBarIcon: ({ tintColor }) => (
+          <Image
+            source={require("../assets/icons/money-exchange.png")} //Icons made by Freepik "https://www.flaticon.com/authors/freepik"
             style={{ width: 23, height: 23, tintColor: tintColor }}
           />
         ),

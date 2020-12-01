@@ -36,7 +36,7 @@ const userProfileScreen = (props) => {
   );
   const userTrips = useSelector((state) => state.trips.userTrips);
   const loggedUser = useSelector((state) => state.auth.loggedUser);
-  console.log(loggedUser);
+
   const submitHandler = useCallback(async () => {
     // var body = {
     //   ...props.navigation.state.params,
@@ -76,7 +76,10 @@ const userProfileScreen = (props) => {
     //     )
     //   );
     // }
-    props.navigation.goBack();
+    console.log("EDIT USER");
+    props.navigation.navigate("EditUserProfile", {
+      loggedUser: loggedUser,
+    });
   }, [dispatch]);
 
   useEffect(() => {
@@ -208,7 +211,7 @@ const userProfileScreen = (props) => {
                   </Text>
                 </View>
                 <View style={styles.subCounterBottom}>
-                  <Text style={styles.subTripLabel}>FEATURE TRIP</Text>
+                  <Text style={styles.subTripLabel}>FUTURE TRIP</Text>
                 </View>
               </View>
             </View>
@@ -350,7 +353,7 @@ userProfileScreen.navigationOptions = (navData) => {
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           buttonStyle={{ color: "#147efb" }}
-          title="Add"
+          title="Edit user"
           iconName="ios-settings"
           onPress={submitFn}
           //TO DO: save or edit Task

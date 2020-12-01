@@ -6,6 +6,7 @@ import {
   Diamentions,
   Button,
   ImageBackground,
+  ActivityIndicator,
 } from "react-native";
 import {
   ScrollView,
@@ -58,7 +59,23 @@ const currencyExchangeScreen = (props) => {
       setIsLoading(false);
     });
   }, [dispatch, loadRates]);
-
+  // if (isLoading) {
+  //   return (
+  //     <View
+  //       style={{
+  //         flex: 1,
+  //         backgroundColor: "#2C2C2E",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //       }}
+  //     >
+  //       <ActivityIndicator size="large" />
+  //       <Text style={{ color: "white", marginTop: 20 }}>
+  //         Rates are updating...
+  //       </Text>
+  //     </View>
+  //   );
+  // }
   return (
     <View style={styles.screen}>
       <View style={styles.mainContainer}>
@@ -150,11 +167,15 @@ const currencyExchangeScreen = (props) => {
           </View>
           <View style={styles.currencyInfoContainer}>
             <View style={styles.currencyInfoTile}>
-              <Text style={styles.currencyInfoText}>
-                {/* 1 {fromPicker} = {rates[toPicker].toFixed(2)} {toPicker} */}
-                1 {fromPicker} = {toPicker}
-                {/* FIX IT!!! */}
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" />
+              ) : (
+                <Text style={styles.currencyInfoText}>
+                  1 {fromPicker} = {rates[toPicker].toFixed(2)} {toPicker}
+                  {/* 1 {fromPicker} = {toPicker} */}
+                  {/* FIX IT!!! */}
+                </Text>
+              )}
             </View>
           </View>
         </View>
@@ -218,6 +239,7 @@ const currencyExchangeScreen = (props) => {
                 console.log(text);
                 setToValue(text);
               }}
+              editable={false}
             />
           </View>
         </View>
@@ -304,6 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   screen: {
+    paddingTop: 60,
     flex: 1,
     backgroundColor: "#2C2C2E",
   },

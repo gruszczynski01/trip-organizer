@@ -4,7 +4,9 @@ import { AsyncStorage } from "react-native";
 // export const LOGIN = 'LOGIN';
 export const AUTHENTICATE = "AUTHENTICATE";
 export const SAVE_USER = "SAVE_USER";
+export const EDIT_USER = "EDIT_USER";
 export const LOGOUT = "LOGOUT";
+export const DELETE_ACCOUNT = "DELETE_ACCOUNT";
 import { auth, database } from "../../firebase";
 
 let timer;
@@ -191,6 +193,59 @@ export const getLoggedUser = () => {
         name: loggedUser.name,
         surname: loggedUser.surname,
       },
+    });
+  };
+};
+export const editUser = (id, email, name, surname) => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
+
+    var updates = {};
+    updates["users/" + userId + "/name"] = name;
+    updates["users/" + userId + "/surname"] = surname;
+    database.ref().update(updates);
+
+    // const response = await database.ref("users/" + userId).set(
+    //   {
+    //     name: name,
+    //     surname: surname,
+    //   },
+    //   function (error) {
+    //     if (error) {
+    //       console.log(
+    //         "LOG: trip-organizer-rn-app/store/actions/auth.js: Something went wrong with editing user to database"
+    //       );
+    //     } else {
+    //       console.log(
+    //         "LOG: trip-organizer-rn-app/store/actions/auth.js: User has been edited in database"
+    //       );
+    //     }
+    //   }
+    // );
+    dispatch({
+      type: EDIT_USER,
+      editedUser: {
+        id: id,
+        email: email,
+        name: name,
+        surname: surname,
+      },
+    });
+  };
+};
+
+export const deleteAccount = () => {
+  return async (dispatch, getState) => {
+    await auth.currentUser
+      .delete()
+      .then(function () {
+        console.log("Deleted");
+      })
+      .catch(function (error) {
+        console.log("Sth went wrong");
+      });
+    dispatch({
+      type: LOGOUT,
     });
   };
 };

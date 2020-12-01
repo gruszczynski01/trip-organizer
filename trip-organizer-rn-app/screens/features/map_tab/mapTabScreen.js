@@ -459,6 +459,7 @@ const mapTabScreen = (props) => {
         >
           {nearbyPlaces.map((marker, index) => (
             <TouchableWithoutFeedback
+              key={index}
               // style={{ backgroundColor: "#2C2C2E" }}
               onPress={() => {
                 dispatch(getWebsiteLink(marker.place_id));
@@ -583,10 +584,18 @@ const mapTabScreen = (props) => {
                 dispatch({
                   type: SET_SPECIFIC_MARKER,
                   data: {
-                    latitude: details.geometry.location.lat,
-                    longitude: details.geometry.location.lng,
+                    place_id: data.place_id,
                     name: data.description,
-                    vicinity: details.formatted_address,
+                    lat: details.geometry.location.lat,
+                    lng: details.geometry.location.lng,
+
+                    address: details.formatted_address,
+                    rating: details.rating,
+                    reviews: details.user_ratings_total,
+                    ifImage: details.hasOwnProperty("photos") ? true : false,
+                    image: details.hasOwnProperty("photos")
+                      ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference=${details.photos[0].photo_reference}&key=${GOOGLE_MAP_API_KEY}`
+                      : "",
                   },
                 });
                 setRegion({

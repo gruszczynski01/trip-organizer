@@ -1,4 +1,4 @@
-import { AUTHENTICATE, LOGOUT, SAVE_USER } from "../actions/auth";
+import { AUTHENTICATE, LOGOUT, SAVE_USER, EDIT_USER } from "../actions/auth";
 
 const initialState = {
   token: null,
@@ -20,6 +20,15 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loggedUser: action.loggedUser,
+      };
+    case EDIT_USER:
+      console.log("UPDATE USER REDUCER");
+      console.log(action.editedUser);
+      console.log("END");
+
+      return {
+        ...state,
+        loggedUser: action.editedUser,
       };
     case LOGOUT:
       initialState;

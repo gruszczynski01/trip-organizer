@@ -12,10 +12,7 @@ export default (state = initialState, action) => {
       return {
         nearbyPlaces: [
           {
-            lat: action.data.latitude,
-            lng: action.data.longitude,
-            name: action.data.name,
-            address: action.data.SET_SPECIFIC_MARKERvicinity,
+            ...action.data,
           },
         ],
       };
