@@ -5,6 +5,7 @@ import {
   GET_USER_TRIP,
   DELETE_TRIP,
   GET_TRIP_MEMBERS,
+  REMOVE_USER_FROM_TRIP,
 } from "../actions/trips";
 
 const initialState = {
@@ -52,6 +53,13 @@ export default (state = initialState, action) => {
       return {
         ...state,
         userTrips: state.userTrips.filter((trip) => trip.id !== action.tripId),
+      };
+    case REMOVE_USER_FROM_TRIP:
+      return {
+        ...state,
+        tripMembers: state.tripMembers.filter(
+          (member) => member.id !== action.userToDelete
+        ),
       };
     case GET_TRIP_MEMBERS:
       return {

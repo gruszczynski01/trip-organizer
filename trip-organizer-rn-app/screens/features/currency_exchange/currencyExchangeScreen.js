@@ -21,7 +21,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as currenciesActions from "../../../store/actions/currencies";
 
 const currencyExchangeScreen = (props) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
 
@@ -79,6 +79,13 @@ const currencyExchangeScreen = (props) => {
   return (
     <View style={styles.screen}>
       <View style={styles.mainContainer}>
+        <Button
+          style={styles.backButton}
+          title="Back"
+          onPress={() => {
+            props.navigation.goBack();
+          }}
+        />
         <View style={styles.fromContainer}>
           <View style={styles.pickerContainer}>
             <Picker
@@ -251,10 +258,27 @@ const currencyExchangeScreen = (props) => {
 currencyExchangeScreen.navigationOptions = (navData) => {
   return {
     headerTitle: "Exchange Currency",
+    headerLeft: () => (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          buttonStyle={{ color: "#147efb" }}
+          title="Menu"
+          iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
+          onPress={() => {
+            navData.navigation.toggleDrawer();
+          }}
+        />
+      </HeaderButtons>
+    ),
   };
 };
 
 const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: "flex-end",
+    borderColor: "red",
+    borderWidth: 1,
+  },
   swapTile: {
     padding: 5,
     backgroundColor: "black",
@@ -326,7 +350,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   screen: {
-    paddingTop: 60,
+    paddingTop: 50,
     flex: 1,
     backgroundColor: "#2C2C2E",
   },

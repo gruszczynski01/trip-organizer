@@ -114,6 +114,7 @@ const tripNameScreen = (props) => {
         <Card style={styles.input}>
           <ScrollView>
             <Input
+              labelStyle={{ color: "white" }}
               id="name"
               label="Name"
               required
@@ -140,6 +141,7 @@ tripNameScreen.navigationOptions = {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: "#2C2C2E",
   },
   mainContent: {
     flex: 1,
@@ -148,10 +150,11 @@ const styles = StyleSheet.create({
   },
   title: {
     textTransform: "uppercase",
-    fontSize: 45,
+    fontSize: 25,
     fontWeight: "bold",
     letterSpacing: 1,
     margin: 30,
+    color: "white",
   },
   input: {
     width: "80%",
@@ -159,6 +162,7 @@ const styles = StyleSheet.create({
     maxHeight: 400,
     paddingHorizontal: 20,
     paddingVertical: 5,
+    backgroundColor: "black",
   },
   buttonContainer: {
     paddingVertical: 20,

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -140,6 +141,42 @@ const tripMembersScreen = (props) => {
                   <TouchableOpacity
                     onPress={() => {
                       console.log(itemData.item);
+                      if (itemData.item.ifActive) {
+                        Alert.alert(
+                          itemData.item.name + " " + itemData.item.surname,
+                          "Do you want to delete  user from trip?",
+                          [
+                            {
+                              text: "Delete",
+                              style: "destructive",
+                              onPress: () => {
+                                console.log("Deleting");
+                                dispatch(
+                                  tripActions.deleteUserFromTrip(
+                                    itemData.item.id,
+                                    trip.id
+                                  )
+                                );
+                                // console.log(trip);
+                                // dispatch(tripActions.deleteTrip(trip.id));
+                              },
+                            },
+                            {
+                              text: "Cancel",
+                              style: "cancel",
+                              onPress: () => {
+                                console.log("Editing");
+                              },
+                            },
+                          ]
+                        );
+                      } else {
+                        Alert.alert(
+                          itemData.item.name + " " + itemData.item.surname,
+                          "User doesn't accept invitation yet"
+                        );
+                      }
+
                       // setSelectedMember(itemData.item.id);
                     }}
                     onLongPress={(trip) => {

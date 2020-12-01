@@ -3,6 +3,7 @@ export const EDIT_TRIP = "EDIT_TRIP";
 export const GET_USER_TRIP = "GET_USER_TRIP";
 export const GET_TRIP_MEMBERS = "GET_TRIP_MEMBERS";
 export const DELETE_TRIP = "DELETE_TRIP";
+export const REMOVE_USER_FROM_TRIP = "REMOVE_USER_FROM_TRIP";
 
 import { auth, database } from "../../firebase";
 // import trips from "../reducers/trips";
@@ -201,6 +202,35 @@ export const getTripMembers = (tripId) => {
     dispatch({
       type: GET_TRIP_MEMBERS,
       tripMembers: tripMembersArray,
+    });
+  };
+};
+
+export const deleteUserFromTrip = (userId, tripId) => {
+  return async (dispatch, getState) => {
+    await database
+      .ref("trips/" + tripId + "/members/" + userId)
+      .remove()
+      .then(function () {
+        console.log("Remove succeeded.");
+      })
+      .catch(function (error) {
+        console.log("Remove failed: " + error.message);
+      });
+
+    await database
+      .ref("users/" + userId + "/userTrips/" + tripId)
+      .remove()
+      .then(function () {
+        console.log("Remove succeeded.");
+      })
+      .catch(function (error) {
+        console.log("Remove failed: " + error.message);
+      });
+
+    dispatch({
+      type: REMOVE_USER_FROM_TRIP,
+      userToDelete: userId,
     });
   };
 };

@@ -107,28 +107,25 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: "flex-start",
+    backgroundColor: "#2C2C2E",
     // alignItems: "center",
   },
   title: {
     textTransform: "uppercase",
-    fontSize: 45,
-    fontWeight: "bold",
-    letterSpacing: 1,
-    margin: 30,
-  },
-  title: {
-    textTransform: "uppercase",
     fontSize: 25,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     letterSpacing: 1,
     margin: 30,
+    color: "white",
   },
+
   subtitle: {
     textTransform: "uppercase",
     fontSize: 15,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     letterSpacing: 1,
     marginLeft: 30,
+    color: "white",
   },
   input: {
     width: "80%",
