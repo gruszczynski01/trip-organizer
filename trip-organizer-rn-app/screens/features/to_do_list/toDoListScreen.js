@@ -164,133 +164,135 @@ const toDoListScreen = (props) => {
           />
         </View>
       </View>
-      <FlatList
-        contentContainerStyle={{ paddingBottom: 85 }}
-        onRefresh={loadTasks}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={loadTasks}
-            tintColor="#F2F2F7"
-          />
-        }
-        refreshing={isRefreshing}
-        data={tasksToFlatlist}
-        extraData={refresh}
-        bounces={true}
-        keyExtractor={(item) => item.id}
-        renderItem={(itemData) => (
-          <View>
-            <Animatable.View
-              animation="bounceInLeft"
-              iterationCount={1}
-              easing="linear"
-            >
-              {(!isEnabled || itemData.item.owner == loggedUserId) && (
-                <Card style={styles.cartItem}>
-                  <View style={styles.checkmarkContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        // itemData.item.ifDone = !itemData.item.ifDone;
+      <View>
+        <FlatList
+          contentContainerStyle={{ paddingBottom: 85 }}
+          onRefresh={loadTasks}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={loadTasks}
+              tintColor="#F2F2F7"
+            />
+          }
+          refreshing={isRefreshing}
+          data={tasksToFlatlist}
+          extraData={refresh}
+          bounces={true}
+          keyExtractor={(item) => item.id}
+          renderItem={(itemData) => (
+            <View>
+              <Animatable.View
+                animation="bounceInLeft"
+                iterationCount={1}
+                easing="linear"
+              >
+                {(!isEnabled || itemData.item.owner == loggedUserId) && (
+                  <Card style={styles.cartItem}>
+                    <View style={styles.checkmarkContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          // itemData.item.ifDone = !itemData.item.ifDone;
 
-                        dispatch(
-                          taskActions.editTask(
-                            itemData.item.id,
-                            itemData.item.name,
-                            itemData.item.description,
-                            !itemData.item.ifDone,
-                            itemData.item.owner
-                          )
-                        );
-                        tasks.sort(compareTasks);
-                        loadTasks();
-                      }}
-                    >
-                      <Ionicons
-                        name={
-                          itemData.item.ifDone === true
-                            ? "ios-checkmark-circle"
-                            : "ios-radio-button-off"
-                          // : "ios-checkmark-circle-outline"
-                        }
-                        size={32}
-                        color={
-                          itemData.item.ifDone === true ? "#00D84D" : "grey"
-                        }
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.contentContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        console.log(itemData.item);
-                        setRefresh(!refresh);
-                        tasks.forEach((task) => {
-                          if (task.id == itemData.item.id) {
-                            task.showDetails = !task.showDetails;
+                          dispatch(
+                            taskActions.editTask(
+                              itemData.item.id,
+                              itemData.item.name,
+                              itemData.item.description,
+                              !itemData.item.ifDone,
+                              itemData.item.owner
+                            )
+                          );
+                          tasks.sort(compareTasks);
+                          loadTasks();
+                        }}
+                      >
+                        <Ionicons
+                          name={
+                            itemData.item.ifDone === true
+                              ? "ios-checkmark-circle"
+                              : "ios-radio-button-off"
+                            // : "ios-checkmark-circle-outline"
                           }
-                        });
-                      }}
-                      onLongPress={(trip) => {
-                        // console.log("onLongPress: trip: ", itemData.item);
-                        // setEditMode(true);
-                        longPressHandler(itemData.item);
-                      }}
-                    >
-                      <View style={styles.nameContainer}>
-                        <Animatable.Text style={styles.title}>
-                          {itemData.item.name}
-                        </Animatable.Text>
-                        <View
-                          style={{
-                            borderTopColor: "grey",
-                            borderTopWidth: 1,
-
-                            // paddingHorizontal: 5,
-                            // marginHorizontal: 5,
-                            width: "90%",
-                            paddingTop: 10,
-                            paddingBottom: 10,
-                            // alignItems: "center",
-                            alignContent: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text style={styles.ownerName}>
-                            {itemData.item.ownerName}
-                          </Text>
-                        </View>
-
-                        {itemData.item.showDetails && (
-                          <Animatable.View
-                            animation="flipInX"
-                            iterationCount={1}
-                            easing="linear"
+                          size={32}
+                          color={
+                            itemData.item.ifDone === true ? "#00D84D" : "grey"
+                          }
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.contentContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          console.log(itemData.item);
+                          setRefresh(!refresh);
+                          tasks.forEach((task) => {
+                            if (task.id == itemData.item.id) {
+                              task.showDetails = !task.showDetails;
+                            }
+                          });
+                        }}
+                        onLongPress={(trip) => {
+                          // console.log("onLongPress: trip: ", itemData.item);
+                          // setEditMode(true);
+                          longPressHandler(itemData.item);
+                        }}
+                      >
+                        <View style={styles.nameContainer}>
+                          <Animatable.Text style={styles.title}>
+                            {itemData.item.name}
+                          </Animatable.Text>
+                          <View
                             style={{
                               borderTopColor: "grey",
                               borderTopWidth: 1,
-                              width: "90%",
 
+                              // paddingHorizontal: 5,
+                              // marginHorizontal: 5,
+                              width: "90%",
                               paddingTop: 10,
+                              paddingBottom: 10,
                               // alignItems: "center",
                               alignContent: "center",
                               justifyContent: "center",
                             }}
                           >
-                            <Text style={styles.description}>
-                              {itemData.item.description}
+                            <Text style={styles.ownerName}>
+                              {itemData.item.ownerName}
                             </Text>
-                          </Animatable.View>
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                </Card>
-              )}
-            </Animatable.View>
-          </View>
-        )}
-      />
+                          </View>
+
+                          {itemData.item.showDetails && (
+                            <Animatable.View
+                              animation="flipInX"
+                              iterationCount={1}
+                              easing="linear"
+                              style={{
+                                borderTopColor: "grey",
+                                borderTopWidth: 1,
+                                width: "90%",
+
+                                paddingTop: 10,
+                                // alignItems: "center",
+                                alignContent: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={styles.description}>
+                                {itemData.item.description}
+                              </Text>
+                            </Animatable.View>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </Card>
+                )}
+              </Animatable.View>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -329,6 +331,7 @@ const styles = StyleSheet.create({
     maxHeight: 50,
     flexDirection: "row",
     paddingTop: 10,
+    paddingBottom: 10,
     // alignItems: "flex-start",
     justifyContent: "space-between",
     alignContent: "space-around",
