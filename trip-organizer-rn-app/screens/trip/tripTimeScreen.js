@@ -54,7 +54,7 @@ const tripTimeScreen = (props) => {
           value={startDate}
           mode="date"
           // is24Hour={true}
-          display="default"
+          display="spinner"
           onChange={onChange}
           minimumDate={new Date(Date.now())}
           // locale="pl-PL"
@@ -69,7 +69,7 @@ const tripTimeScreen = (props) => {
           value={endDate}
           mode="date"
           // is24Hour={true}
-          display="default"
+          display="spinner"
           onChange={onChangeEnd}
           minimumDate={startDate}
         />

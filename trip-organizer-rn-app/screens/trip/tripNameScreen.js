@@ -135,7 +135,7 @@ const tripNameScreen = (props) => {
 };
 
 tripNameScreen.navigationOptions = {
-  headerTitle: "Select destination",
+  headerTitle: "Select name",
 };
 
 const styles = StyleSheet.create({

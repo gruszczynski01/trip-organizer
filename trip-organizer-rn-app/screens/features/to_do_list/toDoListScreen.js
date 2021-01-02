@@ -138,8 +138,18 @@ const toDoListScreen = (props) => {
 
   if (!isLoading && tasks.length === 0) {
     return (
-      <View style={styles.centered}>
-        <Text>No tasks found. Maybe start adding some!</Text>
+      <View style={styles.screen}>
+        <Text
+          style={{ ...styles.switchLabel, padding: 20, alignSelf: "center" }}
+        >
+          No tasks found. Maybe start adding some!
+        </Text>
+        <Button
+          title="Add first task! 🪄"
+          onPress={() => {
+            props.navigation.navigate("EditTask", { trip: trip, task: -1 });
+          }}
+        />
       </View>
     );
   }

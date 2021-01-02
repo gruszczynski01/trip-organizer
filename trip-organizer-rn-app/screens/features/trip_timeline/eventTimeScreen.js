@@ -62,7 +62,7 @@ const eventTimeScreen = (props) => {
             value={date}
             mode="datetime"
             is24Hour={true}
-            display="default"
+            display="spinner"
             onChange={onChange}
             // onChange={() => {
             //   console.log("ZAMIAAANAA");

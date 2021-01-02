@@ -215,7 +215,12 @@ const MainTabsNavigator = createBottomTabNavigator(
 // );
 const DrawerNavigator = createDrawerNavigator(
   {
-    MainTabs: MainTabsNavigator,
+    MainTabs: {
+      screen: MainTabsNavigator,
+      navigationOptions: () => ({
+        title: "",
+      }),
+    },
   },
   {
     contentOptions: {

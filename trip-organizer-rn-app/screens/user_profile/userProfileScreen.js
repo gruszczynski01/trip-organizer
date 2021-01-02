@@ -155,7 +155,7 @@ const userProfileScreen = (props) => {
             <Avatar
               source={{
                 uri:
-                  "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/102848904_3066354756813371_3616733500491375538_o.jpg?_nc_cat=105&ccb=2&_nc_sid=09cbfe&_nc_ohc=ntn9XDr63XkAX_2wEHg&_nc_ht=scontent-waw1-1.xx&oh=3e02024708218cf46bec2c8059796bea&oe=5FD5101E",
+                  "https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-9/102848904_3066354756813371_3616733500491375538_o.jpg?_nc_cat=105&ccb=2&_nc_sid=09cbfe&_nc_ohc=bylMH2n5I6cAX8PQ-FR&_nc_ht=scontent-waw1-1.xx&oh=ca2fb75922f27b4302d1413872cae694&oe=6010639E",
               }}
               size="xlarge"
               rounded
